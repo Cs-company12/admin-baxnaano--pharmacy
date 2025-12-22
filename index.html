@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Baxnaano Hospital</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #0ea5e9; --secondary: #8b5cf6; --accent: #f97316;
+            --dark: #1e293b; --light: #f8fafc; --danger: #ef4444; --success: #10b981;
+            --warning: #f59e0b; --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--light); min-height: 100vh; }
+
+        .login-container { 
+            background: white; 
+            border-radius: 20px; 
+            box-shadow: var(--shadow); 
+            max-width: 400px; 
+            margin: 5rem auto; 
+            padding: 2.5rem; 
+        }
+        .login-container h1 { 
+            text-align: center; 
+            margin-bottom: 2rem; 
+            color: var(--primary); 
+        }
+        .error-message { 
+            padding: 1rem; 
+            border-radius: 8px; 
+            margin-bottom: 1rem; 
+            display: none; 
+            background: #fee2e2; 
+            color: var(--danger); 
+        }
+
+        .container { 
+            max-width: 1200px; 
+            margin: 2rem auto; 
+            padding: 0 1rem; 
+        }
+        h1 { 
+            color: var(--dark); 
+            margin-bottom: 2rem; 
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            overflow: hidden;
+        }
+        .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .card { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 15px; 
+            box-shadow: var(--shadow); 
+            margin-bottom: 2rem; 
+        }
+        .card h2 { 
+            color: var(--primary); 
+            margin-bottom: 1.5rem; 
+            border-bottom: 2px solid var(--primary); 
+            padding-bottom: 0.5rem; 
+        }
+        .form-group { 
+            margin-bottom: 1.5rem; 
+        }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 0.5rem; 
+            font-weight: bold; 
+            color: var(--dark); 
+        }
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select { 
+            width: 100%; 
+            padding: 0.8rem; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 8px; 
+            font-size: 1rem; 
+        }
+        .btn { 
+            padding: 0.8rem 1.5rem; 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .btn-danger { background: var(--danger); } 
+        .btn-success { background: var(--success); } 
+        .btn-warning { background: var(--warning); }
+        .btn-block { width: 100%; padding: 1rem; }
+        .logout-btn { 
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            background: var(--danger); 
+            color: white; 
+            padding: 0.8rem 1.5rem; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            z-index: 1000; 
+        }
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 1rem; 
+            margin-bottom: 2rem; 
+        }
+        .stat-card { 
+            background: white; 
+            padding: 1.5rem; 
+            border-radius: 15px; 
+            box-shadow: var(--shadow); 
+            text-align: center; 
+        }
+        .stat-card h3 { 
+            font-size: 2rem; 
+            color: var(--primary); 
+        }
+        .delivery-list { 
+            display: grid; 
+            gap: 1rem; 
+        }
+        .delivery-item { 
+            background: #f8fafc; 
+            padding: 1.5rem; 
+            border-radius: 10px; 
+            border-left: 5px solid var(--primary); 
+        }
+        .delivery-item.PENDING { 
+            border-left-color: var(--warning); 
+            background: linear-gradient(to right, rgba(245, 158, 11, 0.05), white); 
+        }
+        .delivery-item.DELIVERED { 
+            border-left-color: var(--success); 
+            background: linear-gradient(to right, rgba(16, 185, 129, 0.05), white); 
+        }
+        .delivery-item.CANCELLED { 
+            border-left-color: var(--danger); 
+            background: linear-gradient(to right, rgba(239, 68, 68, 0.05), white); 
+        }
+        .medicine-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 1rem; 
+            margin-top: 1rem; 
+        }
+        .medicine-card-admin { 
+            background: #f8fafc; 
+            padding: 1rem; 
+            border-radius: 10px; 
+            border: 2px solid #e2e8f0; 
+        }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 768px) {
+            .logout-btn {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 1rem;
+                width: 100%;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- === LOGIN FORM === -->
+    <div id="loginPage" class="login-container">
+        <div class="logo" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.8rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <div class="logo-img">🏥</div>
+            Baxnaano Hospital
+        </div>
+        <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--dark);">Admin Login</h2>
+        <form onsubmit="login(event)">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="username" required placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" required placeholder="Enter password">
+            </div>
+            <button type="submit" class="btn btn-block">🔐 Login</button>
+            <div class="error-message" id="errorMsg">❌ Invalid username or password!</div>
+        </form>
+    </div>
+
+    <!-- === DASHBOARD === -->
+    <div id="dashboardPage" class="hidden">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        
+        <div class="container">
+            <h1>
+                <div class="logo-img">🏥</div>
+                Baxnaano Hospital - Pharmacy Admin
+            </h1>
+            
+            <!-- STATS -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalOrders">0</h3>
+                    <p>Total Orders</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="pendingOrders">0</h3>
+                    <p>Pending Delivery</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="deliveredOrders">0</h3>
+                    <p>Delivered</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalRevenue">$0</h3>
+                    <p>Total Revenue</p>
+                </div>
+            </div>
+
+            <!-- UPLOAD GALLERY PHOTOS (NEW) -->
+            <div class="card">
+                <h2>📸 Upload Gallery Photos</h2>
+                <div class="form-group">
+                    <label>Upload Image File (JPEG/PNG)</label>
+                    <input type="file" id="galleryFile" accept="image/*" onchange="previewGalleryFile(event)">
+                    <img id="galleryPreview" style="display: none; max-width: 200px; margin-top: 1rem;">
+                </div>
+                <div class="form-group">
+                    <label>OR Enter Image URL (Facebook)</label>
+                    <input type="text" id="galleryUrl" placeholder="https://scontent.xx.fbcdn.net/...">
+                </div>
+                <div class="form-group">
+                    <label>Title *</label>
+                    <input type="text" id="galleryTitle" placeholder="e.g., Hospital Building" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="galleryDesc" placeholder="e.g., Main entrance"></textarea>
+                </div>
+                <button class="btn btn-block" onclick="addGalleryPhoto()">➕ Add to Gallery</button>
+            </div>
+
+            <!-- MANAGE MEDICINES -->
+            <div class="card">
+                <h2>🏥 Manage Medicines</h2>
+                <div class="form-group">
+                    <label>Medicine Name *</label>
+                    <input type="text" id="medName" placeholder="e.g., Panadol Extra" required>
+                </div>
+                <div class="form-group">
+                    <label>Price ($) *</label>
+                    <input type="number" id="medPrice" placeholder="10.99" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea id="medDesc" placeholder="Description and usage..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Medicine Image (Upload)</label>
+                    <input type="file" id="medicineImage" accept="image/*" onchange="previewMedicineImage(event)">
+                    <img id="medicineImagePreview" class="preview" style="display: none; max-width: 200px; margin-top: 1rem;">
+                </div>
+                <button class="btn btn-block" id="medicineSubmitBtn" onclick="addMedicine()">➕ Add Medicine</button>
+                
+                <div class="medicine-grid" id="medicineList"></div>
+            </div>
+
+            <!-- MANAGE DELIVERIES -->
+            <div class="card">
+                <h2>🚚 Manage Deliveries</h2>
+                <div class="form-group">
+                    <label>Search Orders (Name, Phone, or Order ID)</label>
+                    <input type="text" placeholder="🔍 Search..." onkeyup="searchDeliveries(this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Filter Status</label>
+                    <select id="deliveryFilter" onchange="filterDeliveries()">
+                        <option value="ALL">All Orders</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="DELIVERED">Delivered</option>
+                        <option value="CANCELLED">Cancelled</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="exportOrders()" style="margin-bottom: 1rem;">📥 Export All Orders</button>
+                <div class="delivery-list" id="deliveryList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === CONFIGURATION (CHANGE PASSWORD!) ===
+        const ADMIN_CREDENTIALS = {
+            username: 'admin',
+            password: 'Baxnaano2024!'
+        };
+
+        // === LOGIN/LOGOUT ===
+        function login(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                localStorage.setItem('pharmacyAdmin', JSON.stringify({
+                    loggedIn: true,
+                    loginTime: new Date().toISOString()
+                }));
+                showDashboard();
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            if (confirm('🚪 Are you sure you want to logout?')) {
+                localStorage.removeItem('pharmacyAdmin');
+                location.reload();
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('dashboardPage').classList.remove('hidden');
+            loadMedicines();
+            loadDeliveries();
+            updateStats();
+        }
+
+        // === CHECK LOGIN STATUS ===
+        window.onload = function() {
+            const admin = JSON.parse(localStorage.getItem('pharmacyAdmin') || 'null');
+            if (admin && admin.loggedIn) {
+                showDashboard();
+            } else {
+                document.getElementById('loginPage').classList.remove('hidden');
+            }
+        };
+
+        // === GALLERY PHOTO UPLOAD ===
+        let galleryFileData = null;
+
+        function previewGalleryFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    galleryFileData = e.target.result;
+                    const img = document.getElementById('galleryPreview');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    document.getElementById('galleryUrl').value = ''; // Clear URL if file selected
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addGalleryPhoto() {
+            const url = document.getElementById('galleryUrl').value;
+            const title = document.getElementById('galleryTitle').value;
+            const desc = document.getElementById('galleryDesc').value;
+            
+            if (!title) {
+                alert('❌ Please provide a title!');
+                return;
+            }
+            
+            let imageUrl = url || galleryFileData;
+            if (!imageUrl) {
+                alert('❌ Please upload an image or enter a URL!');
+                return;
+            }
+            
+            let gallery = JSON.parse(localStorage.getItem('hospitalGallery') || '[]');
+            gallery.push({
+                type: 'image',
+                url: imageUrl,
+                title: title,
+                description: desc,
+                date: new Date().toISOString().split('T')[0]
+            });
+            localStorage.setItem('hospitalGallery', JSON.stringify(gallery));
+            
+            alert('✅ Gallery photo added successfully!');
+            document.getElementById('galleryFile').value = '';
+            document.getElementById('galleryUrl').value = '';
+            document.getElementById('galleryTitle').value = '';
+            document.getElementById('galleryDesc').value = '';
+            document.getElementById('galleryPreview').style.display = 'none';
+            galleryFileData = null;
+        }
+
+        // === MEDICINE FUNCTIONS ===
+        let editingMedicineId = null;
+        let medicineFileData = null;
+
+        function addMedicine() {
+            const name = document.getElementById('medName').value;
+            const price = parseFloat(document.getElementById('medPrice').value);
+            const description = document.getElementById('medDesc').value;
+            const image = medicineFileData || document.getElementById('medicineImagePreview').src || null;
+            
+            if (!name || !price || !description) {
+                alert('❌ Please fill all required fields!');
+                return;
+            }
+            
+            const medicine = {
+                id: Date.now(),
+                name: name,
+                price: price,
+                description: description,
+                image: image
+            };
+            
+            let medicines = JSON.parse(localStorage.getItem('pharmacyMedicines') || '[]');
+            medicines.push(medicine);
+            localStorage.setItem('pharmacyMedicines', JSON.stringify(medicines));
+            
+            alert('✅ Medicine added successfully!');
+            clearMedicineForm();
+            loadMedicines();
+            updateStats();
+        }
+
+        function editMedicine(id) {
+            const medicines = JSON.parse(localStorage.getItem('pharmacyMedicines') || '[]');
+            const med = medicines.find(m => m.id === id);
+            
+            if (med) {
+                document.getElementById('medName').value = med.name;
+                document.getElementById('medPrice').value = med.price;
+                document.getElementById('medDesc').value = med.description;
+                
+                if (med.image) {
+                    const img = document.getElementById('medicineImagePreview');
+                    img.src = med.image;
+                    img.style.display = 'block';
+                    medicineFileData = null; // Reset file data
+                }
+                
+                editingMedicineId = id;
+                
+                const btn = document.getElementById('medicineSubmitBtn');
+                btn.textContent = '💾 Update Medicine';
+                btn.onclick = updateMedicine;
+                
+                document.querySelector('.card h2').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function updateMedicine() {
+            if (!editingMedicineId) return;
+            
+            const medicines = JSON.parse(localStorage.getItem('pharmacyMedicines') || '[]');
+            const index = medicines.findIndex(m => m.id === editingMedicineId);
+            
+            if (index !== -1) {
+                medicines[index] = {
+                    ...medicines[index],
+                    name: document.getElementById('medName').value,
+                    price: parseFloat(document.getElementById('medPrice').value),
+                    description: document.getElementById('medDesc').value,
+                    image: medicineFileData || document.getElementById('medicineImagePreview').src || null
+                };
+                
+                localStorage.setItem('pharmacyMedicines', JSON.stringify(medicines));
+                alert('✅ Medicine updated successfully!');
+                clearMedicineForm();
+                loadMedicines();
+                
+                const btn = document.getElementById('medicineSubmitBtn');
+                btn.textContent = '➕ Add Medicine';
+                btn.onclick = addMedicine;
+                editingMedicineId = null;
+            }
+        }
+
+        function clearMedicineForm() {
+            document.getElementById('medName').value = '';
+            document.getElementById('medPrice').value = '';
+            document.getElementById('medDesc').value = '';
+            document.getElementById('medicineImage').value = '';
+            document.getElementById('medicineImagePreview').style.display = 'none';
+            medicineFileData = null;
+        }
+
+        function previewMedicineImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    medicineFileData = e.target.result;
+                    const img = document.getElementById('medicineImagePreview');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function loadMedicines() {
+            const medicines = JSON.parse(localStorage.getItem('pharmacyMedicines') || '[]');
+            const list = document.getElementById('medicineList');
+            
+            if (medicines.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #64748b;">No medicines in catalog</p>';
+                return;
+            }
+            
+            list.innerHTML = medicines.map(med => `
+                <div class="medicine-card-admin">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>${med.name}</strong>
+                        <span style="color: var(--primary); font-weight: bold;">$${med.price.toFixed(2)}</span>
+                    </div>
+                    <p style="color: #64748b; margin: 0.5rem 0;">${med.description}</p>
+                    <div style="margin: 0.5rem 0;">
+                        ${med.image ? `<img src="${med.image}" style="max-width: 100px; border-radius: 8px;">` : '<span style="font-size: 2rem;">💊</span>'}
+                    </div>
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                        <button class="btn" onclick="editMedicine(${med.id})" style="flex: 1; font-size: 0.9rem; padding: 0.5rem;">✏️ Edit</button>
+                        <button class="btn-danger" onclick="deleteMedicine(${med.id})" style="flex: 1; font-size: 0.9rem; padding: 0.5rem;">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteMedicine(id) {
+            if (confirm('🗑️ Delete this medicine from the catalog?')) {
+                let medicines = JSON.parse(localStorage.getItem('pharmacyMedicines') || '[]');
+                medicines = medicines.filter(m => m.id !== id);
+                localStorage.setItem('pharmacyMedicines', JSON.stringify(medicines));
+                loadMedicines();
+                updateStats();
+            }
+        }
+
+        // === DELIVERY FUNCTIONS ===
+        function loadDeliveries() {
+            const deliveries = JSON.parse(localStorage.getItem('pharmacyDeliveries') || '[]');
+            const list = document.getElementById('deliveryList');
+            const filter = document.getElementById('deliveryFilter').value;
+            
+            let filtered = deliveries;
+            if (filter !== 'ALL') {
+                filtered = deliveries.filter(d => d.status === filter);
+            }
+            
+            if (filtered.length === 0) {
+                const statusText = filter === 'ALL' ? '' : filter.toLowerCase();
+                list.innerHTML = `<p style="text-align: center; color: #64748b;">No ${statusText} orders found</p>`;
+                return;
+            }
+            
+            list.innerHTML = filtered.map(delivery => `
+                <div class="delivery-item ${delivery.status}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <strong>Order #${delivery.id}</strong>
+                        <span style="background: ${delivery.status === 'PENDING' ? '#f59e0b' : delivery.status === 'DELIVERED' ? '#10b981' : '#ef4444'}; color: white; padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.85rem;">${delivery.status}</span>
+                    </div>
+                    <p><strong>Customer:</strong> ${delivery.customerName}</p>
+                    <p><strong>Phone:</strong> <a href="tel:${delivery.customerPhone}" style="color: var(--primary);">${delivery.customerPhone}</a></p>
+                    <p><strong>Address:</strong> ${delivery.deliveryAddress}</p>
+                    <p><strong>Total:</strong> $${delivery.totalAmount.toFixed(2)}</p>
+                    <p><strong>Time:</strong> ${delivery.timestamp}</p>
+                    <div style="margin: 1rem 0;">
+                        <strong>Medicines:</strong>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            ${delivery.medicines.map(m => `<li>${m.name} - $${m.price.toFixed(2)}</li>`).join('')}
+                        </ul>
+                    </div>
+                    ${delivery.instructions ? `<p><strong>Instructions:</strong> ${delivery.instructions}</p>` : ''}
+                    ${delivery.prescription ? `<p><strong>Prescription:</strong><br><img src="${delivery.prescription}" style="max-width: 150px; border-radius: 8px;"></p>` : ''}
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        ${delivery.status === 'PENDING' 
+                            ? `<button class="btn-success" onclick="updateDeliveryStatus('${delivery.id}', 'DELIVERED')">✅ Mark Delivered</button>
+                               <button class="btn-danger" onclick="updateDeliveryStatus('${delivery.id}', 'CANCELLED')">❌ Cancel</button>` 
+                            : ''
+                        }
+                        <button class="btn" onclick="viewDeliveryDetails('${delivery.id}')">👁️ View Details</button>
+                        <button class="btn-danger" onclick="deleteDelivery('${delivery.id}')">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function searchDeliveries(query) {
+            const deliveries = JSON.parse(localStorage.getItem('pharmacyDeliveries') || '[]');
+            const list = document.getElementById('deliveryList');
+            
+            if (!query) {
+                loadDeliveries();
+                return;
+            }
+            
+            const filtered = deliveries.filter(d => 
+                d.customerName.toLowerCase().includes(query.toLowerCase()) ||
+                d.customerPhone.includes(query) ||
+                d.id.includes(query)
+            );
+            
+            if (filtered.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #64748b;">No matching orders</p>';
+                return;
+            }
+            
+            list.innerHTML = filtered.map(delivery => `
+                <div class="delivery-item ${delivery.status}">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>Order #${delivery.id}</strong>
+                        <span>${delivery.status}</span>
+                    </div>
+                    <p>${delivery.customerName} - ${delivery.customerPhone}</p>
+                    <button class="btn" onclick="viewDeliveryDetails('${delivery.id}')">View</button>
+                </div>
+            `).join('');
+        }
+
+        function updateDeliveryStatus(id, newStatus) {
+            let deliveries = JSON.parse(localStorage.getItem('pharmacyDeliveries') || '[]');
+            const index = deliveries.findIndex(d => d.id === id);
+            
+            if (index !== -1) {
+                deliveries[index].status = newStatus;
+                localStorage.setItem('pharmacyDeliveries', JSON.stringify(deliveries));
+                loadDeliveries();
+                updateStats();
+                alert(`✅ Order ${id} marked as ${newStatus}`);
+            }
+        }
+
+        function viewDeliveryDetails(id) {
+            const deliveries = JSON.parse(localStorage.getItem('pharmacyDeliveries') || '[]');
+            const delivery = deliveries.find(d => d.id === id);
+            
+            if (delivery) {
+                const details = `
+ORDER DETAILS - #${delivery.id}
+================================
+Customer: ${delivery.customerName}
+Phone: ${delivery.customerPhone}
+Address: ${delivery.deliveryAddress}
+Total: $${delivery.totalAmount.toFixed(2)}
+Status: ${delivery.status}
+Time: ${delivery.timestamp}
+
+Medicines:
+${delivery.medicines.map(m => `- ${m.name}: $${m.price.toFixed(2)}`).join('\n')}
+
+Instructions: ${delivery.instructions || 'None'}
+                `;
+                alert(details);
+            }
+        }
+
+        function deleteDelivery(id) {
+            if (confirm(`🗑️ Delete order ${id}? This cannot be undone.`)) {
+                let deliveries = JSON.parse(localStorage.getItem('pharmacyDeliveries') || '[]');
+                deliveries = deliveries.filter(d => d.id !== id);
+                localStorage.setItem('pharmacyDeliveries', JSON.stringify(deliveries));
+                loadDeliveries();
+                updateStats();
+            }
+        }
+
+        function filterDeliveries() {
+            loadDeliveries();
+        }
+
+        function exportOrders() {
+            const deliveries = JSON.parse(localStorage.getItem('pharmacyDeliveries') || '[]');
+            
+            if (deliveries.length === 0) {
+                alert('❌ No orders to export!');
+                return;
+            }
+            
+            const csv = [
+                ['Order ID', 'Customer', 'Phone', 'Address', 'Total', 'Status', 'Date'],
+                ...deliveries.map(d => [
+                    d.id, 
+                    d.customerName.replace(/,/g, ''), 
+                    d.customerPhone, 
+                    d.deliveryAddress.replace(/,/g, ';'), 
+                    d.totalAmount, 
+                    d.status, 
+                    d.timestamp
+                ])
+            ].map(row => row.join(',')).join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `baxnaano-orders-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Orders exported successfully!');
+        }
+
+        function updateStats() {
+            const deliveries = JSON.parse(localStorage.getItem('pharmacyDeliveries') || '[]');
+            
+            document.getElementById('totalOrders').textContent = deliveries.length;
+            document.getElementById('pendingOrders').textContent = deliveries.filter(d => d.status === 'PENDING').length;
+            document.getElementById('deliveredOrders').textContent = deliveries.filter(d => d.status === 'DELIVERED').length;
+            document.getElementById('totalRevenue').textContent = '$' + deliveries.reduce((sum, d) => sum + d.totalAmount, 0).toFixed(2);
+        }
+
+        window.addEventListener('beforeunload', function(e) {
+            if (editingMedicineId) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+            }
+        });
+    </script>
+</body>
+</html>
