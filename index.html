@@ -12,393 +12,132 @@
             --warning: #f59e0b; --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--light); min-height: 100vh; }
-
-        .login-container { 
-            background: white; 
-            border-radius: 20px; 
-            box-shadow: var(--shadow); 
-            max-width: 400px; 
-            margin: 5rem auto; 
-            padding: 2.5rem; 
-        }
-        .login-container h1 { 
-            text-align: center; 
-            margin-bottom: 2rem; 
-            color: var(--primary); 
-        }
-        .error-message { 
-            padding: 1rem; 
-            border-radius: 8px; 
-            margin-bottom: 1rem; 
-            display: none; 
-            background: #fee2e2; 
-            color: var(--danger); 
-        }
-
-        .container { 
-            max-width: 1200px; 
-            margin: 2rem auto; 
-            padding: 0 1rem; 
-        }
-        h1 { 
-            color: var(--dark); 
-            margin-bottom: 2rem; 
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .logo-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.8rem;
-        }
-        .card { 
-            background: white; 
-            padding: 2rem; 
-            border-radius: 15px; 
-            box-shadow: var(--shadow); 
-            margin-bottom: 2rem; 
-        }
-        .card h2 { 
-            color: var(--primary); 
-            margin-bottom: 1.5rem; 
-            border-bottom: 2px solid var(--primary); 
-            padding-bottom: 0.5rem; 
-        }
-        .form-group { 
-            margin-bottom: 1.5rem; 
-        }
-        .form-group label { 
-            display: block; 
-            margin-bottom: 0.5rem; 
-            font-weight: bold; 
-            color: var(--dark); 
-        }
-        .form-group input, 
-        .form-group textarea, 
-        .form-group select { 
-            width: 100%; 
-            padding: 0.8rem; 
-            border: 2px solid #e2e8f0; 
-            border-radius: 8px; 
-            font-size: 1rem; 
-        }
-        .form-group input:focus, 
-        .form-group textarea:focus, 
-        .form-group select:focus { 
-            outline: none; 
-            border-color: var(--primary); 
-        }
-        .btn { 
-            padding: 0.8rem 1.5rem; 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            transition: all 0.3s;
-        }
-        .btn:hover, .btn:focus { 
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
-            outline: 3px solid rgba(14, 165, 233, 0.3); 
-        }
-        .btn-danger { background: var(--danger); } 
-        .btn-success { background: var(--success); } 
-        .btn-warning { background: var(--warning); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .login-container { background: white; border-radius: 20px; box-shadow: var(--shadow); max-width: 400px; margin: 5rem auto; padding: 2.5rem; }
+        .login-container h1 { text-align: center; margin-bottom: 2rem; color: var(--primary); }
+        .error-message { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; display: none; background: #fee2e2; color: var(--danger); }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        h1 { color: var(--dark); margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; }
+        .logo-img { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem; }
+        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: var(--shadow); margin-bottom: 2rem; }
+        .card h2 { color: var(--primary); margin-bottom: 1.5rem; border-bottom: 2px solid var(--primary); padding-bottom: 0.5rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: bold; color: var(--dark); }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.8rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
+        .btn { padding: 0.8rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .btn:hover, .btn:focus { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); outline: 3px solid rgba(14, 165, 233, 0.3); }
+        .btn-danger { background: var(--danger); } .btn-success { background: var(--success); } .btn-warning { background: var(--warning); }
         .btn-block { width: 100%; padding: 1rem; }
-        .logout-btn { 
-            position: fixed; 
-            top: 20px; 
-            right: 20px; 
-            background: var(--danger); 
-            color: white; 
-            padding: 0.8rem 1.5rem; 
-            border: none; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            z-index: 1000; 
-        }
-        .stats-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-            gap: 1rem; 
-            margin-bottom: 2rem; 
-        }
-        .stat-card { 
-            background: white; 
-            padding: 1.5rem; 
-            border-radius: 15px; 
-            box-shadow: var(--shadow); 
-            text-align: center; 
-        }
-        .stat-card h3 { 
-            font-size: 2rem; 
-            color: var(--primary); 
-        }
-        .delivery-list { 
-            display: grid; 
-            gap: 1rem; 
-        }
-        .delivery-item { 
-            background: #f8fafc; 
-            padding: 1.5rem; 
-            border-radius: 10px; 
-            border-left: 5px solid var(--primary); 
-        }
-        .delivery-item.PENDING { 
-            border-left-color: var(--warning); 
-            background: linear-gradient(to right, rgba(245, 158, 11, 0.05), white); 
-        }
-        .delivery-item.DELIVERED { 
-            border-left-color: var(--success); 
-            background: linear-gradient(to right, rgba(16, 185, 129, 0.05), white); 
-        }
-        .delivery-item.CANCELLED { 
-            border-left-color: var(--danger); 
-            background: linear-gradient(to right, rgba(239, 68, 68, 0.05), white); 
-        }
-        .medicine-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-            gap: 1rem; 
-            margin-top: 1rem; 
-        }
-        .medicine-card-admin { 
-            background: #f8fafc; 
-            padding: 1rem; 
-            border-radius: 10px; 
-            border: 2px solid #e2e8f0; 
-        }
-        .image-preview { 
-            max-width: 150px; 
-            max-height: 150px; 
-            border-radius: 8px; 
-            margin-top: 0.5rem; 
-            display: none; 
-        }
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: #64748b;
-        }
-        .error {
-            text-align: center;
-            padding: 2rem;
-            color: var(--danger);
-        }
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            z-index: 9999;
-            animation: slideIn 0.5s ease;
-        }
+        .logout-btn { position: fixed; top: 20px; right: 20px; background: var(--danger); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; z-index: 1000; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: var(--shadow); text-align: center; }
+        .stat-card h3 { font-size: 2rem; color: var(--primary); }
+        .delivery-list { display: grid; gap: 1rem; }
+        .delivery-item { background: #f8fafc; padding: 1.5rem; border-radius: 10px; border-left: 5px solid var(--primary); }
+        .delivery-item.PENDING { border-left-color: var(--warning); background: linear-gradient(to right, rgba(245, 158, 11, 0.05), white); }
+        .delivery-item.DELIVERED { border-left-color: var(--success); background: linear-gradient(to right, rgba(16, 185, 129, 0.05), white); }
+        .delivery-item.CANCELLED { border-left-color: var(--danger); background: linear-gradient(to right, rgba(239, 68, 68, 0.05), white); }
+        .medicine-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .medicine-card-admin { background: #f8fafc; padding: 1rem; border-radius: 10px; border: 2px solid #e2e8f0; }
+        .image-preview { max-width: 150px; max-height: 150px; border-radius: 8px; margin-top: 0.5rem; display: none; }
+        .loading { text-align: center; padding: 2rem; color: #64748b; }
+        .error { text-align: center; padding: 2rem; color: var(--danger); }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 1rem 2rem; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 9999; animation: slideIn 0.5s ease; }
         .notification.success { background: var(--success); color: white; }
         .notification.error { background: var(--danger); color: white; }
         .notification.warning { background: var(--warning); color: white; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         .hidden { display: none !important; }
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        footer {
-            background: var(--dark);
-            color: white;
-            text-align: center;
-            padding: 2rem;
-            margin-top: 2rem;
-        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        footer { background: var(--dark); color: white; text-align: center; padding: 2rem; margin-top: 2rem; }
 
         @media (max-width: 768px) {
-            .logout-btn {
-                position: relative;
-                top: auto;
-                right: auto;
-                margin-bottom: 1rem;
-                width: 100%;
-            }
-            h1 {
-                font-size: 1.5rem;
-            }
+            .logout-btn { position: relative; top: auto; right: auto; margin-bottom: 1rem; width: 100%; }
+            h1 { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
-    <!-- === LOGIN FORM WITH FIREBASE AUTH === -->
+    <!-- LOGIN FORM -->
     <div id="loginPage" class="login-container">
-        <div class="logo" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.8rem;" aria-hidden="true">
-            🏥
-        </div>
+        <div class="logo" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.8rem;" aria-hidden="true">🏥</div>
         <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--dark);">Admin Login</h2>
         <form id="loginForm">
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" required placeholder="admin@baxnaano.com" autocomplete="username">
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required placeholder="CIISE LEGEND" autocomplete="CIISE LEGEND">
-            </div>
+            <div class="form-group"><label for="email">Email Address</label><input type="email" id="email" required placeholder="admin@baxnaano.com" autocomplete="username"></div>
+            <div class="form-group"><label for="password">Password</label><input type="password" id="password" required placeholder="Enter password" autocomplete="current-password"></div>
             <button type="submit" class="btn btn-block" id="loginBtn">🔐 Login</button>
             <div class="error-message" id="errorMsg" role="alert" aria-live="polite"></div>
         </form>
     </div>
 
-    <!-- === DASHBOARD === -->
+    <!-- DASHBOARD -->
     <div id="dashboardPage" class="hidden">
         <button class="logout-btn" id="logoutBtn" aria-label="Logout">🚪 Logout</button>
-        
         <div class="container">
             <h1>🏥 Baxnaano Hospital - Pharmacy Admin</h1>
-            
-            <!-- STATS -->
             <div class="stats-grid">
-                <div class="stat-card">
-                    <h3 id="totalOrders">0</h3>
-                    <p>Total Orders</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="pendingOrders">0</h3>
-                    <p>Pending Delivery</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="deliveredOrders">0</h3>
-                    <p>Delivered</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="totalRevenue">$0</h3>
-                    <p>Total Revenue</p>
-                </div>
+                <div class="stat-card"><h3 id="totalOrders">0</h3><p>Total Orders</p></div>
+                <div class="stat-card"><h3 id="pendingOrders">0</h3><p>Pending Delivery</p></div>
+                <div class="stat-card"><h3 id="deliveredOrders">0</h3><p>Delivered</p></div>
+                <div class="stat-card"><h3 id="totalRevenue">$0</h3><p>Total Revenue</p></div>
             </div>
 
-            <!-- UPLOAD GALLERY PHOTOS -->
-            <div class="card">
-                <h2>📸 Upload Gallery Photo</h2>
-                <form id="galleryForm">
-                    <div class="form-group">
-                        <label for="galleryFile">Choose Image *</label>
-                        <input type="file" id="galleryFile" accept="image/*" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="galleryTitle">Title *</label>
-                        <input type="text" id="galleryTitle" placeholder="e.g., Hospital Building" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="galleryDesc">Description</label>
-                        <textarea id="galleryDesc" placeholder="e.g., Main entrance"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-block" id="gallerySubmitBtn">➕ Add to Gallery</button>
-                </form>
-            </div>
+            <div class="card"><h2>📸 Upload Gallery Photo</h2><form id="galleryForm">
+                <div class="form-group"><label for="galleryFile">Choose Image *</label><input type="file" id="galleryFile" accept="image/*" required></div>
+                <div class="form-group"><label for="galleryTitle">Title *</label><input type="text" id="galleryTitle" placeholder="e.g., Hospital Building" required></div>
+                <div class="form-group"><label for="galleryDesc">Description</label><textarea id="galleryDesc" placeholder="e.g., Main entrance"></textarea></div>
+                <button type="submit" class="btn btn-block" id="gallerySubmitBtn">➕ Add to Gallery</button>
+            </form></div>
 
-            <!-- MANAGE MEDICINES -->
-            <div class="card">
-                <h2>🏥 Manage Medicines</h2>
-                <form id="medicineForm">
-                    <div class="form-group">
-                        <label for="medName">Medicine Name *</label>
-                        <input type="text" id="medName" placeholder="e.g., Panadol Extra" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="medPrice">Price ($) *</label>
-                        <input type="number" id="medPrice" placeholder="10.99" step="0.01" required min="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="medDesc">Description *</label>
-                        <textarea id="medDesc" placeholder="Description and usage..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="medicineImage">Medicine Image (Upload)</label>
-                        <input type="file" id="medicineImage" accept="image/*">
-                        <img id="medicineImagePreview" class="image-preview" alt="Preview">
-                    </div>
-                    <button type="submit" class="btn btn-block" id="medicineSubmitBtn">➕ Add Medicine</button>
-                </form>
-                <div class="medicine-grid" id="medicineList"><p class="loading">Loading medicines...</p></div>
-            </div>
+            <div class="card"><h2>🏥 Manage Medicines</h2><form id="medicineForm">
+                <div class="form-group"><label for="medName">Medicine Name *</label><input type="text" id="medName" placeholder="e.g., Panadol Extra" required></div>
+                <div class="form-group"><label for="medPrice">Price ($) *</label><input type="number" id="medPrice" placeholder="10.99" step="0.01" required min="0"></div>
+                <div class="form-group"><label for="medDesc">Description *</label><textarea id="medDesc" placeholder="Description and usage..." required></textarea></div>
+                <div class="form-group"><label for="medicineImage">Medicine Image (Upload)</label><input type="file" id="medicineImage" accept="image/*"><img id="medicineImagePreview" class="image-preview" alt="Preview"></div>
+                <button type="submit" class="btn btn-block" id="medicineSubmitBtn">➕ Add Medicine</button>
+            </form><div class="medicine-grid" id="medicineList"><p class="loading">Loading medicines...</p></div></div>
 
-            <!-- MANAGE DELIVERIES -->
-            <div class="card">
-                <h2>🚚 Manage Deliveries</h2>
-                <div class="form-group">
-                    <label for="deliverySearch">Search Orders (Name, Phone, or Order ID)</label>
-                    <input type="text" id="deliverySearch" placeholder="🔍 Search...">
-                </div>
-                <div class="form-group">
-                    <label for="deliveryFilter">Filter Status</label>
-                    <select id="deliveryFilter">
-                        <option value="ALL">All Orders</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="DELIVERED">Delivered</option>
-                        <option value="CANCELLED">Cancelled</option>
-                    </select>
-                </div>
+            <div class="card"><h2>🚚 Manage Deliveries</h2>
+                <div class="form-group"><label for="deliverySearch">Search Orders (Name, Phone, or Order ID)</label><input type="text" id="deliverySearch" placeholder="🔍 Search..."></div>
+                <div class="form-group"><label for="deliveryFilter">Filter Status</label><select id="deliveryFilter">
+                    <option value="ALL">All Orders</option><option value="PENDING">Pending</option><option value="DELIVERED">Delivered</option><option value="CANCELLED">Cancelled</option>
+                </select></div>
                 <button class="btn" id="exportOrdersBtn" style="margin-bottom: 1rem;">📥 Export All Orders</button>
                 <div class="delivery-list" id="deliveryList"><p class="loading">Loading deliveries...</p></div>
             </div>
 
-            <!-- ADMIN LOGO UPLOAD -->
-            <div class="card" style="border: 2px solid var(--accent);">
-                <h2 style="color: var(--accent);">🏥 Upload Hospital Logo</h2>
-                <form id="logoForm">
-                    <div class="form-group">
-                        <label for="logoFile">Choose Logo Image *</label>
-                        <input type="file" id="logoFile" accept="image/*" required>
-                        <small style="color: #64748b;">Recommended: Square image, max 2MB</small>
-                    </div>
-                    <button type="submit" class="btn btn-block" style="background: var(--accent);" id="logoSubmitBtn">📤 Upload Logo</button>
-                </form>
-                <div id="currentLogo" style="margin-top: 1rem;">
-                    <p style="color: #64748b;">Current logo: 🏥 (default)</p>
-                </div>
-            </div>
+            <div class="card" style="border: 2px solid var(--accent);"><h2 style="color: var(--accent);">🏥 Upload Hospital Logo</h2><form id="logoForm">
+                <div class="form-group"><label for="logoFile">Choose Logo Image *</label><input type="file" id="logoFile" accept="image/*" required><small style="color: #64748b;">Recommended: Square image, max 2MB</small></div>
+                <button type="submit" class="btn btn-block" style="background: var(--accent);" id="logoSubmitBtn">📤 Upload Logo</button>
+            </form><div id="currentLogo" style="margin-top: 1rem;"><p style="color: #64748b;">Current logo: 🏥 (default)</p></div></div>
 
-            <!-- DATA BACKUP/RESTORE -->
             <div class="card" style="background: linear-gradient(135deg, #fef3c7, #fff); border: 2px solid var(--warning);">
                 <h2 style="color: var(--warning);">⚠️ Data Backup & Restore</h2>
                 <p style="margin-bottom: 1rem;"><strong>Export all data</strong> for backup:</p>
                 <button class="btn-warning btn-block" id="exportAllBtn">📤 Export All Data</button>
-                
                 <p style="margin: 2rem 0 1rem;"><strong>Import data</strong> from backup:</p>
                 <input type="file" id="importFile" accept=".json" class="hidden">
                 <button class="btn-warning" id="importBtn">📥 Import Data</button>
-                <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
-                    ⚠️ Importing will overwrite existing data. Use with caution.
-                </p>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">⚠️ Importing will overwrite existing data. Use with caution.</p>
             </div>
         </div>
     </div>
 
-    <!-- FIREBASE SDK -->
+    <!-- ===== 🔑 FIREBASE CONFIG SECTION - KU DARI HAGAAGKAAGA Halkan ===== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // === REPLACE WITH YOUR ACTUAL FIREBASE CONFIG ===
-        // Get this from Firebase Console > Project Settings > General > Your apps
+        // TODO: KU DARI HAGAAGKAAGA FIIREBASE KA Halkan
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY_HERE",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "YOUR_API_KEY_HERE",           // <--- BADAL
+            authDomain: "YOUR_PROJECT.firebaseapp.com", // <--- BADAL
+            projectId: "YOUR_PROJECT_ID",         // <--- BADAL
+            storageBucket: "YOUR_PROJECT.appspot.com", // <--- BADAL
+            messagingSenderId: "YOUR_SENDER_ID", // <--- BADAL
+            appId: "YOUR_APP_ID"                   // <--- BADAL
         };
 
         const app = initializeApp(firebaseConfig);
@@ -418,10 +157,7 @@
             },
             
             async saveMedicine(medicine) {
-                return await addDoc(this.medicines, {
-                    ...medicine,
-                    createdAt: new Date().toISOString()
-                });
+                return await addDoc(this.medicines, { ...medicine, createdAt: new Date().toISOString() });
             },
             
             async updateMedicine(id, medicine) {
@@ -452,10 +188,7 @@
             },
             
             async saveGalleryItem(item) {
-                return await addDoc(this.gallery, {
-                    ...item,
-                    date: new Date().toISOString().split('T')[0]
-                });
+                return await addDoc(this.gallery, { ...item, date: new Date().toISOString().split('T')[0] });
             },
             
             async getSettings() {
@@ -466,7 +199,6 @@
             async saveSetting(key, value) {
                 const settings = await this.getSettings();
                 const existing = settings.find(s => s.key === key);
-                
                 if (existing) {
                     return await updateDoc(doc(db, 'settings', existing.id), { value, updatedAt: new Date().toISOString() });
                 } else {
@@ -475,7 +207,6 @@
             }
         };
 
-        // Real-time listeners
         onSnapshot(collection(db, 'medicines'), () => window.adminApp?.loadMedicines());
         onSnapshot(query(collection(db, 'orders'), orderBy('timestamp', 'desc')), () => {
             window.adminApp?.loadDeliveries();
@@ -484,15 +215,16 @@
         onSnapshot(collection(db, 'gallery'), () => window.adminApp?.loadGallery());
         onSnapshot(collection(db, 'settings'), () => window.adminApp?.loadSettings());
 
-        // Authentication state observer
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Check if user has admin claim
-                user.getIdTokenResult().then(idTokenResult => {
-                    if (idTokenResult.claims.admin) {
+                // Check if user is admin
+                const adminRef = doc(db, 'admins', user.uid);
+                getDocs(collection(db, 'admins')).then(snapshot => {
+                    const isAdmin = snapshot.docs.some(doc => doc.id === user.uid);
+                    if (isAdmin) {
                         window.adminApp.showDashboard();
                     } else {
-                        window.adminApp.showError('❌ You do not have admin privileges');
+                        window.adminApp.showError('❌ Admin access required');
                         signOut(auth);
                     }
                 });
@@ -504,7 +236,6 @@
     </script>
 
     <script>
-        // === ADMIN APPLICATION CLASS ===
         class AdminApp {
             constructor() {
                 this.editingMedicineId = null;
@@ -513,45 +244,28 @@
             }
 
             initEventListeners() {
-                // Login form
                 document.getElementById('loginForm')?.addEventListener('submit', (e) => this.login(e));
-                
-                // Logout button
                 document.getElementById('logoutBtn')?.addEventListener('click', () => this.logout());
-                
-                // Medicine form
                 document.getElementById('medicineForm')?.addEventListener('submit', (e) => this.handleMedicineSubmit(e));
                 document.getElementById('medicineImage')?.addEventListener('change', (e) => this.previewMedicineImage(e));
-                
-                // Gallery form
                 document.getElementById('galleryForm')?.addEventListener('submit', (e) => this.handleGallerySubmit(e));
-                
-                // Logo form
                 document.getElementById('logoForm')?.addEventListener('submit', (e) => this.handleLogoSubmit(e));
-                
-                // Delivery actions
                 document.getElementById('deliverySearch')?.addEventListener('input', (e) => this.searchDeliveries(e.target.value));
                 document.getElementById('deliveryFilter')?.addEventListener('change', () => this.filterDeliveries());
                 document.getElementById('exportOrdersBtn')?.addEventListener('click', () => this.exportOrders());
-                
-                // Backup/Restore
                 document.getElementById('exportAllBtn')?.addEventListener('click', () => this.exportAllData());
                 document.getElementById('importBtn')?.addEventListener('click', () => document.getElementById('importFile').click());
                 document.getElementById('importFile')?.addEventListener('change', (e) => this.importAllData(e));
             }
 
-            // === AUTHENTICATION ===
             async login(event) {
                 event.preventDefault();
                 const loginBtn = document.getElementById('loginBtn');
                 const errorMsg = document.getElementById('errorMsg');
-                
                 loginBtn.disabled = true;
                 loginBtn.textContent = '⏳ Logging in...';
-                
                 const email = document.getElementById('email').value.trim();
                 const password = document.getElementById('password').value;
-                
                 try {
                     await signInWithEmailAndPassword(auth, email, password);
                     errorMsg.style.display = 'none';
@@ -586,17 +300,14 @@
                 setTimeout(() => errorMsg.style.display = 'none', 5000);
             }
 
-            // === MEDICINE MANAGEMENT ===
             async loadMedicines() {
                 const list = document.getElementById('medicineList');
                 try {
                     const medicines = await DataManager.getMedicines();
-                    
                     if (medicines.length === 0) {
                         list.innerHTML = '<p class="error">No medicines found. Add some to get started.</p>';
                         return;
                     }
-                    
                     list.innerHTML = medicines.map(med => `
                         <div class="medicine-card-admin">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -613,8 +324,6 @@
                             </div>
                         </div>
                     `).join('');
-                    
-                    // Attach event listeners
                     list.querySelectorAll('[data-edit]').forEach(btn => {
                         btn.addEventListener('click', () => this.editMedicine(btn.dataset.edit));
                     });
@@ -639,26 +348,21 @@
                 const submitBtn = document.getElementById('medicineSubmitBtn');
                 submitBtn.disabled = true;
                 submitBtn.textContent = '⏳ Adding...';
-                
                 const name = document.getElementById('medName').value.trim();
                 const price = parseFloat(document.getElementById('medPrice').value);
                 const description = document.getElementById('medDesc').value.trim();
-                
                 try {
                     if (!name || isNaN(price) || !description) {
                         throw new Error('Please fill all required fields');
                     }
-                    
                     const imageFile = document.getElementById('medicineImage').files[0];
                     let imageUrl = null;
-                    
                     if (imageFile) {
                         if (imageFile.size > 5 * 1024 * 1024) {
                             throw new Error('Image too large! Max 5MB');
                         }
                         imageUrl = await this.uploadFile(imageFile, 'medicines');
                     }
-                    
                     await DataManager.saveMedicine({ name, price, description, image: imageUrl });
                     this.showNotification('✅ Medicine added successfully', 'success');
                     this.clearMedicineForm();
@@ -674,18 +378,15 @@
                 try {
                     const medicines = await DataManager.getMedicines();
                     const med = medicines.find(m => m.id === id);
-                    
                     if (med) {
                         document.getElementById('medName').value = med.name;
                         document.getElementById('medPrice').value = med.price;
                         document.getElementById('medDesc').value = med.description;
-                        
                         if (med.image) {
                             const img = document.getElementById('medicineImagePreview');
                             img.src = med.image;
                             img.style.display = 'block';
                         }
-                        
                         this.editingMedicineId = id;
                         document.getElementById('medicineSubmitBtn').textContent = '💾 Update Medicine';
                         document.querySelector('.card h2').scrollIntoView({ behavior: 'smooth' });
@@ -697,29 +398,23 @@
 
             async updateMedicine() {
                 if (!this.editingMedicineId) return;
-                
                 const submitBtn = document.getElementById('medicineSubmitBtn');
                 submitBtn.disabled = true;
                 submitBtn.textContent = '⏳ Updating...';
-                
                 const name = document.getElementById('medName').value.trim();
                 const price = parseFloat(document.getElementById('medPrice').value);
                 const description = document.getElementById('medDesc').value.trim();
-                
                 try {
                     const imageFile = document.getElementById('medicineImage').files[0];
                     let imageUrl = null;
-                    
                     if (imageFile) {
                         if (imageFile.size > 5 * 1024 * 1024) {
                             throw new Error('Image too large! Max 5MB');
                         }
                         imageUrl = await this.uploadFile(imageFile, 'medicines');
                     }
-                    
                     const updateData = { name, price, description };
                     if (imageUrl) updateData.image = imageUrl;
-                    
                     await DataManager.updateMedicine(this.editingMedicineId, updateData);
                     this.showNotification('✅ Medicine updated successfully', 'success');
                     this.clearMedicineForm();
@@ -767,34 +462,23 @@
                 document.getElementById('medicineImagePreview').style.display = 'none';
             }
 
-            // === GALLERY MANAGEMENT ===
             async handleGallerySubmit(event) {
                 event.preventDefault();
                 const submitBtn = document.getElementById('gallerySubmitBtn');
                 submitBtn.disabled = true;
                 submitBtn.textContent = '⏳ Uploading...';
-                
                 const file = document.getElementById('galleryFile').files[0];
                 const title = document.getElementById('galleryTitle').value.trim();
                 const desc = document.getElementById('galleryDesc').value.trim();
-                
                 try {
                     if (!file || !title) {
                         throw new Error('Please select an image and enter a title');
                     }
-                    
                     if (file.size > 5 * 1024 * 1024) {
                         throw new Error('File too large! Maximum size is 5MB');
                     }
-                    
                     const imageUrl = await this.uploadFile(file, 'gallery');
-                    await DataManager.saveGalleryItem({
-                        type: 'image',
-                        url: imageUrl,
-                        title,
-                        description: desc
-                    });
-                    
+                    await DataManager.saveGalleryItem({ type: 'image', url: imageUrl, title, description: desc });
                     this.showNotification('✅ Gallery photo uploaded successfully', 'success');
                     document.getElementById('galleryForm').reset();
                 } catch (error) {
@@ -805,7 +489,6 @@
                 }
             }
 
-            // === LOGO MANAGEMENT ===
             async loadSettings() {
                 try {
                     const settings = await DataManager.getSettings();
@@ -823,21 +506,16 @@
                 const submitBtn = document.getElementById('logoSubmitBtn');
                 submitBtn.disabled = true;
                 submitBtn.textContent = '⏳ Uploading...';
-                
                 const file = document.getElementById('logoFile').files[0];
-                
                 try {
                     if (!file) {
                         throw new Error('Please select a logo image');
                     }
-                    
                     if (file.size > 2 * 1024 * 1024) {
                         throw new Error('Logo too large! Max 2MB');
                     }
-                    
                     const logoUrl = await this.uploadFile(file, 'logos');
                     await DataManager.saveSetting('logo', logoUrl);
-                    
                     this.showNotification('✅ Logo uploaded successfully', 'success');
                     document.getElementById('logoForm').reset();
                     this.loadSettings();
@@ -849,7 +527,6 @@
                 }
             }
 
-            // === FILE UPLOAD UTILITY ===
             async uploadFile(file, folder) {
                 try {
                     const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
@@ -860,17 +537,14 @@
                 }
             }
 
-            // === DELIVERY MANAGEMENT ===
             async loadDeliveries() {
                 const list = document.getElementById('deliveryList');
                 try {
                     this.allDeliveries = await DataManager.getOrders();
-                    
                     if (this.allDeliveries.length === 0) {
                         list.innerHTML = '<p class="error">No delivery orders found.</p>';
                         return;
                     }
-                    
                     this.renderDeliveries(this.allDeliveries);
                     this.updateStats();
                 } catch (error) {
@@ -882,12 +556,10 @@
                 const list = document.getElementById('deliveryList');
                 const filter = document.getElementById('deliveryFilter').value;
                 const filtered = filter === 'ALL' ? deliveries : deliveries.filter(d => d.status === filter);
-                
                 if (filtered.length === 0) {
                     list.innerHTML = '<p class="error">No orders match your filter.</p>';
                     return;
                 }
-                
                 list.innerHTML = filtered.map(delivery => `
                     <div class="delivery-item ${delivery.status}">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -899,12 +571,9 @@
                         <p><strong>Address:</strong> ${this.escapeHtml(delivery.deliveryAddress)}</p>
                         <p><strong>Total:</strong> $${Number(delivery.totalAmount).toFixed(2)}</p>
                         <p><strong>Time:</strong> ${new Date(delivery.timestamp).toLocaleString()}</p>
-                        <div style="margin: 1rem 0;">
-                            <strong>Medicines:</strong>
-                            <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                                ${delivery.medicines.map(m => `<li>${this.escapeHtml(m.name)} (${m.quantity || 1}) - $${Number(m.price).toFixed(2)}</li>`).join('')}
-                            </ul>
-                        </div>
+                        <div style="margin: 1rem 0;"><strong>Medicines:</strong><ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            ${delivery.medicines.map(m => `<li>${this.escapeHtml(m.name)} (${m.quantity || 1}) - $${Number(m.price).toFixed(2)}</li>`).join('')}
+                        </ul></div>
                         ${delivery.instructions ? `<p><strong>Instructions:</strong> ${this.escapeHtml(delivery.instructions)}</p>` : ''}
                         ${delivery.prescription ? `<p><strong>Prescription:</strong><br><img src="${delivery.prescription}" style="max-width: 150px; border-radius: 8px;" alt="Prescription"></p>` : ''}
                         <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -918,8 +587,6 @@
                         </div>
                     </div>
                 `).join('');
-                
-                // Attach event listeners
                 list.querySelectorAll('[data-mark-delivered]').forEach(btn => {
                     btn.addEventListener('click', () => this.updateDeliveryStatus(btn.dataset.markDelivered, 'DELIVERED'));
                 });
@@ -997,7 +664,6 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
                     this.showError('❌ No orders to export');
                     return;
                 }
-                
                 const csv = [
                     ['Order ID', 'Customer', 'Phone', 'Address', 'Total', 'Status', 'Date', 'Medicines'],
                     ...this.allDeliveries.map(d => [
@@ -1011,12 +677,10 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
                         `"${d.medicines.map(m => `${this.escapeHtml(m.name)} (${m.quantity || 1})`).join(', ')}"`
                     ])
                 ].map(row => row.join(',')).join('\n');
-                
                 this.downloadFile(csv, `baxnaano-orders-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
                 this.showNotification('✅ Orders exported successfully', 'success');
             }
 
-            // === STATISTICS ===
             updateStats() {
                 const total = this.allDeliveries.length;
                 const pending = this.allDeliveries.filter(d => d.status === 'PENDING').length;
@@ -1024,14 +688,12 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
                 const revenue = this.allDeliveries
                     .filter(d => d.status !== 'CANCELLED')
                     .reduce((sum, d) => sum + Number(d.totalAmount), 0);
-                
                 document.getElementById('totalOrders').textContent = total;
                 document.getElementById('pendingOrders').textContent = pending;
                 document.getElementById('deliveredOrders').textContent = delivered;
                 document.getElementById('totalRevenue').textContent = `$${revenue.toFixed(2)}`;
             }
 
-            // === BACKUP/RESTORE ===
             async exportAllData() {
                 try {
                     const data = {
@@ -1042,7 +704,6 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
                         exportDate: new Date().toISOString(),
                         version: '1.0'
                     };
-                    
                     const json = JSON.stringify(data, null, 2);
                     this.downloadFile(json, `baxnaano-backup-${new Date().toISOString().split('T')[0]}.json`, 'application/json');
                     this.showNotification('✅ Full backup exported successfully', 'success');
@@ -1054,22 +715,16 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
             async importAllData(event) {
                 const file = event.target.files[0];
                 if (!file) return;
-                
                 if (!confirm('⚠️ WARNING: This will overwrite all existing data. Are you absolutely sure?')) {
                     event.target.value = '';
                     return;
                 }
-                
                 try {
                     const text = await file.text();
                     const data = JSON.parse(text);
-                    
-                    // Validate data structure
                     if (!data.medicines || !data.orders || !data.gallery || !data.settings) {
                         throw new Error('Invalid backup file structure');
                     }
-                    
-                    // In production, implement batch import
                     this.showNotification('⚠️ Import feature requires manual implementation for safety', 'warning');
                     event.target.value = '';
                 } catch (error) {
@@ -1090,7 +745,6 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
                 URL.revokeObjectURL(url);
             }
 
-            // === UTILITY FUNCTIONS ===
             escapeHtml(text) {
                 const div = document.createElement('div');
                 div.textContent = text;
@@ -1103,16 +757,13 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
                 notification.setAttribute('aria-live', 'polite');
                 notification.className = `notification ${type}`;
                 notification.textContent = message;
-                
                 document.body.appendChild(notification);
-                
                 setTimeout(() => {
                     notification.style.animation = 'fadeOut 0.5s ease';
                     setTimeout(() => notification.remove(), 500);
                 }, 5000);
             }
 
-            // === INITIALIZATION ===
             async init() {
                 if (document.getElementById('dashboardPage').classList.contains('hidden') === false) {
                     await this.loadMedicines();
@@ -1123,7 +774,6 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
             }
         }
 
-        // Initialize admin app
         window.adminApp = new AdminApp();
         window.addEventListener('DOMContentLoaded', () => window.adminApp.init());
     </script>
