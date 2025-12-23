@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="so">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,6 +89,12 @@
             border-radius: 8px; 
             font-size: 1rem; 
         }
+        .form-group input:focus, 
+        .form-group textarea:focus, 
+        .form-group select:focus { 
+            outline: none; 
+            border-color: var(--primary); 
+        }
         .btn { 
             padding: 0.8rem 1.5rem; 
             background: var(--primary); 
@@ -99,9 +105,10 @@
             font-weight: bold; 
             transition: all 0.3s;
         }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        .btn:hover, .btn:focus { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
+            outline: 3px solid rgba(14, 165, 233, 0.3); 
         }
         .btn-danger { background: var(--danger); } 
         .btn-success { background: var(--success); } 
@@ -171,8 +178,50 @@
             border-radius: 10px; 
             border: 2px solid #e2e8f0; 
         }
-
+        .image-preview { 
+            max-width: 150px; 
+            max-height: 150px; 
+            border-radius: 8px; 
+            margin-top: 0.5rem; 
+            display: none; 
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+        .error {
+            text-align: center;
+            padding: 2rem;
+            color: var(--danger);
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 9999;
+            animation: slideIn 0.5s ease;
+        }
+        .notification.success { background: var(--success); color: white; }
+        .notification.error { background: var(--danger); color: white; }
+        .notification.warning { background: var(--warning); color: white; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         .hidden { display: none !important; }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
 
         @media (max-width: 768px) {
             .logout-btn {
@@ -189,29 +238,29 @@
     </style>
 </head>
 <body>
-    <!-- === LOGIN FORM === -->
+    <!-- === LOGIN FORM WITH FIREBASE AUTH === -->
     <div id="loginPage" class="login-container">
-        <div class="logo" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.8rem;">
-            🏥 Baxnaano Hospital
+        <div class="logo" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.8rem;" aria-hidden="true">
+            🏥
         </div>
         <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--dark);">Admin Login</h2>
-        <form onsubmit="login(event)">
+        <form id="loginForm">
             <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="username" required placeholder="Enter username">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required placeholder="admin@baxnaano.com" autocomplete="username">
             </div>
             <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="password" required placeholder="Enter password">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="Enter password" autocomplete="current-password">
             </div>
-            <button type="submit" class="btn btn-block">🔐 Login</button>
-            <div class="error-message" id="errorMsg">❌ Invalid username or password!</div>
+            <button type="submit" class="btn btn-block" id="loginBtn">🔐 Login</button>
+            <div class="error-message" id="errorMsg" role="alert" aria-live="polite"></div>
         </form>
     </div>
 
     <!-- === DASHBOARD === -->
     <div id="dashboardPage" class="hidden">
-        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        <button class="logout-btn" id="logoutBtn" aria-label="Logout">🚪 Logout</button>
         
         <div class="container">
             <h1>🏥 Baxnaano Hospital - Pharmacy Admin</h1>
@@ -238,79 +287,97 @@
 
             <!-- UPLOAD GALLERY PHOTOS -->
             <div class="card">
-                <h2>📸 Upload Gallery Photo (File)</h2>
-                <div class="form-group">
-                    <label>Choose Image *</label>
-                    <input type="file" id="galleryFile" accept="image/*" required onchange="previewGalleryFile(event)">
-                </div>
-                <div class="form-group">
-                    <label>Title *</label>
-                    <input type="text" id="galleryTitle" placeholder="e.g., Hospital Building" required>
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="galleryDesc" placeholder="e.g., Main entrance"></textarea>
-                </div>
-                <button class="btn btn-block" onclick="uploadGalleryPhoto()">➕ Add to Gallery</button>
+                <h2>📸 Upload Gallery Photo</h2>
+                <form id="galleryForm">
+                    <div class="form-group">
+                        <label for="galleryFile">Choose Image *</label>
+                        <input type="file" id="galleryFile" accept="image/*" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="galleryTitle">Title *</label>
+                        <input type="text" id="galleryTitle" placeholder="e.g., Hospital Building" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="galleryDesc">Description</label>
+                        <textarea id="galleryDesc" placeholder="e.g., Main entrance"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-block" id="gallerySubmitBtn">➕ Add to Gallery</button>
+                </form>
             </div>
 
             <!-- MANAGE MEDICINES -->
             <div class="card">
                 <h2>🏥 Manage Medicines</h2>
-                <div class="form-group">
-                    <label>Medicine Name *</label>
-                    <input type="text" id="medName" placeholder="e.g., Panadol Extra" required>
-                </div>
-                <div class="form-group">
-                    <label>Price ($) *</label>
-                    <input type="number" id="medPrice" placeholder="10.99" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label>Description *</label>
-                    <textarea id="medDesc" placeholder="Description and usage..." required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Medicine Image (Upload)</label>
-                    <input type="file" id="medicineImage" accept="image/*" onchange="previewMedicineImage(event)">
-                </div>
-                <button class="btn btn-block" id="medicineSubmitBtn" onclick="addMedicine()">➕ Add Medicine</button>
-                
-                <div class="medicine-grid" id="medicineList"></div>
+                <form id="medicineForm">
+                    <div class="form-group">
+                        <label for="medName">Medicine Name *</label>
+                        <input type="text" id="medName" placeholder="e.g., Panadol Extra" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="medPrice">Price ($) *</label>
+                        <input type="number" id="medPrice" placeholder="10.99" step="0.01" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="medDesc">Description *</label>
+                        <textarea id="medDesc" placeholder="Description and usage..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="medicineImage">Medicine Image (Upload)</label>
+                        <input type="file" id="medicineImage" accept="image/*">
+                        <img id="medicineImagePreview" class="image-preview" alt="Preview">
+                    </div>
+                    <button type="submit" class="btn btn-block" id="medicineSubmitBtn">➕ Add Medicine</button>
+                </form>
+                <div class="medicine-grid" id="medicineList"><p class="loading">Loading medicines...</p></div>
             </div>
 
             <!-- MANAGE DELIVERIES -->
             <div class="card">
                 <h2>🚚 Manage Deliveries</h2>
                 <div class="form-group">
-                    <label>Search Orders (Name, Phone, or Order ID)</label>
-                    <input type="text" placeholder="🔍 Search..." onkeyup="searchDeliveries(this.value)">
+                    <label for="deliverySearch">Search Orders (Name, Phone, or Order ID)</label>
+                    <input type="text" id="deliverySearch" placeholder="🔍 Search...">
                 </div>
                 <div class="form-group">
-                    <label>Filter Status</label>
-                    <select id="deliveryFilter" onchange="filterDeliveries()">
+                    <label for="deliveryFilter">Filter Status</label>
+                    <select id="deliveryFilter">
                         <option value="ALL">All Orders</option>
                         <option value="PENDING">Pending</option>
                         <option value="DELIVERED">Delivered</option>
                         <option value="CANCELLED">Cancelled</option>
                     </select>
                 </div>
-                <button class="btn" onclick="exportOrders()" style="margin-bottom: 1rem;">📥 Export All Orders</button>
-                <div class="delivery-list" id="deliveryList"></div>
+                <button class="btn" id="exportOrdersBtn" style="margin-bottom: 1rem;">📥 Export All Orders</button>
+                <div class="delivery-list" id="deliveryList"><p class="loading">Loading deliveries...</p></div>
             </div>
 
-            <!-- MANUAL SYNC (MULTI-DEVICE WORKAROUND) -->
-            <div class="card" style="background: linear-gradient(135deg, #fef3c7, #fff); border: 2px solid #f59e0b;">
-                <h2 style="color: #f59e0b;">⚠️ MULTI-DEVICE SYNC (Temporary)</h2>
-                <p style="margin-bottom: 1rem;"><strong>Export all data</strong> from this device:</p>
-                <button class="btn-warning btn-block" onclick="exportAllData()">📤 Export All Data (Backup)</button>
-                
-                <p style="margin: 2rem 0 1rem;"><strong>Import data</strong> to another device:</p>
-                <div class="form-group">
-                    <input type="file" id="importFile" accept=".json" onchange="importAllData(event)">
+            <!-- ADMIN LOGO UPLOAD -->
+            <div class="card" style="border: 2px solid var(--accent);">
+                <h2 style="color: var(--accent);">🏥 Upload Hospital Logo</h2>
+                <form id="logoForm">
+                    <div class="form-group">
+                        <label for="logoFile">Choose Logo Image *</label>
+                        <input type="file" id="logoFile" accept="image/*" required>
+                        <small style="color: #64748b;">Recommended: Square image, max 2MB</small>
+                    </div>
+                    <button type="submit" class="btn btn-block" style="background: var(--accent);" id="logoSubmitBtn">📤 Upload Logo</button>
+                </form>
+                <div id="currentLogo" style="margin-top: 1rem;">
+                    <p style="color: #64748b;">Current logo: 🏥 (default)</p>
                 </div>
-                <button class="btn-warning" onclick="document.getElementById('importFile').click()">📥 Import Data</button>
+            </div>
+
+            <!-- DATA BACKUP/RESTORE -->
+            <div class="card" style="background: linear-gradient(135deg, #fef3c7, #fff); border: 2px solid var(--warning);">
+                <h2 style="color: var(--warning);">⚠️ Data Backup & Restore</h2>
+                <p style="margin-bottom: 1rem;"><strong>Export all data</strong> for backup:</p>
+                <button class="btn-warning btn-block" id="exportAllBtn">📤 Export All Data</button>
+                
+                <p style="margin: 2rem 0 1rem;"><strong>Import data</strong> from backup:</p>
+                <input type="file" id="importFile" accept=".json" class="hidden">
+                <button class="btn-warning" id="importBtn">📥 Import Data</button>
                 <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
-                    ⚠️ Importing will overwrite all data on this device!
+                    ⚠️ Importing will overwrite existing data. Use with caution.
                 </p>
             </div>
         </div>
@@ -318,12 +385,15 @@
 
     <!-- FIREBASE SDK -->
     <script type="module">
-        // TODO: Add your Firebase config here
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+        // === REPLACE WITH YOUR ACTUAL FIREBASE CONFIG ===
+        // Get this from Firebase Console > Project Settings > General > Your apps
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
+            apiKey: "YOUR_API_KEY_HERE",
             authDomain: "YOUR_PROJECT.firebaseapp.com",
             projectId: "YOUR_PROJECT_ID",
             storageBucket: "YOUR_PROJECT.appspot.com",
@@ -333,11 +403,14 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const storage = getStorage(app);
+        const auth = getAuth(app);
 
         window.DataManager = {
             medicines: collection(db, 'medicines'),
             orders: collection(db, 'orders'),
             gallery: collection(db, 'gallery'),
+            settings: collection(db, 'settings'),
             
             async getMedicines() {
                 const snapshot = await getDocs(this.medicines);
@@ -345,15 +418,18 @@
             },
             
             async saveMedicine(medicine) {
-                await addDoc(this.medicines, medicine);
+                return await addDoc(this.medicines, {
+                    ...medicine,
+                    createdAt: new Date().toISOString()
+                });
             },
             
             async updateMedicine(id, medicine) {
-                await updateDoc(doc(db, 'medicines', id), medicine);
+                return await updateDoc(doc(db, 'medicines', id), medicine);
             },
             
             async deleteMedicine(id) {
-                await deleteDoc(doc(db, 'medicines', id));
+                return await deleteDoc(doc(db, 'medicines', id));
             },
             
             async getOrders() {
@@ -362,16 +438,12 @@
                 return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             },
             
-            async saveOrder(order) {
-                await addDoc(this.orders, order);
-            },
-            
             async updateOrder(id, status) {
-                await updateDoc(doc(db, 'orders', id), { status });
+                return await updateDoc(doc(db, 'orders', id), { status });
             },
             
             async deleteOrder(id) {
-                await deleteDoc(doc(db, 'orders', id));
+                return await deleteDoc(doc(db, 'orders', id));
             },
             
             async getGallery() {
@@ -380,345 +452,680 @@
             },
             
             async saveGalleryItem(item) {
-                await addDoc(this.gallery, item);
+                return await addDoc(this.gallery, {
+                    ...item,
+                    date: new Date().toISOString().split('T')[0]
+                });
+            },
+            
+            async getSettings() {
+                const snapshot = await getDocs(this.settings);
+                return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            },
+            
+            async saveSetting(key, value) {
+                const settings = await this.getSettings();
+                const existing = settings.find(s => s.key === key);
+                
+                if (existing) {
+                    return await updateDoc(doc(db, 'settings', existing.id), { value, updatedAt: new Date().toISOString() });
+                } else {
+                    return await addDoc(this.settings, { key, value, createdAt: new Date() });
+                }
             }
         };
 
         // Real-time listeners
-        onSnapshot(collection(db, 'medicines'), () => loadMedicines());
-        onSnapshot(query(collection(db, 'orders'), orderBy('timestamp', 'desc')), () => loadDeliveries());
-        onSnapshot(collection(db, 'gallery'), () => loadGallery());
+        onSnapshot(collection(db, 'medicines'), () => window.adminApp?.loadMedicines());
+        onSnapshot(query(collection(db, 'orders'), orderBy('timestamp', 'desc')), () => {
+            window.adminApp?.loadDeliveries();
+            window.adminApp?.updateStats();
+        });
+        onSnapshot(collection(db, 'gallery'), () => window.adminApp?.loadGallery());
+        onSnapshot(collection(db, 'settings'), () => window.adminApp?.loadSettings());
+
+        // Authentication state observer
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Check if user has admin claim
+                user.getIdTokenResult().then(idTokenResult => {
+                    if (idTokenResult.claims.admin) {
+                        window.adminApp.showDashboard();
+                    } else {
+                        window.adminApp.showError('❌ You do not have admin privileges');
+                        signOut(auth);
+                    }
+                });
+            } else {
+                document.getElementById('loginPage').classList.remove('hidden');
+                document.getElementById('dashboardPage').classList.add('hidden');
+            }
+        });
     </script>
 
     <script>
-        // === CONFIGURATION ===
-        const ADMIN_CREDENTIALS = {
-            username: 'admin',
-            password: 'Baxnaano2007' // 
-        };
-
-        // === LOGIN/LOGOUT ===
-        function login(event) {
-            event.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-                localStorage.setItem('pharmacyAdmin', JSON.stringify({
-                    loggedIn: true,
-                    loginTime: new Date().toISOString()
-                }));
-                showDashboard();
-            } else {
-                document.getElementById('errorMsg').style.display = 'block';
+        // === ADMIN APPLICATION CLASS ===
+        class AdminApp {
+            constructor() {
+                this.editingMedicineId = null;
+                this.auth = window.auth;
+                this.initEventListeners();
             }
-        }
 
-        function logout() {
-            if (confirm('🚪 Are you sure you want to logout?')) {
-                localStorage.removeItem('pharmacyAdmin');
-                location.reload();
-            }
-        }
-
-        function showDashboard() {
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('dashboardPage').classList.remove('hidden');
-            loadMedicines();
-            loadDeliveries();
-            updateStats();
-        }
-
-        // === CHECK LOGIN STATUS ===
-        window.onload = function() {
-            const admin = JSON.parse(localStorage.getItem('pharmacyAdmin') || 'null');
-            if (admin && admin.loggedIn) {
-                showDashboard();
-            } else {
-                document.getElementById('loginPage').classList.remove('hidden');
-            }
-        };
-
-        // === GALLERY PHOTO UPLOAD ===
-        let galleryFileData = null;
-
-        function previewGalleryFile(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    galleryFileData = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        async function uploadGalleryPhoto() {
-            const file = document.getElementById('galleryFile').files[0];
-            const title = document.getElementById('galleryTitle').value;
-            const desc = document.getElementById('galleryDesc').value;
-            
-            if (!file || !title) {
-                alert('❌ Please select an image and enter a title!');
-                return;
-            }
-            
-            if (!galleryFileData) {
-                alert('❌ Please wait for image to finish loading!');
-                return;
-            }
-            
-            await DataManager.saveGalleryItem({
-                type: 'image',
-                url: galleryFileData,
-                title: title,
-                description: desc,
-                date: new Date().toISOString().split('T')[0]
-            });
-            
-            alert('✅ Gallery photo uploaded successfully!');
-            document.getElementById('galleryFile').value = '';
-            document.getElementById('galleryTitle').value = '';
-            document.getElementById('galleryDesc').value = '';
-            galleryFileData = null;
-        }
-
-        // === MEDICINE FUNCTIONS ===
-        let editingMedicineId = null;
-        let medicineFileData = null;
-
-        async function addMedicine() {
-            const name = document.getElementById('medName').value;
-            const price = parseFloat(document.getElementById('medPrice').value);
-            const description = document.getElementById('medDesc').value;
-            const image = medicineFileData || null;
-            
-            if (!name || !price || !description) {
-                alert('❌ Please fill all required fields!');
-                return;
-            }
-            
-            await DataManager.saveMedicine({
-                name: name,
-                price: price,
-                description: description,
-                image: image
-            });
-            
-            alert('✅ Medicine added successfully!');
-            clearMedicineForm();
-        }
-
-        async function editMedicine(id) {
-            const medicines = await DataManager.getMedicines();
-            const med = medicines.find(m => m.id === id);
-            
-            if (med) {
-                document.getElementById('medName').value = med.name;
-                document.getElementById('medPrice').value = med.price;
-                document.getElementById('medDesc').value = med.description;
+            initEventListeners() {
+                // Login form
+                document.getElementById('loginForm')?.addEventListener('submit', (e) => this.login(e));
                 
-                if (med.image) {
-                    const img = document.getElementById('medicineImagePreview');
-                    img.src = med.image;
-                    img.style.display = 'block';
-                    medicineFileData = null;
+                // Logout button
+                document.getElementById('logoutBtn')?.addEventListener('click', () => this.logout());
+                
+                // Medicine form
+                document.getElementById('medicineForm')?.addEventListener('submit', (e) => this.handleMedicineSubmit(e));
+                document.getElementById('medicineImage')?.addEventListener('change', (e) => this.previewMedicineImage(e));
+                
+                // Gallery form
+                document.getElementById('galleryForm')?.addEventListener('submit', (e) => this.handleGallerySubmit(e));
+                
+                // Logo form
+                document.getElementById('logoForm')?.addEventListener('submit', (e) => this.handleLogoSubmit(e));
+                
+                // Delivery actions
+                document.getElementById('deliverySearch')?.addEventListener('input', (e) => this.searchDeliveries(e.target.value));
+                document.getElementById('deliveryFilter')?.addEventListener('change', () => this.filterDeliveries());
+                document.getElementById('exportOrdersBtn')?.addEventListener('click', () => this.exportOrders());
+                
+                // Backup/Restore
+                document.getElementById('exportAllBtn')?.addEventListener('click', () => this.exportAllData());
+                document.getElementById('importBtn')?.addEventListener('click', () => document.getElementById('importFile').click());
+                document.getElementById('importFile')?.addEventListener('change', (e) => this.importAllData(e));
+            }
+
+            // === AUTHENTICATION ===
+            async login(event) {
+                event.preventDefault();
+                const loginBtn = document.getElementById('loginBtn');
+                const errorMsg = document.getElementById('errorMsg');
+                
+                loginBtn.disabled = true;
+                loginBtn.textContent = '⏳ Logging in...';
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    errorMsg.style.display = 'none';
+                } catch (error) {
+                    errorMsg.textContent = `❌ ${error.message}`;
+                    errorMsg.style.display = 'block';
+                    setTimeout(() => errorMsg.style.display = 'none', 5000);
+                } finally {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = '🔐 Login';
+                }
+            }
+
+            logout() {
+                if (confirm('🚪 Are you sure you want to logout?')) {
+                    signOut(auth);
+                }
+            }
+
+            showDashboard() {
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('dashboardPage').classList.remove('hidden');
+                this.loadMedicines();
+                this.loadDeliveries();
+                this.loadSettings();
+            }
+
+            showError(message) {
+                const errorMsg = document.getElementById('errorMsg');
+                errorMsg.textContent = message;
+                errorMsg.style.display = 'block';
+                setTimeout(() => errorMsg.style.display = 'none', 5000);
+            }
+
+            // === MEDICINE MANAGEMENT ===
+            async loadMedicines() {
+                const list = document.getElementById('medicineList');
+                try {
+                    const medicines = await DataManager.getMedicines();
+                    
+                    if (medicines.length === 0) {
+                        list.innerHTML = '<p class="error">No medicines found. Add some to get started.</p>';
+                        return;
+                    }
+                    
+                    list.innerHTML = medicines.map(med => `
+                        <div class="medicine-card-admin">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong>${this.escapeHtml(med.name)}</strong>
+                                <span style="color: var(--primary); font-weight: bold;">$${Number(med.price).toFixed(2)}</span>
+                            </div>
+                            <p style="color: #64748b; margin: 0.5rem 0;">${this.escapeHtml(med.description)}</p>
+                            <div style="margin: 0.5rem 0;">
+                                ${med.image ? `<img src="${med.image}" style="max-width: 100px; border-radius: 8px;" alt="${this.escapeHtml(med.name)}">` : '<span style="font-size: 2rem;">💊</span>'}
+                            </div>
+                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                <button class="btn" data-edit="${med.id}" style="flex: 1; font-size: 0.9rem; padding: 0.5rem;">✏️ Edit</button>
+                                <button class="btn-danger" data-delete="${med.id}" style="flex: 1; font-size: 0.9rem; padding: 0.5rem;">🗑️ Delete</button>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    // Attach event listeners
+                    list.querySelectorAll('[data-edit]').forEach(btn => {
+                        btn.addEventListener('click', () => this.editMedicine(btn.dataset.edit));
+                    });
+                    list.querySelectorAll('[data-delete]').forEach(btn => {
+                        btn.addEventListener('click', () => this.deleteMedicine(btn.dataset.delete));
+                    });
+                } catch (error) {
+                    list.innerHTML = `<p class="error">Failed to load medicines: ${error.message}</p>`;
+                }
+            }
+
+            handleMedicineSubmit(event) {
+                event.preventDefault();
+                if (this.editingMedicineId) {
+                    this.updateMedicine();
+                } else {
+                    this.addMedicine();
+                }
+            }
+
+            async addMedicine() {
+                const submitBtn = document.getElementById('medicineSubmitBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '⏳ Adding...';
+                
+                const name = document.getElementById('medName').value.trim();
+                const price = parseFloat(document.getElementById('medPrice').value);
+                const description = document.getElementById('medDesc').value.trim();
+                
+                try {
+                    if (!name || isNaN(price) || !description) {
+                        throw new Error('Please fill all required fields');
+                    }
+                    
+                    const imageFile = document.getElementById('medicineImage').files[0];
+                    let imageUrl = null;
+                    
+                    if (imageFile) {
+                        if (imageFile.size > 5 * 1024 * 1024) {
+                            throw new Error('Image too large! Max 5MB');
+                        }
+                        imageUrl = await this.uploadFile(imageFile, 'medicines');
+                    }
+                    
+                    await DataManager.saveMedicine({ name, price, description, image: imageUrl });
+                    this.showNotification('✅ Medicine added successfully', 'success');
+                    this.clearMedicineForm();
+                } catch (error) {
+                    this.showError(`❌ ${error.message}`);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '➕ Add Medicine';
+                }
+            }
+
+            async editMedicine(id) {
+                try {
+                    const medicines = await DataManager.getMedicines();
+                    const med = medicines.find(m => m.id === id);
+                    
+                    if (med) {
+                        document.getElementById('medName').value = med.name;
+                        document.getElementById('medPrice').value = med.price;
+                        document.getElementById('medDesc').value = med.description;
+                        
+                        if (med.image) {
+                            const img = document.getElementById('medicineImagePreview');
+                            img.src = med.image;
+                            img.style.display = 'block';
+                        }
+                        
+                        this.editingMedicineId = id;
+                        document.getElementById('medicineSubmitBtn').textContent = '💾 Update Medicine';
+                        document.querySelector('.card h2').scrollIntoView({ behavior: 'smooth' });
+                    }
+                } catch (error) {
+                    this.showError(`❌ Failed to load medicine: ${error.message}`);
+                }
+            }
+
+            async updateMedicine() {
+                if (!this.editingMedicineId) return;
+                
+                const submitBtn = document.getElementById('medicineSubmitBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '⏳ Updating...';
+                
+                const name = document.getElementById('medName').value.trim();
+                const price = parseFloat(document.getElementById('medPrice').value);
+                const description = document.getElementById('medDesc').value.trim();
+                
+                try {
+                    const imageFile = document.getElementById('medicineImage').files[0];
+                    let imageUrl = null;
+                    
+                    if (imageFile) {
+                        if (imageFile.size > 5 * 1024 * 1024) {
+                            throw new Error('Image too large! Max 5MB');
+                        }
+                        imageUrl = await this.uploadFile(imageFile, 'medicines');
+                    }
+                    
+                    const updateData = { name, price, description };
+                    if (imageUrl) updateData.image = imageUrl;
+                    
+                    await DataManager.updateMedicine(this.editingMedicineId, updateData);
+                    this.showNotification('✅ Medicine updated successfully', 'success');
+                    this.clearMedicineForm();
+                    document.getElementById('medicineSubmitBtn').textContent = '➕ Add Medicine';
+                    this.editingMedicineId = null;
+                } catch (error) {
+                    this.showError(`❌ ${error.message}`);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '➕ Add Medicine';
+                }
+            }
+
+            async deleteMedicine(id) {
+                if (confirm('🗑️ Delete this medicine? This cannot be undone.')) {
+                    try {
+                        await DataManager.deleteMedicine(id);
+                        this.showNotification('✅ Medicine deleted successfully', 'success');
+                    } catch (error) {
+                        this.showError(`❌ ${error.message}`);
+                    }
+                }
+            }
+
+            previewMedicineImage(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    if (file.size > 5 * 1024 * 1024) {
+                        this.showError('❌ File too large! Maximum size is 5MB');
+                        event.target.value = '';
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = document.getElementById('medicineImagePreview');
+                        img.src = e.target.result;
+                        img.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            clearMedicineForm() {
+                document.getElementById('medicineForm').reset();
+                document.getElementById('medicineImagePreview').style.display = 'none';
+            }
+
+            // === GALLERY MANAGEMENT ===
+            async handleGallerySubmit(event) {
+                event.preventDefault();
+                const submitBtn = document.getElementById('gallerySubmitBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '⏳ Uploading...';
+                
+                const file = document.getElementById('galleryFile').files[0];
+                const title = document.getElementById('galleryTitle').value.trim();
+                const desc = document.getElementById('galleryDesc').value.trim();
+                
+                try {
+                    if (!file || !title) {
+                        throw new Error('Please select an image and enter a title');
+                    }
+                    
+                    if (file.size > 5 * 1024 * 1024) {
+                        throw new Error('File too large! Maximum size is 5MB');
+                    }
+                    
+                    const imageUrl = await this.uploadFile(file, 'gallery');
+                    await DataManager.saveGalleryItem({
+                        type: 'image',
+                        url: imageUrl,
+                        title,
+                        description: desc
+                    });
+                    
+                    this.showNotification('✅ Gallery photo uploaded successfully', 'success');
+                    document.getElementById('galleryForm').reset();
+                } catch (error) {
+                    this.showError(`❌ ${error.message}`);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '➕ Add to Gallery';
+                }
+            }
+
+            // === LOGO MANAGEMENT ===
+            async loadSettings() {
+                try {
+                    const settings = await DataManager.getSettings();
+                    const logoSetting = settings.find(s => s.key === 'logo');
+                    if (logoSetting?.value) {
+                        document.getElementById('currentLogo').innerHTML = `<img src="${logoSetting.value}" style="max-width: 100px; border-radius: 50%;" alt="Current Logo">`;
+                    }
+                } catch (error) {
+                    console.error("Failed to load logo:", error);
+                }
+            }
+
+            async handleLogoSubmit(event) {
+                event.preventDefault();
+                const submitBtn = document.getElementById('logoSubmitBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '⏳ Uploading...';
+                
+                const file = document.getElementById('logoFile').files[0];
+                
+                try {
+                    if (!file) {
+                        throw new Error('Please select a logo image');
+                    }
+                    
+                    if (file.size > 2 * 1024 * 1024) {
+                        throw new Error('Logo too large! Max 2MB');
+                    }
+                    
+                    const logoUrl = await this.uploadFile(file, 'logos');
+                    await DataManager.saveSetting('logo', logoUrl);
+                    
+                    this.showNotification('✅ Logo uploaded successfully', 'success');
+                    document.getElementById('logoForm').reset();
+                    this.loadSettings();
+                } catch (error) {
+                    this.showError(`❌ ${error.message}`);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '📤 Upload Logo';
+                }
+            }
+
+            // === FILE UPLOAD UTILITY ===
+            async uploadFile(file, folder) {
+                try {
+                    const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
+                    await uploadBytes(storageRef, file);
+                    return await getDownloadURL(storageRef);
+                } catch (error) {
+                    throw new Error(`Upload failed: ${error.message}`);
+                }
+            }
+
+            // === DELIVERY MANAGEMENT ===
+            async loadDeliveries() {
+                const list = document.getElementById('deliveryList');
+                try {
+                    this.allDeliveries = await DataManager.getOrders();
+                    
+                    if (this.allDeliveries.length === 0) {
+                        list.innerHTML = '<p class="error">No delivery orders found.</p>';
+                        return;
+                    }
+                    
+                    this.renderDeliveries(this.allDeliveries);
+                    this.updateStats();
+                } catch (error) {
+                    list.innerHTML = `<p class="error">Failed to load deliveries: ${error.message}</p>`;
+                }
+            }
+
+            renderDeliveries(deliveries) {
+                const list = document.getElementById('deliveryList');
+                const filter = document.getElementById('deliveryFilter').value;
+                const filtered = filter === 'ALL' ? deliveries : deliveries.filter(d => d.status === filter);
+                
+                if (filtered.length === 0) {
+                    list.innerHTML = '<p class="error">No orders match your filter.</p>';
+                    return;
                 }
                 
-                editingMedicineId = id;
+                list.innerHTML = filtered.map(delivery => `
+                    <div class="delivery-item ${delivery.status}">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <strong>Order #${delivery.id.substring(0, 8)}</strong>
+                            <span style="background: ${delivery.status === 'PENDING' ? '#f59e0b' : delivery.status === 'DELIVERED' ? '#10b981' : '#ef4444'}; color: white; padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.85rem;">${delivery.status}</span>
+                        </div>
+                        <p><strong>Customer:</strong> ${this.escapeHtml(delivery.customerName)}</p>
+                        <p><strong>Phone:</strong> <a href="tel:${delivery.customerPhone}" style="color: var(--primary);">${delivery.customerPhone}</a></p>
+                        <p><strong>Address:</strong> ${this.escapeHtml(delivery.deliveryAddress)}</p>
+                        <p><strong>Total:</strong> $${Number(delivery.totalAmount).toFixed(2)}</p>
+                        <p><strong>Time:</strong> ${new Date(delivery.timestamp).toLocaleString()}</p>
+                        <div style="margin: 1rem 0;">
+                            <strong>Medicines:</strong>
+                            <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                ${delivery.medicines.map(m => `<li>${this.escapeHtml(m.name)} (${m.quantity || 1}) - $${Number(m.price).toFixed(2)}</li>`).join('')}
+                            </ul>
+                        </div>
+                        ${delivery.instructions ? `<p><strong>Instructions:</strong> ${this.escapeHtml(delivery.instructions)}</p>` : ''}
+                        ${delivery.prescription ? `<p><strong>Prescription:</strong><br><img src="${delivery.prescription}" style="max-width: 150px; border-radius: 8px;" alt="Prescription"></p>` : ''}
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            ${delivery.status === 'PENDING' 
+                                ? `<button class="btn-success" data-mark-delivered="${delivery.id}" style="flex: 1; min-width: 150px;">✅ Mark Delivered</button>
+                                   <button class="btn-danger" data-cancel="${delivery.id}" style="flex: 1; min-width: 150px;">❌ Cancel</button>` 
+                                : ''
+                            }
+                            <button class="btn" data-view="${delivery.id}" style="flex: 1; min-width: 150px;">👁️ View Details</button>
+                            <button class="btn-danger" data-delete="${delivery.id}" style="flex: 1; min-width: 150px;">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `).join('');
                 
-                const btn = document.getElementById('medicineSubmitBtn');
-                btn.textContent = '💾 Update Medicine';
-                btn.onclick = updateMedicine;
-                
-                document.querySelector('.card h2').scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
-        async function updateMedicine() {
-            if (!editingMedicineId) return;
-            
-            const medicines = await DataManager.getMedicines();
-            const med = medicines.find(m => m.id === editingMedicineId);
-            
-            if (med) {
-                await DataManager.updateMedicine(editingMedicineId, {
-                    name: document.getElementById('medName').value,
-                    price: parseFloat(document.getElementById('medPrice').value),
-                    description: document.getElementById('medDesc').value,
-                    image: medicineFileData || med.image || null
+                // Attach event listeners
+                list.querySelectorAll('[data-mark-delivered]').forEach(btn => {
+                    btn.addEventListener('click', () => this.updateDeliveryStatus(btn.dataset.markDelivered, 'DELIVERED'));
                 });
+                list.querySelectorAll('[data-cancel]').forEach(btn => {
+                    btn.addEventListener('click', () => this.updateDeliveryStatus(btn.dataset.cancel, 'CANCELLED'));
+                });
+                list.querySelectorAll('[data-view]').forEach(btn => {
+                    btn.addEventListener('click', () => this.viewDeliveryDetails(btn.dataset.view));
+                });
+                list.querySelectorAll('[data-delete]').forEach(btn => {
+                    btn.addEventListener('click', () => this.deleteDelivery(btn.dataset.delete));
+                });
+            }
+
+            searchDeliveries(query) {
+                if (!query.trim()) {
+                    this.renderDeliveries(this.allDeliveries);
+                    return;
+                }
+                const filtered = this.allDeliveries.filter(d => 
+                    d.customerName.toLowerCase().includes(query.toLowerCase()) ||
+                    d.customerPhone.includes(query) ||
+                    d.id.toLowerCase().includes(query.toLowerCase())
+                );
+                this.renderDeliveries(filtered);
+            }
+
+            filterDeliveries() {
+                this.renderDeliveries(this.allDeliveries);
+            }
+
+            async updateDeliveryStatus(id, newStatus) {
+                try {
+                    await DataManager.updateOrder(id, newStatus);
+                    this.showNotification(`✅ Order marked as ${newStatus}`, 'success');
+                } catch (error) {
+                    this.showError(`❌ ${error.message}`);
+                }
+            }
+
+            viewDeliveryDetails(id) {
+                const delivery = this.allDeliveries.find(d => d.id === id);
+                if (delivery) {
+                    const details = `
+Order ID: ${delivery.id}
+Customer: ${this.escapeHtml(delivery.customerName)}
+Phone: ${delivery.customerPhone}
+Address: ${this.escapeHtml(delivery.deliveryAddress)}
+Total: $${Number(delivery.totalAmount).toFixed(2)}
+Status: ${delivery.status}
+Date: ${new Date(delivery.timestamp).toLocaleString()}
+
+Medicines:
+${delivery.medicines.map(m => `- ${this.escapeHtml(m.name)} (${m.quantity || 1}) - $${Number(m.price).toFixed(2)}`).join('\n')}
+
+${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions)}` : ''}
+                    `;
+                    alert(details);
+                }
+            }
+
+            async deleteDelivery(id) {
+                if (confirm(`🗑️ Delete order ${id.substring(0, 8)}? This cannot be undone.`)) {
+                    try {
+                        await DataManager.deleteOrder(id);
+                        this.showNotification('✅ Order deleted successfully', 'success');
+                    } catch (error) {
+                        this.showError(`❌ ${error.message}`);
+                    }
+                }
+            }
+
+            exportOrders() {
+                if (this.allDeliveries.length === 0) {
+                    this.showError('❌ No orders to export');
+                    return;
+                }
                 
-                alert('✅ Medicine updated successfully!');
-                clearMedicineForm();
+                const csv = [
+                    ['Order ID', 'Customer', 'Phone', 'Address', 'Total', 'Status', 'Date', 'Medicines'],
+                    ...this.allDeliveries.map(d => [
+                        d.id, 
+                        `"${this.escapeHtml(d.customerName).replace(/"/g, '""')}"`, 
+                        d.customerPhone, 
+                        `"${this.escapeHtml(d.deliveryAddress).replace(/"/g, '""')}"`, 
+                        Number(d.totalAmount).toFixed(2), 
+                        d.status, 
+                        new Date(d.timestamp).toLocaleString(),
+                        `"${d.medicines.map(m => `${this.escapeHtml(m.name)} (${m.quantity || 1})`).join(', ')}"`
+                    ])
+                ].map(row => row.join(',')).join('\n');
                 
-                const btn = document.getElementById('medicineSubmitBtn');
-                btn.textContent = '➕ Add Medicine';
-                btn.onclick = addMedicine;
-                editingMedicineId = null;
+                this.downloadFile(csv, `baxnaano-orders-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+                this.showNotification('✅ Orders exported successfully', 'success');
+            }
+
+            // === STATISTICS ===
+            updateStats() {
+                const total = this.allDeliveries.length;
+                const pending = this.allDeliveries.filter(d => d.status === 'PENDING').length;
+                const delivered = this.allDeliveries.filter(d => d.status === 'DELIVERED').length;
+                const revenue = this.allDeliveries
+                    .filter(d => d.status !== 'CANCELLED')
+                    .reduce((sum, d) => sum + Number(d.totalAmount), 0);
+                
+                document.getElementById('totalOrders').textContent = total;
+                document.getElementById('pendingOrders').textContent = pending;
+                document.getElementById('deliveredOrders').textContent = delivered;
+                document.getElementById('totalRevenue').textContent = `$${revenue.toFixed(2)}`;
+            }
+
+            // === BACKUP/RESTORE ===
+            async exportAllData() {
+                try {
+                    const data = {
+                        medicines: await DataManager.getMedicines(),
+                        orders: await DataManager.getOrders(),
+                        gallery: await DataManager.getGallery(),
+                        settings: await DataManager.getSettings(),
+                        exportDate: new Date().toISOString(),
+                        version: '1.0'
+                    };
+                    
+                    const json = JSON.stringify(data, null, 2);
+                    this.downloadFile(json, `baxnaano-backup-${new Date().toISOString().split('T')[0]}.json`, 'application/json');
+                    this.showNotification('✅ Full backup exported successfully', 'success');
+                } catch (error) {
+                    this.showError(`❌ ${error.message}`);
+                }
+            }
+
+            async importAllData(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                if (!confirm('⚠️ WARNING: This will overwrite all existing data. Are you absolutely sure?')) {
+                    event.target.value = '';
+                    return;
+                }
+                
+                try {
+                    const text = await file.text();
+                    const data = JSON.parse(text);
+                    
+                    // Validate data structure
+                    if (!data.medicines || !data.orders || !data.gallery || !data.settings) {
+                        throw new Error('Invalid backup file structure');
+                    }
+                    
+                    // In production, implement batch import
+                    this.showNotification('⚠️ Import feature requires manual implementation for safety', 'warning');
+                    event.target.value = '';
+                } catch (error) {
+                    this.showError(`❌ ${error.message}`);
+                    event.target.value = '';
+                }
+            }
+
+            downloadFile(content, filename, type) {
+                const blob = new Blob([content], { type });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            // === UTILITY FUNCTIONS ===
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.setAttribute('role', 'alert');
+                notification.setAttribute('aria-live', 'polite');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'fadeOut 0.5s ease';
+                    setTimeout(() => notification.remove(), 500);
+                }, 5000);
+            }
+
+            // === INITIALIZATION ===
+            async init() {
+                if (document.getElementById('dashboardPage').classList.contains('hidden') === false) {
+                    await this.loadMedicines();
+                    await this.loadDeliveries();
+                    await this.loadSettings();
+                    this.updateStats();
+                }
             }
         }
 
-        function clearMedicineForm() {
-            document.getElementById('medName').value = '';
-            document.getElementById('medPrice').value = '';
-            document.getElementById('medDesc').value = '';
-            document.getElementById('medicineImage').value = '';
-            document.getElementById('medicineImagePreview').style.display = 'none';
-            medicineFileData = null;
-        }
-
-        function previewMedicineImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    medicineFileData = e.target.result;
-                    const img = document.getElementById('medicineImagePreview');
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        async function loadMedicines() {
-            const medicines = await DataManager.getMedicines();
-            const list = document.getElementById('medicineList');
-            
-            if (!list) return;
-            
-            list.innerHTML = medicines.map(med => `
-                <div class="medicine-card-admin">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <strong>${med.name}</strong>
-                        <span style="color: var(--primary); font-weight: bold;">$${med.price.toFixed(2)}</span>
-                    </div>
-                    <p style="color: #64748b; margin: 0.5rem 0;">${med.description}</p>
-                    <div style="margin: 0.5rem 0;">
-                        ${med.image ? `<img src="${med.image}" style="max-width: 100px; border-radius: 8px;">` : '<span style="font-size: 2rem;">💊</span>'}
-                    </div>
-                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-                        <button class="btn" onclick="editMedicine('${med.id}')" style="flex: 1; font-size: 0.9rem; padding: 0.5rem;">✏️ Edit</button>
-                        <button class="btn-danger" onclick="deleteMedicine('${med.id}')" style="flex: 1; font-size: 0.9rem; padding: 0.5rem;">🗑️ Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function deleteMedicine(id) {
-            if (confirm('🗑️ Delete this medicine from the catalog?')) {
-                await DataManager.deleteMedicine(id);
-                alert('✅ Medicine deleted!');
-            }
-        }
-
-        // === DELIVERY FUNCTIONS ===
-        async function loadDeliveries() {
-            const deliveries = await DataManager.getOrders();
-            const list = document.getElementById('deliveryList');
-            
-            if (!list) return;
-            
-            list.innerHTML = deliveries.map(delivery => `
-                <div class="delivery-item ${delivery.status}">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <strong>Order #${delivery.id.substring(0, 8)}</strong>
-                        <span style="background: ${delivery.status === 'PENDING' ? '#f59e0b' : delivery.status === 'DELIVERED' ? '#10b981' : '#ef4444'}; color: white; padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.85rem;">${delivery.status}</span>
-                    </div>
-                    <p><strong>Customer:</strong> ${delivery.customerName}</p>
-                    <p><strong>Phone:</strong> <a href="tel:${delivery.customerPhone}" style="color: var(--primary);">${delivery.customerPhone}</a></p>
-                    <p><strong>Address:</strong> ${delivery.deliveryAddress}</p>
-                    <p><strong>Total:</strong> $${delivery.totalAmount.toFixed(2)}</p>
-                    <p><strong>Time:</strong> ${new Date(delivery.timestamp).toLocaleString('so-SO')}</p>
-                    <div style="margin: 1rem 0;">
-                        <strong>Medicines:</strong>
-                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                            ${delivery.medicines.map(m => `<li>${m.name} - $${m.price.toFixed(2)}</li>`).join('')}
-                        </ul>
-                    </div>
-                    ${delivery.instructions ? `<p><strong>Instructions:</strong> ${delivery.instructions}</p>` : ''}
-                    ${delivery.prescription ? `<p><strong>Prescription:</strong><br><img src="${delivery.prescription}" style="max-width: 150px; border-radius: 8px;"></p>` : ''}
-                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        ${delivery.status === 'PENDING' 
-                            ? `<button class="btn-success" onclick="updateDeliveryStatus('${delivery.id}', 'DELIVERED')">✅ Mark Delivered</button>
-                               <button class="btn-danger" onclick="updateDeliveryStatus('${delivery.id}', 'CANCELLED')">❌ Cancel</button>` 
-                            : ''
-                        }
-                        <button class="btn" onclick="viewDeliveryDetails('${delivery.id}')">👁️ View Details</button>
-                        <button class="btn-danger" onclick="deleteDelivery('${delivery.id}')">🗑️ Delete</button>
-                    </div>
-                </div>
-            `).join('');
-            updateStats();
-        }
-
-        function searchDeliveries(query) {
-            // Firebase search would be implemented here
-            alert('🔍 Search will work when connected to backend');
-        }
-
-        async function updateDeliveryStatus(id, newStatus) {
-            await DataManager.updateOrder(id, newStatus);
-            alert(`✅ Order marked as ${newStatus}`);
-        }
-
-        function viewDeliveryDetails(id) {
-            alert('🔍 Full details view ready for implementation');
-        }
-
-        async function deleteDelivery(id) {
-            if (confirm(`🗑️ Delete order ${id}? This cannot be undone.`)) {
-                await DataManager.deleteOrder(id);
-            }
-        }
-
-        function filterDeliveries() {
-            loadDeliveries();
-        }
-
-        async function exportOrders() {
-            const deliveries = await DataManager.getOrders();
-            
-            if (deliveries.length === 0) {
-                alert('❌ No orders to export!');
-                return;
-            }
-            
-            const csv = [
-                ['Order ID', 'Customer', 'Phone', 'Address', 'Total', 'Status', 'Date'],
-                ...deliveries.map(d => [
-                    d.id, 
-                    d.customerName.replace(/,/g, ''), 
-                    d.customerPhone, 
-                    d.deliveryAddress.replace(/,/g, ';'), 
-                    d.totalAmount, 
-                    d.status, 
-                    new Date(d.timestamp).toLocaleString('so-SO')
-                ])
-            ].map(row => row.join(',')).join('\n');
-            
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `baxnaano-orders-${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function updateStats() {
-            // Stats are auto-updated by Firebase listeners
-        }
-
-        window.addEventListener('beforeunload', function(e) {
-            if (editingMedicineId) {
-                e.preventDefault();
-                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
-            }
-        });
+        // Initialize admin app
+        window.adminApp = new AdminApp();
+        window.addEventListener('DOMContentLoaded', () => window.adminApp.init());
     </script>
 </body>
 </html>
