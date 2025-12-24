@@ -6,12 +6,16 @@
     <title>Admin Panel - Baxnaano Hospital</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --primary: #0ea5e9; --secondary: #8b5cf6; --accent: #f97316; --dark: #1e293b; --light: #f8fafc; --danger: #ef4444; --success: #10b981; --warning: #f59e0b; --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        :root { 
+            --primary: #0ea5e9; --secondary: #8b5cf6; --accent: #f97316; 
+            --dark: #1e293b; --light: #f8fafc; --danger: #ef4444; 
+            --success: #10b981; --warning: #f59e0b; --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
+        }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--light); min-height: 100vh; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
         .login-container { background: white; border-radius: 20px; box-shadow: var(--shadow); max-width: 400px; margin: 5rem auto; padding: 2.5rem; }
-        .login-container h1 { text-align: center; margin-bottom: 2rem; color: var(--primary); }
-        .error-message { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; display: none; background: #fee2e2; color: var(--danger); }
+        .login-container h1, .login-container h2 { text-align: center; margin-bottom: 2rem; color: var(--primary); }
+        .error-message { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; display: none; background: #fee2e2; color: var(--danger); font-weight: bold; }
         .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
         h1 { color: var(--dark); margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; }
         .logo-img { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem; }
@@ -25,21 +29,23 @@
         .btn:hover, .btn:focus { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); outline: 3px solid rgba(14, 165, 233, 0.3); }
         .btn-danger { background: var(--danger); } .btn-success { background: var(--success); } .btn-warning { background: var(--warning); }
         .btn-block { width: 100%; padding: 1rem; }
-        .logout-btn { position: fixed; top: 20px; right: 20px; background: var(--danger); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; z-index: 1000; }
+        .logout-btn { position: fixed; top: 20px; right: 20px; background: var(--danger); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; z-index: 1000; box-shadow: var(--shadow); }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-        .stat-card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: var(--shadow); text-align: center; }
-        .stat-card h3 { font-size: 2rem; color: var(--primary); }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: var(--shadow); text-align: center; transition: all 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card h3 { font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem; }
         .delivery-list { display: grid; gap: 1rem; }
-        .delivery-item { background: #f8fafc; padding: 1.5rem; border-radius: 10px; border-left: 5px solid var(--primary); }
+        .delivery-item { background: #f8fafc; padding: 1.5rem; border-radius: 10px; border-left: 5px solid var(--primary); transition: all 0.3s; }
         .delivery-item.PENDING { border-left-color: var(--warning); background: linear-gradient(to right, rgba(245, 158, 11, 0.05), white); }
         .delivery-item.DELIVERED { border-left-color: var(--success); background: linear-gradient(to right, rgba(16, 185, 129, 0.05), white); }
         .delivery-item.CANCELLED { border-left-color: var(--danger); background: linear-gradient(to right, rgba(239, 68, 68, 0.05), white); }
         .medicine-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem; }
-        .medicine-card-admin { background: #f8fafc; padding: 1rem; border-radius: 10px; border: 2px solid #e2e8f0; }
-        .image-preview { max-width: 150px; max-height: 150px; border-radius: 8px; margin-top: 0.5rem; display: none; }
-        .loading { text-align: center; padding: 2rem; color: #64748b; }
-        .error { text-align: center; padding: 2rem; color: var(--danger); }
-        .notification { position: fixed; top: 20px; right: 20px; padding: 1rem 2rem; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 9999; animation: slideIn 0.5s ease; }
+        .medicine-card-admin { background: #f8fafc; padding: 1rem; border-radius: 10px; border: 2px solid #e2e8f0; transition: all 0.3s; }
+        .medicine-card-admin:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .image-preview { max-width: 150px; max-height: 150px; border-radius: 8px; margin-top: 0.5rem; display: none; border: 2px solid var(--primary); }
+        .loading { text-align: center; padding: 2rem; color: #64748b; font-weight: bold; }
+        .error { text-align: center; padding: 2rem; color: var(--danger); font-weight: bold; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 1rem 2rem; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 9999; animation: slideIn 0.5s ease; max-width: 400px; word-wrap: break-word; }
         .notification.success { background: var(--success); color: white; }
         .notification.error { background: var(--danger); color: white; }
         .notification.warning { background: var(--warning); color: white; }
@@ -49,21 +55,31 @@
         @media (max-width: 768px) {
             .logout-btn { position: relative; top: auto; right: auto; margin-bottom: 1rem; width: 100%; }
             h1 { font-size: 1.5rem; }
+            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <!-- ===== SETUP PAGE (Only shows if admin doesn't exist) ===== -->
+    <!-- ===== SETUP PAGE (Kaliya marka la abuurayo admin cusub) ===== -->
     <div id="setupPage" class="login-container hidden">
         <div class="logo" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.8rem;" aria-hidden="true">🏥</div>
-        <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--dark);">🔐 INITIAL ADMIN SETUP</h2>
-        <p style="text-align: center; color: #64748b; margin-bottom: 1rem;">
+        <h2>🔐 INITIAL ADMIN SETUP</h2>
+        <p style="text-align: center; color: #64748b; margin-bottom: 1.5rem;">
             This will create your first admin account. <strong>Do this only once!</strong>
         </p>
         <form id="setupForm">
-            <div class="form-group"><label for="setupEmail">Admin Email *</label><input type="email" id="setupEmail" required placeholder="admin@baxnaano.com"></div>
-            <div class="form-group"><label for="setupPassword">Admin Password *</label><input type="password" id="setupPassword" required placeholder="Min 12 characters"></div>
-            <div class="form-group"><label for="setupConfirm">Confirm Password *</label><input type="password" id="setupConfirm" required placeholder="Repeat password"></div>
+            <div class="form-group">
+                <label for="setupEmail">Admin Email *</label>
+                <input type="email" id="setupEmail" required placeholder="admin@baxnaano.com" autocomplete="email">
+            </div>
+            <div class="form-group">
+                <label for="setupPassword">Admin Password *</label>
+                <input type="password" id="setupPassword" required placeholder="Min 12 characters" autocomplete="new-password">
+            </div>
+            <div class="form-group">
+                <label for="setupConfirm">Confirm Password *</label>
+                <input type="password" id="setupConfirm" required placeholder="Repeat password" autocomplete="new-password">
+            </div>
             <button type="submit" class="btn btn-block" id="setupBtn">🚀 Create Admin Account</button>
             <div class="error-message" id="setupError" role="alert"></div>
         </form>
@@ -72,10 +88,16 @@
     <!-- LOGIN FORM -->
     <div id="loginPage" class="login-container hidden">
         <div class="logo" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.8rem;" aria-hidden="true">🏥</div>
-        <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--dark);">Admin Login</h2>
+        <h2>Admin Login</h2>
         <form id="loginForm">
-            <div class="form-group"><label for="email">Email Address</label><input type="email" id="email" required placeholder="admin@baxnaano.com" autocomplete="username"></div>
-            <div class="form-group"><label for="password">Password</label><input type="password" id="password" required placeholder="Enter password" autocomplete="current-password"></div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required placeholder="admin@baxnaano.com" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="Enter password" autocomplete="current-password">
+            </div>
             <button type="submit" class="btn btn-block" id="loginBtn">🔐 Login</button>
             <div class="error-message" id="errorMsg" role="alert" aria-live="polite"></div>
         </form>
@@ -87,45 +109,110 @@
         <div class="container">
             <h1>🏥 Baxnaano Hospital - Pharmacy Admin</h1>
             <div class="stats-grid">
-                <div class="stat-card"><h3 id="totalOrders">0</h3><p>Total Orders</p></div>
-                <div class="stat-card"><h3 id="pendingOrders">0</h3><p>Pending Delivery</p></div>
-                <div class="stat-card"><h3 id="deliveredOrders">0</h3><p>Delivered</p></div>
-                <div class="stat-card"><h3 id="totalRevenue">$0</h3><p>Total Revenue</p></div>
+                <div class="stat-card">
+                    <h3 id="totalOrders">0</h3>
+                    <p>Total Orders</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="pendingOrders">0</h3>
+                    <p>Pending Delivery</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="deliveredOrders">0</h3>
+                    <p>Delivered</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalRevenue">$0</h3>
+                    <p>Total Revenue</p>
+                </div>
             </div>
 
-            <div class="card"><h2>📸 Upload Gallery Photo</h2><form id="galleryForm">
-                <div class="form-group"><label for="galleryFile">Choose Image *</label><input type="file" id="galleryFile" accept="image/*" required></div>
-                <div class="form-group"><label for="galleryTitle">Title *</label><input type="text" id="galleryTitle" placeholder="e.g., Hospital Building" required></div>
-                <div class="form-group"><label for="galleryDesc">Description</label><textarea id="galleryDesc" placeholder="e.g., Main entrance"></textarea></div>
-                <button type="submit" class="btn btn-block" id="gallerySubmitBtn">➕ Add to Gallery</button>
-            </form></div>
-
-            <div class="card"><h2>🏥 Manage Medicines</h2><form id="medicineForm">
-                <div class="form-group"><label for="medName">Medicine Name *</label><input type="text" id="medName" placeholder="e.g., Panadol Extra" required></div>
-                <div class="form-group"><label for="medPrice">Price ($) *</label><input type="number" id="medPrice" placeholder="10.99" step="0.01" required min="0"></div>
-                <div class="form-group"><label for="medDesc">Description *</label><textarea id="medDesc" placeholder="Description and usage..." required></textarea></div>
-                <div class="form-group"><label for="medicineImage">Medicine Image (Upload)</label><input type="file" id="medicineImage" accept="image/*"><img id="medicineImagePreview" class="image-preview" alt="Preview"></div>
-                <button type="submit" class="btn btn-block" id="medicineSubmitBtn">➕ Add Medicine</button>
-            </form><div class="medicine-grid" id="medicineList"><p class="loading">Loading medicines...</p></div></div>
-
-            <div class="card"><h2>🚚 Manage Deliveries</h2>
-                <div class="form-group"><label for="deliverySearch">Search Orders (Name, Phone, or Order ID)</label><input type="text" id="deliverySearch" placeholder="🔍 Search..."></div>
-                <div class="form-group"><label for="deliveryFilter">Filter Status</label><select id="deliveryFilter">
-                    <option value="ALL">All Orders</option><option value="PENDING">Pending</option><option value="DELIVERED">Delivered</option><option value="CANCELLED">Cancelled</option>
-                </select></div>
-                <button class="btn" id="exportOrdersBtn" style="margin-bottom: 1rem;">📥 Export All Orders</button>
-                <div class="delivery-list" id="deliveryList"><p class="loading">Loading deliveries...</p></div>
+            <div class="card">
+                <h2>📸 Upload Gallery Photo</h2>
+                <form id="galleryForm">
+                    <div class="form-group">
+                        <label for="galleryFile">Choose Image *</label>
+                        <input type="file" id="galleryFile" accept="image/*" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="galleryTitle">Title *</label>
+                        <input type="text" id="galleryTitle" placeholder="e.g., Hospital Building" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="galleryDesc">Description</label>
+                        <textarea id="galleryDesc" placeholder="e.g., Main entrance"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-block" id="gallerySubmitBtn">➕ Add to Gallery</button>
+                </form>
             </div>
 
-            <div class="card" style="border: 2px solid var(--accent);"><h2 style="color: var(--accent);">🏥 Upload Hospital Logo</h2><form id="logoForm">
-                <div class="form-group"><label for="logoFile">Choose Logo Image *</label><input type="file" id="logoFile" accept="image/*" required><small style="color: #64748b;">Recommended: Square image, max 2MB</small></div>
-                <button type="submit" class="btn btn-block" style="background: var(--accent);" id="logoSubmitBtn">📤 Upload Logo</button>
-            </form><div id="currentLogo" style="margin-top: 1rem;"><p style="color: #64748b;">Current logo: 🏥 (default)</p></div></div>
+            <div class="card">
+                <h2>🏥 Manage Medicines</h2>
+                <form id="medicineForm">
+                    <div class="form-group">
+                        <label for="medName">Medicine Name *</label>
+                        <input type="text" id="medName" placeholder="e.g., Panadol Extra" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="medPrice">Price ($) *</label>
+                        <input type="number" id="medPrice" placeholder="10.99" step="0.01" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="medDesc">Description *</label>
+                        <textarea id="medDesc" placeholder="Description and usage..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="medicineImage">Medicine Image (Optional)</label>
+                        <input type="file" id="medicineImage" accept="image/*">
+                        <img id="medicineImagePreview" class="image-preview" alt="Preview">
+                    </div>
+                    <button type="submit" class="btn btn-block" id="medicineSubmitBtn">➕ Add Medicine</button>
+                </form>
+                <div class="medicine-grid" id="medicineList">
+                    <div class="loading">Loading medicines...</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🚚 Manage Deliveries</h2>
+                <div class="form-group">
+                    <label for="deliverySearch">Search Orders (Name, Phone, or Order ID)</label>
+                    <input type="text" id="deliverySearch" placeholder="🔍 Search...">
+                </div>
+                <div class="form-group">
+                    <label for="deliveryFilter">Filter Status</label>
+                    <select id="deliveryFilter">
+                        <option value="ALL">All Orders</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="DELIVERED">Delivered</option>
+                        <option value="CANCELLED">Cancelled</option>
+                    </select>
+                </div>
+                <button class="btn" id="exportOrdersBtn" style="margin-bottom: 1rem;">📥 Export All Orders (CSV)</button>
+                <div class="delivery-list" id="deliveryList">
+                    <div class="loading">Loading deliveries...</div>
+                </div>
+            </div>
+
+            <div class="card" style="border: 2px solid var(--accent);">
+                <h2 style="color: var(--accent);">🏥 Upload Hospital Logo</h2>
+                <form id="logoForm">
+                    <div class="form-group">
+                        <label for="logoFile">Choose Logo Image *</label>
+                        <input type="file" id="logoFile" accept="image/*" required>
+                        <small style="color: #64748b; display: block; margin-top: 0.5rem;">Recommended: Square image, max 2MB</small>
+                    </div>
+                    <button type="submit" class="btn btn-block" style="background: var(--accent);" id="logoSubmitBtn">📤 Upload Logo</button>
+                </form>
+                <div id="currentLogo" style="margin-top: 1rem;">
+                    <p style="color: #64748b;">Current logo: 🏥 (default)</p>
+                </div>
+            </div>
 
             <div class="card" style="background: linear-gradient(135deg, #fef3c7, #fff); border: 2px solid var(--warning);">
                 <h2 style="color: var(--warning);">⚠️ Data Backup & Restore</h2>
                 <p style="margin-bottom: 1rem;"><strong>Export all data</strong> for backup:</p>
-                <button class="btn-warning btn-block" id="exportAllBtn">📤 Export All Data</button>
+                <button class="btn-warning btn-block" id="exportAllBtn">📤 Export All Data (JSON)</button>
                 <p style="margin: 2rem 0 1rem;"><strong>Import data</strong> from backup:</p>
                 <input type="file" id="importFile" accept=".json" class="hidden">
                 <button class="btn-warning" id="importBtn">📥 Import Data</button>
@@ -134,21 +221,29 @@
         </div>
     </div>
 
-    <!-- ===== 🔑 FIREBASE CONFIG SECTION - KU DARI HAGAAGKAAGA Halkan ===== -->
+    <!-- ===== FIREBASE API MODULE - DHAN OO LA HUBIYAY ===== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, 
+            query, orderBy, onSnapshot, writeBatch, where 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { 
+            getStorage, ref, uploadBytes, getDownloadURL, deleteObject 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { 
+            getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+            signOut, onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // TODO: KU DARI HAGAAGKAAGA FIIREBASE KA Halkan
+        // TODO: GALI HAGAAGKA FIIREBASE KA
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY_HERE",           // <--- BADAL
-            authDomain: "YOUR_PROJECT.firebaseapp.com", // <--- BADAL
-            projectId: "YOUR_PROJECT_ID",         // <--- BADAL
-            storageBucket: "YOUR_PROJECT.appspot.com", // <--- BADAL
-            messagingSenderId: "YOUR_SENDER_ID", // <--- BADAL
-            appId: "YOUR_APP_ID"                   // <--- BADAL
+            apiKey: "YOUR_API_KEY_HERE",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -156,15 +251,29 @@
         const storage = getStorage(app);
         const auth = getAuth(app);
 
+        // Expose all Firebase API to global
+        window.firebaseAPI = {
+            db, storage, auth,
+            collection, getDocs, addDoc, updateDoc, deleteDoc, doc, 
+            query, orderBy, onSnapshot, writeBatch, where,
+            ref, uploadBytes, getDownloadURL, deleteObject,
+            createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged
+        };
+
         window.DataManager = {
             medicines: collection(db, 'medicines'),
             orders: collection(db, 'orders'),
             gallery: collection(db, 'gallery'),
             settings: collection(db, 'settings'),
+            admins: collection(db, 'admins'),
             
             async getMedicines() {
-                const snapshot = await getDocs(this.medicines);
-                return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                try {
+                    const snapshot = await getDocs(this.medicines);
+                    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                } catch (error) {
+                    throw new Error("Failed to load medicines: " + error.message);
+                }
             },
             
             async saveMedicine(medicine) {
@@ -186,7 +295,7 @@
             },
             
             async updateOrder(id, status) {
-                return await updateDoc(doc(db, 'orders', id), { status });
+                return await updateDoc(doc(db, 'orders', id), { status, updatedAt: new Date().toISOString() });
             },
             
             async deleteOrder(id) {
@@ -194,12 +303,24 @@
             },
             
             async getGallery() {
-                const snapshot = await getDocs(this.gallery);
+                const q = query(this.gallery, orderBy('date', 'desc'));
+                const snapshot = await getDocs(q);
                 return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             },
             
             async saveGalleryItem(item) {
                 return await addDoc(this.gallery, { ...item, date: new Date().toISOString().split('T')[0] });
+            },
+            
+            async deleteGalleryItem(id) {
+                const itemDoc = await getDocs(doc(db, 'gallery', id));
+                if (itemDoc.exists()) {
+                    const itemData = itemDoc.data();
+                    if (itemData.url) {
+                        await deleteObject(ref(storage, itemData.url));
+                    }
+                    await deleteDoc(doc(db, 'gallery', id));
+                }
             },
             
             async getSettings() {
@@ -213,31 +334,58 @@
                 if (existing) {
                     return await updateDoc(doc(db, 'settings', existing.id), { value, updatedAt: new Date().toISOString() });
                 } else {
-                    return await addDoc(this.settings, { key, value, createdAt: new Date() });
+                    return await addDoc(this.settings, { key, value, createdAt: new Date().toISOString() });
+                }
+            },
+            
+            async deleteFile(url) {
+                if (!url) return;
+                try {
+                    const fileRef = ref(storage, url);
+                    await deleteObject(fileRef);
+                } catch (error) {
+                    console.warn("Failed to delete file:", error);
                 }
             }
         };
 
-        // ===== AUTO SETUP: Check if admin exists =====
+        // Hubi auth state
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const adminSnapshot = await getDocs(collection(db, 'admins'));
+                    const isAdmin = adminSnapshot.docs.some(doc => doc.id === user.uid);
+                    if (isAdmin) {
+                        window.adminApp.showDashboard();
+                    } else {
+                        await signOut(auth);
+                        window.adminApp.showError('❌ Admin access required');
+                    }
+                } catch (e) {
+                    console.error("Admin check failed:", e);
+                }
+            } else {
+                document.getElementById('loginPage')?.classList.remove('hidden');
+                document.getElementById('dashboardPage')?.classList.add('hidden');
+            }
+        });
+
+        // Hubi haddii admin uu jiro marka bilaash ah
         (async () => {
             try {
                 const admins = await getDocs(collection(db, 'admins'));
                 if (admins.empty) {
-                    // Show setup page if no admin
-                    document.getElementById('setupPage').classList.remove('hidden');
-                    document.getElementById('loginPage').classList.add('hidden');
-                    document.getElementById('dashboardPage').classList.add('hidden');
+                    document.getElementById('setupPage')?.classList.remove('hidden');
                 } else {
-                    // Show login page
-                    document.getElementById('setupPage').classList.add('hidden');
-                    document.getElementById('loginPage').classList.remove('hidden');
+                    document.getElementById('loginPage')?.classList.remove('hidden');
                 }
             } catch (e) {
                 console.log("Setup check failed:", e);
-                document.getElementById('loginPage').classList.remove('hidden');
+                document.getElementById('loginPage')?.classList.remove('hidden');
             }
         })();
 
+        // Dhegayso isbeddelada degdeg ah
         onSnapshot(collection(db, 'medicines'), () => window.adminApp?.loadMedicines());
         onSnapshot(query(collection(db, 'orders'), orderBy('timestamp', 'desc')), () => {
             window.adminApp?.loadDeliveries();
@@ -245,32 +393,15 @@
         });
         onSnapshot(collection(db, 'gallery'), () => window.adminApp?.loadGallery());
         onSnapshot(collection(db, 'settings'), () => window.adminApp?.loadSettings());
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // Check if user is admin
-                const adminRef = doc(db, 'admins', user.uid);
-                getDocs(collection(db, 'admins')).then(snapshot => {
-                    const isAdmin = snapshot.docs.some(doc => doc.id === user.uid);
-                    if (isAdmin) {
-                        window.adminApp.showDashboard();
-                    } else {
-                        window.adminApp.showError('❌ Admin access required');
-                        signOut(auth);
-                    }
-                });
-            } else {
-                document.getElementById('loginPage')?.classList.remove('hidden');
-                document.getElementById('dashboardPage')?.classList.add('hidden');
-            }
-        });
     </script>
 
+    <!-- ===== Admin App - DHAN OO LA HUBIYAY ===== -->
     <script>
         class AdminApp {
-            constructor() {
+            constructor(firebaseAPI) {
+                this.fb = firebaseAPI;
                 this.editingMedicineId = null;
-                this.auth = window.auth;
+                this.allDeliveries = [];
                 this.initEventListeners();
             }
 
@@ -302,19 +433,13 @@
                 setupBtn.textContent = '⏳ Creating...';
 
                 try {
-                    if (password !== confirm) {
-                        throw new Error('Passwords do not match!');
-                    }
-                    if (password.length < 12) {
-                        throw new Error('Password must be at least 12 characters!');
-                    }
+                    if (password !== confirm) throw new Error('Passwords do not match!');
+                    if (password.length < 12) throw new Error('Password must be at least 12 characters!');
 
-                    // Create Firebase Auth user
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const userCredential = await this.fb.createUserWithEmailAndPassword(this.fb.auth, email, password);
                     const user = userCredential.user;
 
-                    // Create admin record in Firestore
-                    await addDoc(collection(db, 'admins'), {
+                    await this.fb.addDoc(this.fb.admins, {
                         uid: user.uid,
                         email: email,
                         createdAt: new Date().toISOString(),
@@ -322,9 +447,7 @@
                     });
 
                     this.showNotification('✅ Admin created successfully! Please login now.', 'success');
-                    setTimeout(() => {
-                        location.reload(); // Reload to show login page
-                    }, 2000);
+                    setTimeout(() => location.reload(), 2000);
 
                 } catch (error) {
                     setupError.textContent = `❌ ${error.message}`;
@@ -344,8 +467,9 @@
                 loginBtn.textContent = '⏳ Logging in...';
                 const email = document.getElementById('email').value.trim();
                 const password = document.getElementById('password').value;
+                
                 try {
-                    await signInWithEmailAndPassword(auth, email, password);
+                    await this.fb.signInWithEmailAndPassword(this.fb.auth, email, password);
                     errorMsg.style.display = 'none';
                 } catch (error) {
                     errorMsg.textContent = `❌ ${error.message}`;
@@ -359,7 +483,7 @@
 
             logout() {
                 if (confirm('🚪 Are you sure you want to logout?')) {
-                    signOut(auth);
+                    this.fb.signOut(this.fb.auth);
                 }
             }
 
@@ -369,6 +493,7 @@
                 document.getElementById('dashboardPage')?.classList.remove('hidden');
                 this.loadMedicines();
                 this.loadDeliveries();
+                this.loadGallery();
                 this.loadSettings();
             }
 
@@ -381,12 +506,15 @@
 
             async loadMedicines() {
                 const list = document.getElementById('medicineList');
+                list.innerHTML = '<div class="loading">Loading medicines...</div>';
+                
                 try {
                     const medicines = await DataManager.getMedicines();
                     if (medicines.length === 0) {
-                        list.innerHTML = '<p class="error">No medicines found. Add some to get started.</p>';
+                        list.innerHTML = '<div class="error">No medicines found. Add some to get started.</div>';
                         return;
                     }
+                    
                     list.innerHTML = medicines.map(med => `
                         <div class="medicine-card-admin">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -403,6 +531,7 @@
                             </div>
                         </div>
                     `).join('');
+                    
                     list.querySelectorAll('[data-edit]').forEach(btn => {
                         btn.addEventListener('click', () => this.editMedicine(btn.dataset.edit));
                     });
@@ -410,7 +539,7 @@
                         btn.addEventListener('click', () => this.deleteMedicine(btn.dataset.delete));
                     });
                 } catch (error) {
-                    list.innerHTML = `<p class="error">Failed to load medicines: ${error.message}</p>`;
+                    list.innerHTML = `<div class="error">Failed to load medicines: ${error.message}</div>`;
                 }
             }
 
@@ -427,13 +556,17 @@
                 const submitBtn = document.getElementById('medicineSubmitBtn');
                 submitBtn.disabled = true;
                 submitBtn.textContent = '⏳ Adding...';
+                
                 const name = document.getElementById('medName').value.trim();
                 const price = parseFloat(document.getElementById('medPrice').value);
                 const description = document.getElementById('medDesc').value.trim();
+                
                 try {
                     if (!name || isNaN(price) || !description) {
                         throw new Error('Please fill all required fields');
                     }
+                    if (price < 0) throw new Error('Price cannot be negative');
+                    
                     const imageFile = document.getElementById('medicineImage').files[0];
                     let imageUrl = null;
                     if (imageFile) {
@@ -442,6 +575,7 @@
                         }
                         imageUrl = await this.uploadFile(imageFile, 'medicines');
                     }
+                    
                     await DataManager.saveMedicine({ name, price, description, image: imageUrl });
                     this.showNotification('✅ Medicine added successfully', 'success');
                     this.clearMedicineForm();
@@ -477,23 +611,34 @@
 
             async updateMedicine() {
                 if (!this.editingMedicineId) return;
+                
                 const submitBtn = document.getElementById('medicineSubmitBtn');
                 submitBtn.disabled = true;
                 submitBtn.textContent = '⏳ Updating...';
+                
                 const name = document.getElementById('medName').value.trim();
                 const price = parseFloat(document.getElementById('medPrice').value);
                 const description = document.getElementById('medDesc').value.trim();
+                
                 try {
+                    if (!name || isNaN(price) || !description) {
+                        throw new Error('Please fill all required fields');
+                    }
+                    if (price < 0) throw new Error('Price cannot be negative');
+                    
                     const imageFile = document.getElementById('medicineImage').files[0];
                     let imageUrl = null;
+                    
                     if (imageFile) {
                         if (imageFile.size > 5 * 1024 * 1024) {
                             throw new Error('Image too large! Max 5MB');
                         }
                         imageUrl = await this.uploadFile(imageFile, 'medicines');
                     }
-                    const updateData = { name, price, description };
+                    
+                    const updateData = { name, price, description, updatedAt: new Date().toISOString() };
                     if (imageUrl) updateData.image = imageUrl;
+                    
                     await DataManager.updateMedicine(this.editingMedicineId, updateData);
                     this.showNotification('✅ Medicine updated successfully', 'success');
                     this.clearMedicineForm();
@@ -546,9 +691,11 @@
                 const submitBtn = document.getElementById('gallerySubmitBtn');
                 submitBtn.disabled = true;
                 submitBtn.textContent = '⏳ Uploading...';
+                
                 const file = document.getElementById('galleryFile').files[0];
                 const title = document.getElementById('galleryTitle').value.trim();
                 const desc = document.getElementById('galleryDesc').value.trim();
+                
                 try {
                     if (!file || !title) {
                         throw new Error('Please select an image and enter a title');
@@ -556,8 +703,10 @@
                     if (file.size > 5 * 1024 * 1024) {
                         throw new Error('File too large! Maximum size is 5MB');
                     }
+                    
                     const imageUrl = await this.uploadFile(file, 'gallery');
                     await DataManager.saveGalleryItem({ type: 'image', url: imageUrl, title, description: desc });
+                    
                     this.showNotification('✅ Gallery photo uploaded successfully', 'success');
                     document.getElementById('galleryForm').reset();
                 } catch (error) {
@@ -565,6 +714,73 @@
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = '➕ Add to Gallery';
+                }
+            }
+
+            async loadGallery() {
+                const galleryGrid = document.getElementById('galleryGrid');
+                if (!galleryGrid) return;
+                
+                galleryGrid.innerHTML = '<div class="loading">Loading gallery...</div>';
+                
+                try {
+                    const gallery = await DataManager.getGallery();
+                    if (gallery.length === 0) {
+                        galleryGrid.innerHTML = '<div class="error">No gallery images yet.</div>';
+                        return;
+                    }
+                    
+                    galleryGrid.innerHTML = gallery.map(item => `
+                        <div class="gallery-item">
+                            <img src="${item.url}" style="max-width: 100%; border-radius: 8px;" alt="${this.escapeHtml(item.title)}">
+                            <div style="margin-top: 0.5rem;">
+                                <strong>${this.escapeHtml(item.title)}</strong>
+                                <p style="font-size: 0.8rem; color: #64748b;">${this.escapeHtml(item.description || '')}</p>
+                                <button class="btn-danger" data-delete-gallery="${item.id}" style="margin-top: 0.5rem; font-size: 0.8rem; padding: 0.3rem 0.8rem;">🗑️ Delete</button>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    galleryGrid.querySelectorAll('[data-delete-gallery]').forEach(btn => {
+                        btn.addEventListener('click', () => this.deleteGalleryItem(btn.dataset.deleteGallery));
+                    });
+                } catch (error) {
+                    galleryGrid.innerHTML = `<div class="error">Failed: ${error.message}</div>`;
+                }
+            }
+
+            async deleteGalleryItem(id) {
+                if (!confirm('🗑️ Delete this gallery image?')) return;
+                try {
+                    await DataManager.deleteGalleryItem(id);
+                    this.showNotification('✅ Gallery image deleted', 'success');
+                } catch (error) {
+                    this.showError(`❌ ${error.message}`);
+                }
+            }
+
+            async handleLogoSubmit(event) {
+                event.preventDefault();
+                const submitBtn = document.getElementById('logoSubmitBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '⏳ Uploading...';
+                
+                const file = document.getElementById('logoFile').files[0];
+                try {
+                    if (!file) throw new Error('Please select a logo image');
+                    if (file.size > 2 * 1024 * 1024) throw new Error('Logo too large! Max 2MB');
+                    
+                    const logoUrl = await this.uploadFile(file, 'logos');
+                    await DataManager.saveSetting('logo', logoUrl);
+                    
+                    this.showNotification('✅ Logo uploaded successfully', 'success');
+                    document.getElementById('logoForm').reset();
+                    this.loadSettings();
+                } catch (error) {
+                    this.showError(`❌ ${error.message}`);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '📤 Upload Logo';
                 }
             }
 
@@ -580,37 +796,11 @@
                 }
             }
 
-            async handleLogoSubmit(event) {
-                event.preventDefault();
-                const submitBtn = document.getElementById('logoSubmitBtn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = '⏳ Uploading...';
-                const file = document.getElementById('logoFile').files[0];
-                try {
-                    if (!file) {
-                        throw new Error('Please select a logo image');
-                    }
-                    if (file.size > 2 * 1024 * 1024) {
-                        throw new Error('Logo too large! Max 2MB');
-                    }
-                    const logoUrl = await this.uploadFile(file, 'logos');
-                    await DataManager.saveSetting('logo', logoUrl);
-                    this.showNotification('✅ Logo uploaded successfully', 'success');
-                    document.getElementById('logoForm').reset();
-                    this.loadSettings();
-                } catch (error) {
-                    this.showError(`❌ ${error.message}`);
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = '📤 Upload Logo';
-                }
-            }
-
             async uploadFile(file, folder) {
                 try {
-                    const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
-                    await uploadBytes(storageRef, file);
-                    return await getDownloadURL(storageRef);
+                    const storageRef = this.fb.ref(this.fb.storage, `${folder}/${Date.now()}_${file.name}`);
+                    await this.fb.uploadBytes(storageRef, file);
+                    return await this.fb.getDownloadURL(storageRef);
                 } catch (error) {
                     throw new Error(`Upload failed: ${error.message}`);
                 }
@@ -618,16 +808,18 @@
 
             async loadDeliveries() {
                 const list = document.getElementById('deliveryList');
+                list.innerHTML = '<div class="loading">Loading deliveries...</div>';
+                
                 try {
                     this.allDeliveries = await DataManager.getOrders();
                     if (this.allDeliveries.length === 0) {
-                        list.innerHTML = '<p class="error">No delivery orders found.</p>';
+                        list.innerHTML = '<div class="error">No delivery orders found.</div>';
                         return;
                     }
                     this.renderDeliveries(this.allDeliveries);
                     this.updateStats();
                 } catch (error) {
-                    list.innerHTML = `<p class="error">Failed to load deliveries: ${error.message}</p>`;
+                    list.innerHTML = `<div class="error">Failed to load deliveries: ${error.message}</div>`;
                 }
             }
 
@@ -635,10 +827,12 @@
                 const list = document.getElementById('deliveryList');
                 const filter = document.getElementById('deliveryFilter').value;
                 const filtered = filter === 'ALL' ? deliveries : deliveries.filter(d => d.status === filter);
+                
                 if (filtered.length === 0) {
-                    list.innerHTML = '<p class="error">No orders match your filter.</p>';
+                    list.innerHTML = '<div class="error">No orders match your filter.</div>';
                     return;
                 }
+                
                 list.innerHTML = filtered.map(delivery => `
                     <div class="delivery-item ${delivery.status}">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -650,9 +844,12 @@
                         <p><strong>Address:</strong> ${this.escapeHtml(delivery.deliveryAddress)}</p>
                         <p><strong>Total:</strong> $${Number(delivery.totalAmount).toFixed(2)}</p>
                         <p><strong>Time:</strong> ${new Date(delivery.timestamp).toLocaleString()}</p>
-                        <div style="margin: 1rem 0;"><strong>Medicines:</strong><ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                            ${delivery.medicines.map(m => `<li>${this.escapeHtml(m.name)} (${m.quantity || 1}) - $${Number(m.price).toFixed(2)}</li>`).join('')}
-                        </ul></div>
+                        <div style="margin: 1rem 0;">
+                            <strong>Medicines:</strong>
+                            <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                ${delivery.medicines.map(m => `<li>${this.escapeHtml(m.name)} (${m.quantity || 1}) - $${Number(m.price).toFixed(2)}</li>`).join('')}
+                            </ul>
+                        </div>
                         ${delivery.instructions ? `<p><strong>Instructions:</strong> ${this.escapeHtml(delivery.instructions)}</p>` : ''}
                         ${delivery.prescription ? `<p><strong>Prescription:</strong><br><img src="${delivery.prescription}" style="max-width: 150px; border-radius: 8px;" alt="Prescription"></p>` : ''}
                         <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -666,6 +863,7 @@
                         </div>
                     </div>
                 `).join('');
+                
                 list.querySelectorAll('[data-mark-delivered]').forEach(btn => {
                     btn.addEventListener('click', () => this.updateDeliveryStatus(btn.dataset.markDelivered, 'DELIVERED'));
                 });
@@ -743,6 +941,7 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
                     this.showError('❌ No orders to export');
                     return;
                 }
+                
                 const csv = [
                     ['Order ID', 'Customer', 'Phone', 'Address', 'Total', 'Status', 'Date', 'Medicines'],
                     ...this.allDeliveries.map(d => [
@@ -756,6 +955,7 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
                         `"${d.medicines.map(m => `${this.escapeHtml(m.name)} (${m.quantity || 1})`).join(', ')}"`
                     ])
                 ].map(row => row.join(',')).join('\n');
+                
                 this.downloadFile(csv, `baxnaano-orders-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
                 this.showNotification('✅ Orders exported successfully', 'success');
             }
@@ -767,6 +967,7 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
                 const revenue = this.allDeliveries
                     .filter(d => d.status !== 'CANCELLED')
                     .reduce((sum, d) => sum + Number(d.totalAmount), 0);
+                
                 document.getElementById('totalOrders').textContent = total;
                 document.getElementById('pendingOrders').textContent = pending;
                 document.getElementById('deliveredOrders').textContent = delivered;
@@ -775,6 +976,7 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
 
             async exportAllData() {
                 try {
+                    this.showNotification('⏳ Preparing backup...', 'warning');
                     const data = {
                         medicines: await DataManager.getMedicines(),
                         orders: await DataManager.getOrders(),
@@ -794,20 +996,60 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
             async importAllData(event) {
                 const file = event.target.files[0];
                 if (!file) return;
-                if (!confirm('⚠️ WARNING: This will overwrite all existing data. Are you absolutely sure?')) {
+                
+                if (!confirm('⚠️ WARNING: This will overwrite ALL existing data. Are you absolutely sure?')) {
                     event.target.value = '';
                     return;
                 }
+                
                 try {
+                    this.showNotification('⏳ Importing data...', 'warning');
                     const text = await file.text();
                     const data = JSON.parse(text);
+                    
                     if (!data.medicines || !data.orders || !data.gallery || !data.settings) {
                         throw new Error('Invalid backup file structure');
                     }
-                    this.showNotification('⚠️ Import feature requires manual implementation for safety', 'warning');
-                    event.target.value = '';
+
+                    // Use batch for atomic operations
+                    const batch = this.fb.writeBatch();
+                    
+                    // Delete existing data
+                    const existingCollections = ['medicines', 'orders', 'gallery', 'settings'];
+                    for (const colName of existingCollections) {
+                        const colRef = this.fb.collection(this.fb.db, colName);
+                        const snapshot = await this.fb.getDocs(colRef);
+                        snapshot.docs.forEach(doc => batch.delete(doc.ref));
+                    }
+                    
+                    // Add new data
+                    data.medicines.forEach(item => {
+                        const docRef = this.fb.doc(this.fb.db, 'medicines', item.id);
+                        batch.set(docRef, item);
+                    });
+                    
+                    data.orders.forEach(item => {
+                        const docRef = this.fb.doc(this.fb.db, 'orders', item.id);
+                        batch.set(docRef, item);
+                    });
+                    
+                    data.gallery.forEach(item => {
+                        const docRef = this.fb.doc(this.fb.db, 'gallery', item.id);
+                        batch.set(docRef, item);
+                    });
+                    
+                    data.settings.forEach(item => {
+                        const docRef = this.fb.doc(this.fb.db, 'settings', item.id);
+                        batch.set(docRef, item);
+                    });
+                    
+                    await batch.commit();
+                    this.showNotification('✅ Import complete! Refreshing...', 'success');
+                    setTimeout(() => location.reload(), 2000);
+                    
                 } catch (error) {
-                    this.showError(`❌ ${error.message}`);
+                    this.showError(`❌ Import failed: ${error.message}`);
+                } finally {
                     event.target.value = '';
                 }
             }
@@ -837,24 +1079,15 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
                 notification.className = `notification ${type}`;
                 notification.textContent = message;
                 document.body.appendChild(notification);
+                
                 setTimeout(() => {
                     notification.style.animation = 'fadeOut 0.5s ease';
                     setTimeout(() => notification.remove(), 500);
                 }, 5000);
             }
-
-            async init() {
-                if (document.getElementById('dashboardPage')?.classList.contains('hidden') === false) {
-                    await this.loadMedicines();
-                    await this.loadDeliveries();
-                    await this.loadSettings();
-                    this.updateStats();
-                }
-            }
         }
 
-        window.adminApp = new AdminApp();
-        window.addEventListener('DOMContentLoaded', () => window.adminApp.init());
+        window.adminApp = new AdminApp(window.firebaseAPI);
     </script>
 </body>
 </html>
