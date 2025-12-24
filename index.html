@@ -60,7 +60,7 @@
     </style>
 </head>
 <body>
-    <!-- ===== SETUP PAGE ===== -->
+    <!-- ===== SETUP PAGE (Kaliya marka la abuurayo admin cusub) ===== -->
     <div id="setupPage" class="login-container hidden">
         <div class="logo" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.8rem;" aria-hidden="true">🏥</div>
         <h2>🔐 INITIAL ADMIN SETUP</h2>
@@ -70,15 +70,15 @@
         <form id="setupForm">
             <div class="form-group">
                 <label for="setupEmail">Admin Email *</label>
-                <input type="email" id="setupEmail" required placeholder="admin@baxnaano.com" autocomplete="email">
+                <input type="email" id="setupEmail" required placeholder="admin@baxnaano.com" autocomplete="email" value="admin@baxnaano.com">
             </div>
             <div class="form-group">
                 <label for="setupPassword">Admin Password *</label>
-                <input type="password" id="setupPassword" required placeholder="Min 12 characters" autocomplete="new-password">
+                <input type="password" id="setupPassword" required placeholder="Ciise2007@Baxnaano!2024" autocomplete="new-password" value="Ciise2007@Baxnaano!2024">
             </div>
             <div class="form-group">
                 <label for="setupConfirm">Confirm Password *</label>
-                <input type="password" id="setupConfirm" required placeholder="Repeat password" autocomplete="new-password">
+                <input type="password" id="setupConfirm" required placeholder="Ciise2007@Baxnaano!2024" autocomplete="new-password" value="Ciise2007@Baxnaano!2024">
             </div>
             <button type="submit" class="btn btn-block" id="setupBtn">🚀 Create Admin Account</button>
             <div class="error-message" id="setupError" role="alert"></div>
@@ -223,11 +223,10 @@
 
     <!-- ===== FIREBASE V9 API MODULE - DHAN ===== -->
     <script type="module">
-        // --- IMPORT ALL FIREBASE MODULES ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { 
             getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, 
-            query, orderBy, onSnapshot, writeBatch, where 
+            query, orderBy, onSnapshot, writeBatch, where, setDoc 
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { 
             getStorage, ref, uploadBytes, getDownloadURL, deleteObject 
@@ -247,25 +246,19 @@
             appId: "YOUR_APP_ID"
         };
 
-        // --- INITIALIZE ---
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
         const auth = getAuth(app);
 
-        // --- EXPOSE ALL FUNCTIONS ---
         window.firebaseAPI = {
             db, storage, auth,
-            // Firestore
             collection, getDocs, addDoc, updateDoc, deleteDoc, doc, 
-            query, orderBy, onSnapshot, writeBatch, where,
-            // Storage
+            query, orderBy, onSnapshot, writeBatch, where, setDoc,
             ref, uploadBytes, getDownloadURL, deleteObject,
-            // Auth
             createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged
         };
 
-        // --- DataManager with v9 syntax ---
         window.DataManager = {
             medicines: collection(db, 'medicines'),
             orders: collection(db, 'orders'),
@@ -355,7 +348,6 @@
             }
         };
 
-        // --- AUTH STATE LISTENER ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -376,7 +368,6 @@
             }
         });
 
-        // --- Check if admin exists on load ---
         (async () => {
             try {
                 const admins = collection(db, 'admins');
@@ -392,7 +383,6 @@
             }
         })();
 
-        // --- Real-time listeners ---
         onSnapshot(collection(db, 'medicines'), () => window.adminApp?.loadMedicines());
         onSnapshot(query(collection(db, 'orders'), orderBy('timestamp', 'desc')), () => {
             window.adminApp?.loadDeliveries();
@@ -402,7 +392,6 @@
         onSnapshot(collection(db, 'settings'), () => window.adminApp?.loadSettings());
     </script>
 
-    <!-- ===== ADMIN APP - LA HUBIYAY & LA FIX GAREEYAY ===== -->
     <script>
         class AdminApp {
             constructor(firebaseAPI) {
@@ -443,19 +432,22 @@
                     if (password !== confirm) throw new Error('Passwords do not match!');
                     if (password.length < 12) throw new Error('Password must be at least 12 characters!');
 
-                    // ✅ FIX: Use this.fb.collection() instead of this.fb.admins
+                    // ✅ FIXED: Create user and set admin doc with UID
                     const userCredential = await this.fb.createUserWithEmailAndPassword(this.fb.auth, email, password);
                     const user = userCredential.user;
 
-                    await this.fb.addDoc(this.fb.collection(this.fb.db, 'admins'), {
+                    await this.fb.setDoc(this.fb.doc(this.fb.db, 'admins', user.uid), {
                         uid: user.uid,
                         email: email,
                         createdAt: new Date().toISOString(),
                         role: 'admin'
                     });
 
-                    this.showNotification('✅ Admin created successfully! Please login now.', 'success');
-                    setTimeout(() => location.reload(), 2000);
+                    this.showNotification('✅ Admin created successfully! Redirecting to login...', 'success');
+                    setTimeout(() => {
+                        document.getElementById('setupPage').classList.add('hidden');
+                        document.getElementById('loginPage').classList.remove('hidden');
+                    }, 2000);
 
                 } catch (error) {
                     setupError.textContent = `❌ ${error.message}`;
@@ -1019,10 +1011,8 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
                         throw new Error('Invalid backup file structure');
                     }
 
-                    // Use batch for atomic operations
                     const batch = this.fb.writeBatch();
                     
-                    // Delete existing data
                     const existingCollections = ['medicines', 'orders', 'gallery', 'settings'];
                     for (const colName of existingCollections) {
                         const colRef = this.fb.collection(this.fb.db, colName);
@@ -1030,7 +1020,6 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
                         snapshot.docs.forEach(doc => batch.delete(doc.ref));
                     }
                     
-                    // Add new data
                     data.medicines.forEach(item => {
                         const docRef = this.fb.doc(this.fb.db, 'medicines', item.id);
                         batch.set(docRef, item);
