@@ -6,11 +6,7 @@
     <title>Admin Panel - Baxnaano Hospital</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #0ea5e9; --secondary: #8b5cf6; --accent: #f97316;
-            --dark: #1e293b; --light: #f8fafc; --danger: #ef4444; --success: #10b981;
-            --warning: #f59e0b; --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
+        :root { --primary: #0ea5e9; --secondary: #8b5cf6; --accent: #f97316; --dark: #1e293b; --light: #f8fafc; --danger: #ef4444; --success: #10b981; --warning: #f59e0b; --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--light); min-height: 100vh; }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .login-container { background: white; border-radius: 20px; box-shadow: var(--shadow); max-width: 400px; margin: 5rem auto; padding: 2.5rem; }
@@ -50,7 +46,6 @@
         .hidden { display: none !important; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         footer { background: var(--dark); color: white; text-align: center; padding: 2rem; margin-top: 2rem; }
-
         @media (max-width: 768px) {
             .logout-btn { position: relative; top: auto; right: auto; margin-bottom: 1rem; width: 100%; }
             h1 { font-size: 1.5rem; }
@@ -58,8 +53,24 @@
     </style>
 </head>
 <body>
+    <!-- ===== SETUP PAGE (Only shows if admin doesn't exist) ===== -->
+    <div id="setupPage" class="login-container hidden">
+        <div class="logo" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.8rem;" aria-hidden="true">🏥</div>
+        <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--dark);">🔐 INITIAL ADMIN SETUP</h2>
+        <p style="text-align: center; color: #64748b; margin-bottom: 1rem;">
+            This will create your first admin account. <strong>Do this only once!</strong>
+        </p>
+        <form id="setupForm">
+            <div class="form-group"><label for="setupEmail">Admin Email *</label><input type="email" id="setupEmail" required placeholder="admin@baxnaano.com"></div>
+            <div class="form-group"><label for="setupPassword">Admin Password *</label><input type="password" id="setupPassword" required placeholder="Min 12 characters"></div>
+            <div class="form-group"><label for="setupConfirm">Confirm Password *</label><input type="password" id="setupConfirm" required placeholder="Repeat password"></div>
+            <button type="submit" class="btn btn-block" id="setupBtn">🚀 Create Admin Account</button>
+            <div class="error-message" id="setupError" role="alert"></div>
+        </form>
+    </div>
+
     <!-- LOGIN FORM -->
-    <div id="loginPage" class="login-container">
+    <div id="loginPage" class="login-container hidden">
         <div class="logo" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.8rem;" aria-hidden="true">🏥</div>
         <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--dark);">Admin Login</h2>
         <form id="loginForm">
@@ -128,7 +139,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         // TODO: KU DARI HAGAAGKAAGA FIIREBASE KA Halkan
         const firebaseConfig = {
@@ -207,6 +218,26 @@
             }
         };
 
+        // ===== AUTO SETUP: Check if admin exists =====
+        (async () => {
+            try {
+                const admins = await getDocs(collection(db, 'admins'));
+                if (admins.empty) {
+                    // Show setup page if no admin
+                    document.getElementById('setupPage').classList.remove('hidden');
+                    document.getElementById('loginPage').classList.add('hidden');
+                    document.getElementById('dashboardPage').classList.add('hidden');
+                } else {
+                    // Show login page
+                    document.getElementById('setupPage').classList.add('hidden');
+                    document.getElementById('loginPage').classList.remove('hidden');
+                }
+            } catch (e) {
+                console.log("Setup check failed:", e);
+                document.getElementById('loginPage').classList.remove('hidden');
+            }
+        })();
+
         onSnapshot(collection(db, 'medicines'), () => window.adminApp?.loadMedicines());
         onSnapshot(query(collection(db, 'orders'), orderBy('timestamp', 'desc')), () => {
             window.adminApp?.loadDeliveries();
@@ -229,8 +260,8 @@
                     }
                 });
             } else {
-                document.getElementById('loginPage').classList.remove('hidden');
-                document.getElementById('dashboardPage').classList.add('hidden');
+                document.getElementById('loginPage')?.classList.remove('hidden');
+                document.getElementById('dashboardPage')?.classList.add('hidden');
             }
         });
     </script>
@@ -244,6 +275,7 @@
             }
 
             initEventListeners() {
+                document.getElementById('setupForm')?.addEventListener('submit', (e) => this.handleSetup(e));
                 document.getElementById('loginForm')?.addEventListener('submit', (e) => this.login(e));
                 document.getElementById('logoutBtn')?.addEventListener('click', () => this.logout());
                 document.getElementById('medicineForm')?.addEventListener('submit', (e) => this.handleMedicineSubmit(e));
@@ -256,6 +288,52 @@
                 document.getElementById('exportAllBtn')?.addEventListener('click', () => this.exportAllData());
                 document.getElementById('importBtn')?.addEventListener('click', () => document.getElementById('importFile').click());
                 document.getElementById('importFile')?.addEventListener('change', (e) => this.importAllData(e));
+            }
+
+            async handleSetup(event) {
+                event.preventDefault();
+                const setupBtn = document.getElementById('setupBtn');
+                const setupError = document.getElementById('setupError');
+                const email = document.getElementById('setupEmail').value.trim();
+                const password = document.getElementById('setupPassword').value;
+                const confirm = document.getElementById('setupConfirm').value;
+
+                setupBtn.disabled = true;
+                setupBtn.textContent = '⏳ Creating...';
+
+                try {
+                    if (password !== confirm) {
+                        throw new Error('Passwords do not match!');
+                    }
+                    if (password.length < 12) {
+                        throw new Error('Password must be at least 12 characters!');
+                    }
+
+                    // Create Firebase Auth user
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+
+                    // Create admin record in Firestore
+                    await addDoc(collection(db, 'admins'), {
+                        uid: user.uid,
+                        email: email,
+                        createdAt: new Date().toISOString(),
+                        role: 'admin'
+                    });
+
+                    this.showNotification('✅ Admin created successfully! Please login now.', 'success');
+                    setTimeout(() => {
+                        location.reload(); // Reload to show login page
+                    }, 2000);
+
+                } catch (error) {
+                    setupError.textContent = `❌ ${error.message}`;
+                    setupError.style.display = 'block';
+                    setTimeout(() => setupError.style.display = 'none', 5000);
+                } finally {
+                    setupBtn.disabled = false;
+                    setupBtn.textContent = '🚀 Create Admin Account';
+                }
             }
 
             async login(event) {
@@ -286,8 +364,9 @@
             }
 
             showDashboard() {
-                document.getElementById('loginPage').classList.add('hidden');
-                document.getElementById('dashboardPage').classList.remove('hidden');
+                document.getElementById('setupPage')?.classList.add('hidden');
+                document.getElementById('loginPage')?.classList.add('hidden');
+                document.getElementById('dashboardPage')?.classList.remove('hidden');
                 this.loadMedicines();
                 this.loadDeliveries();
                 this.loadSettings();
@@ -765,7 +844,7 @@ ${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions
             }
 
             async init() {
-                if (document.getElementById('dashboardPage').classList.contains('hidden') === false) {
+                if (document.getElementById('dashboardPage')?.classList.contains('hidden') === false) {
                     await this.loadMedicines();
                     await this.loadDeliveries();
                     await this.loadSettings();
