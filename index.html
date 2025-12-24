@@ -60,7 +60,7 @@
     </style>
 </head>
 <body>
-    <!-- ===== SETUP PAGE (Kaliya marka la abuurayo admin cusub) ===== -->
+    <!-- ===== SETUP PAGE ===== -->
     <div id="setupPage" class="login-container hidden">
         <div class="logo" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.8rem;" aria-hidden="true">🏥</div>
         <h2>🔐 INITIAL ADMIN SETUP</h2>
@@ -221,8 +221,9 @@
         </div>
     </div>
 
-    <!-- ===== FIREBASE API MODULE - DHAN OO LA HUBIYAY ===== -->
+    <!-- ===== FIREBASE V9 API MODULE - DHAN ===== -->
     <script type="module">
+        // --- IMPORT ALL FIREBASE MODULES ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { 
             getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, 
@@ -246,20 +247,25 @@
             appId: "YOUR_APP_ID"
         };
 
+        // --- INITIALIZE ---
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
         const auth = getAuth(app);
 
-        // Expose all Firebase API to global
+        // --- EXPOSE ALL FUNCTIONS ---
         window.firebaseAPI = {
             db, storage, auth,
+            // Firestore
             collection, getDocs, addDoc, updateDoc, deleteDoc, doc, 
             query, orderBy, onSnapshot, writeBatch, where,
+            // Storage
             ref, uploadBytes, getDownloadURL, deleteObject,
+            // Auth
             createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged
         };
 
+        // --- DataManager with v9 syntax ---
         window.DataManager = {
             medicines: collection(db, 'medicines'),
             orders: collection(db, 'orders'),
@@ -313,13 +319,14 @@
             },
             
             async deleteGalleryItem(id) {
-                const itemDoc = await getDocs(doc(db, 'gallery', id));
-                if (itemDoc.exists()) {
-                    const itemData = itemDoc.data();
+                const itemRef = doc(db, 'gallery', id);
+                const itemSnap = await getDocs(itemRef);
+                if (itemSnap.exists()) {
+                    const itemData = itemSnap.data();
                     if (itemData.url) {
                         await deleteObject(ref(storage, itemData.url));
                     }
-                    await deleteDoc(doc(db, 'gallery', id));
+                    await deleteDoc(itemRef);
                 }
             },
             
@@ -341,15 +348,14 @@
             async deleteFile(url) {
                 if (!url) return;
                 try {
-                    const fileRef = ref(storage, url);
-                    await deleteObject(fileRef);
+                    await deleteObject(ref(storage, url));
                 } catch (error) {
                     console.warn("Failed to delete file:", error);
                 }
             }
         };
 
-        // Hubi auth state
+        // --- AUTH STATE LISTENER ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -370,11 +376,12 @@
             }
         });
 
-        // Hubi haddii admin uu jiro marka bilaash ah
+        // --- Check if admin exists on load ---
         (async () => {
             try {
-                const admins = await getDocs(collection(db, 'admins'));
-                if (admins.empty) {
+                const admins = collection(db, 'admins');
+                const adminSnapshot = await getDocs(admins);
+                if (adminSnapshot.empty) {
                     document.getElementById('setupPage')?.classList.remove('hidden');
                 } else {
                     document.getElementById('loginPage')?.classList.remove('hidden');
@@ -385,7 +392,7 @@
             }
         })();
 
-        // Dhegayso isbeddelada degdeg ah
+        // --- Real-time listeners ---
         onSnapshot(collection(db, 'medicines'), () => window.adminApp?.loadMedicines());
         onSnapshot(query(collection(db, 'orders'), orderBy('timestamp', 'desc')), () => {
             window.adminApp?.loadDeliveries();
@@ -395,7 +402,7 @@
         onSnapshot(collection(db, 'settings'), () => window.adminApp?.loadSettings());
     </script>
 
-    <!-- ===== Admin App - DHAN OO LA HUBIYAY ===== -->
+    <!-- ===== ADMIN APP - LA HUBIYAY & LA FIX GAREEYAY ===== -->
     <script>
         class AdminApp {
             constructor(firebaseAPI) {
@@ -436,10 +443,11 @@
                     if (password !== confirm) throw new Error('Passwords do not match!');
                     if (password.length < 12) throw new Error('Password must be at least 12 characters!');
 
+                    // ✅ FIX: Use this.fb.collection() instead of this.fb.admins
                     const userCredential = await this.fb.createUserWithEmailAndPassword(this.fb.auth, email, password);
                     const user = userCredential.user;
 
-                    await this.fb.addDoc(this.fb.admins, {
+                    await this.fb.addDoc(this.fb.collection(this.fb.db, 'admins'), {
                         uid: user.uid,
                         email: email,
                         createdAt: new Date().toISOString(),
