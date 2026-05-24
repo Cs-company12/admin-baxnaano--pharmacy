@@ -1,1090 +1,1230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Baxnaano Hospital</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { 
-            --primary: #0ea5e9; --secondary: #8b5cf6; --accent: #f97316; 
-            --dark: #1e293b; --light: #f8fafc; --danger: #ef4444; 
-            --success: #10b981; --warning: #f59e0b; --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
-        }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--light); min-height: 100vh; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
-        .login-container { background: white; border-radius: 20px; box-shadow: var(--shadow); max-width: 400px; margin: 5rem auto; padding: 2.5rem; }
-        .login-container h1, .login-container h2 { text-align: center; margin-bottom: 2rem; color: var(--primary); }
-        .error-message { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; display: none; background: #fee2e2; color: var(--danger); font-weight: bold; }
-        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-        h1 { color: var(--dark); margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; }
-        .logo-img { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem; }
-        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: var(--shadow); margin-bottom: 2rem; }
-        .card h2 { color: var(--primary); margin-bottom: 1.5rem; border-bottom: 2px solid var(--primary); padding-bottom: 0.5rem; }
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: bold; color: var(--dark); }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.8rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
-        .btn { padding: 0.8rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
-        .btn:hover, .btn:focus { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); outline: 3px solid rgba(14, 165, 233, 0.3); }
-        .btn-danger { background: var(--danger); } .btn-success { background: var(--success); } .btn-warning { background: var(--warning); }
-        .btn-block { width: 100%; padding: 1rem; }
-        .logout-btn { position: fixed; top: 20px; right: 20px; background: var(--danger); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; z-index: 1000; box-shadow: var(--shadow); }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-        .stat-card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: var(--shadow); text-align: center; transition: all 0.3s; }
-        .stat-card:hover { transform: translateY(-5px); }
-        .stat-card h3 { font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem; }
-        .delivery-list { display: grid; gap: 1rem; }
-        .delivery-item { background: #f8fafc; padding: 1.5rem; border-radius: 10px; border-left: 5px solid var(--primary); transition: all 0.3s; }
-        .delivery-item.PENDING { border-left-color: var(--warning); background: linear-gradient(to right, rgba(245, 158, 11, 0.05), white); }
-        .delivery-item.DELIVERED { border-left-color: var(--success); background: linear-gradient(to right, rgba(16, 185, 129, 0.05), white); }
-        .delivery-item.CANCELLED { border-left-color: var(--danger); background: linear-gradient(to right, rgba(239, 68, 68, 0.05), white); }
-        .medicine-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem; }
-        .medicine-card-admin { background: #f8fafc; padding: 1rem; border-radius: 10px; border: 2px solid #e2e8f0; transition: all 0.3s; }
-        .medicine-card-admin:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .image-preview { max-width: 150px; max-height: 150px; border-radius: 8px; margin-top: 0.5rem; display: none; border: 2px solid var(--primary); }
-        .loading { text-align: center; padding: 2rem; color: #64748b; font-weight: bold; }
-        .error { text-align: center; padding: 2rem; color: var(--danger); font-weight: bold; }
-        .notification { position: fixed; top: 20px; right: 20px; padding: 1rem 2rem; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 9999; animation: slideIn 0.5s ease; max-width: 400px; word-wrap: break-word; }
-        .notification.success { background: var(--success); color: white; }
-        .notification.error { background: var(--danger); color: white; }
-        .notification.warning { background: var(--warning); color: white; }
-        .hidden { display: none !important; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        footer { background: var(--dark); color: white; text-align: center; padding: 2rem; margin-top: 2rem; }
-        @media (max-width: 768px) {
-            .logout-btn { position: relative; top: auto; right: auto; margin-bottom: 1rem; width: 100%; }
-            h1 { font-size: 1.5rem; }
-            .stats-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Odoo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="shortcut icon" href="images/images (66).jpg" type="image/x-icon">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --purple:#6d3b6e;--purple2:#5a2f5b;--teal:#00bcd4;--teal2:#0097a7;
+  --green:#4caf50;--navy:#1a3a6b;--red:#e53935;--orange:#f57c00;
+  --bg:#f3f4f6;--white:#fff;--border:#e0e0e0;
+  --text:#1f2937;--muted:#6b7280;--light:#9ca3af;
+  --shadow:0 1px 3px rgba(0,0,0,.1);--shadow2:0 4px 16px rgba(0,0,0,.12);
+}
+body{font-family:'Inter',sans-serif;font-size:13px;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;}
+
+/* ── LOGIN ── */
+#loginPage{display:flex;align-items:center;justify-content:center;height:100vh;
+  background:linear-gradient(135deg,#fef2f2 0%,#6d3b6e 50%,#0f2548 100%);}
+.lbox{background:#fff;border-radius:8px;width:360px;padding:40px 36px;box-shadow:0 20px 50px rgba(0,0,0,.3);}
+.llogo{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+.llogo svg{width:52px;height:52px;}
+.llogo h1{font-size:18px;font-weight:700;color:#1a3a6b;line-height:1.3;}
+.llogo p{font-size:11px;color:#6b7280;}
+.lbox label{display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px;}
+.lbox input{width:100%;border:1.5px solid #d1d5db;border-radius:6px;padding:10px 12px;font-size:13px;outline:none;margin-bottom:14px;font-family:inherit;}
+.lbox input:focus{border-color:var(--teal);}
+.lerr{background:#fef2f2;border:1px solid #fca5a5;border-radius:5px;padding:9px 12px;font-size:12px;color:#dc2626;margin-bottom:12px;display:none;}
+.lbtn{width:100%;background:var(--teal);color:#fff;border:none;border-radius:6px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+.lbtn:hover{background:var(--teal2);}
+.lhint{text-align:center;margin-top:14px;font-size:11px;color:#9ca3af;}
+.lhint code{background:#f3f4f6;padding:2px 7px;border-radius:3px;font-weight:600;color:#374151;}
+
+/* ── SHELL ── */
+#app{display:none;height:100vh;flex-direction:column;}
+
+/* TOP NAV */
+.topnav{
+  background:var(--purple);color:#fff;height:40px;display:flex;
+  align-items:center;padding:0 10px;gap:0;flex-shrink:0;z-index:100;
+}
+.tn-ham{font-size:18px;cursor:pointer;padding:0 8px;color:#ddd;}
+.tn-brand{font-weight:700;font-size:14px;padding:0 12px 0 4px;white-space:nowrap;}
+.tn-nav{display:flex;flex:1;overflow-x:auto;scrollbar-width:none;}
+.tn-nav::-webkit-scrollbar{display:none;}
+.tn-nav a{
+  color:rgba(255,255,255,.75);text-decoration:none;padding:0 10px;
+  height:40px;display:flex;align-items:center;font-size:12px;white-space:nowrap;
+  border-bottom:2px solid transparent;cursor:pointer;transition:all .15s;
+}
+.tn-nav a:hover,.tn-nav a.active{color:#fff;border-bottom-color:#fff;}
+.tn-right{margin-left:auto;display:flex;align-items:center;gap:10px;padding-left:10px;font-size:12px;flex-shrink:0;}
+.tn-notif{background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;}
+.tn-user{color:rgba(255,255,255,.85);white-space:nowrap;}
+
+/* CONTENT AREA */
+.content-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+
+/* PAGE HEADER BAR */
+.ph{background:#fff;border-bottom:1px solid var(--border);padding:6px 16px;font-size:13px;color:var(--muted);flex-shrink:0;}
+.ph strong{color:var(--text);}
+
+/* ACTION BAR */
+.abar{background:#fff;border-bottom:1px solid var(--border);padding:7px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;}
+.btn{border:none;border-radius:4px;padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px;transition:all .15s;}
+.btn-teal{background:var(--teal);color:#fff;}
+.btn-teal:hover{background:var(--teal2);}
+.btn-purple{background:var(--purple);color:#fff;}
+.btn-purple:hover{background:var(--purple2);}
+.btn-outline{background:#fff;border:1px solid #ccc;color:var(--text);}
+.btn-outline:hover{background:#f5f5f5;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-sm{padding:4px 10px;font-size:11px;}
+.btn-green{background:var(--green);color:#fff;}
+
+/* FILTER / TOOLBAR */
+.toolbar{background:#fff;border-bottom:1px solid var(--border);padding:6px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;}
+.filter-chip{background:var(--purple);color:#fff;border-radius:3px;padding:3px 8px;font-size:11px;display:flex;align-items:center;gap:5px;}
+.filter-chip span{cursor:pointer;opacity:.8;}
+.filter-chip span:hover{opacity:1;}
+.tb-search{border:1px solid #ccc;border-radius:4px;padding:5px 10px;font-size:12px;width:180px;outline:none;font-family:inherit;}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.tb-btn{background:#fff;border:1px solid #d1d5db;border-radius:3px;padding:4px 8px;font-size:11px;cursor:pointer;color:var(--muted);}
+.tb-btn:hover{background:#f5f5f5;color:var(--text);}
+.pager{font-size:11px;color:var(--muted);white-space:nowrap;}
+.pager button{background:none;border:none;cursor:pointer;font-size:13px;color:var(--muted);padding:0 2px;}
+
+/* SCROLLABLE TABLE AREA */
+.table-area{flex:1;overflow:auto;}
+.table-area::-webkit-scrollbar{width:5px;height:5px;}
+.table-area::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px;}
+table.main-table{width:100%;border-collapse:collapse;background:#fff;}
+.main-table th{
+  position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);
+  padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);
+  white-space:nowrap;z-index:2;
+}
+.main-table td{padding:9px 12px;font-size:12px;border-bottom:1px solid #f0f0f0;vertical-align:middle;white-space:nowrap;}
+.main-table tr:hover td{background:#faf5fa;}
+.main-table tr{cursor:pointer;}
+.main-table tfoot td{border-top:2px solid var(--border);border-bottom:none;font-weight:700;background:#fafafa;}
+.td-link{color:var(--purple);font-weight:600;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;border-radius:10px;padding:2px 9px;font-size:11px;font-weight:500;}
+.b-waiting{background:#fff3e0;color:#e65100;}
+.b-partial{background:#e3f2fd;color:#1565c0;}
+.b-quotation{background:#ede7f6;color:#512da8;}
+.b-done{background:#e8f5e9;color:#2e7d32;}
+.b-cancelled{background:#ffebee;color:#c62828;}
+.b-scheduled{background:#e3f2fd;color:#1565c0;}
+.b-new{background:#f3e5f5;color:#7b1fa2;}
+.b-locked{background:#fafafa;color:#616161;border:1px solid #ccc;}
+.b-cash{background:#e8f5e9;color:#388e3c;}
+.b-free{background:#e3f2fd;color:#1976d2;}
+
+/* FORM VIEW */
+.fview{flex:1;overflow:auto;background:#f9f9f9;}
+.fview::-webkit-scrollbar{width:5px;}
+.fview::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px;}
+.fbar{background:#fff;border-bottom:1px solid var(--border);padding:6px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;}
+.fbread{font-size:13px;color:var(--muted);}
+.fbread a{color:var(--purple);cursor:pointer;font-weight:500;}
+.fbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.status-flow{display:flex;}
+.sf-step{padding:5px 14px;font-size:11px;font-weight:600;background:#f3f4f6;border:1px solid #d1d5db;color:var(--muted);border-left:none;}
+.sf-step:first-child{border-left:1px solid #d1d5db;border-radius:4px 0 0 4px;}
+.sf-step:last-child{border-radius:0 4px 4px 0;}
+.sf-step.active{background:var(--purple);color:#fff;border-color:var(--purple);}
+.fbody{padding:16px;}
+.fcard{background:#fff;border-radius:6px;border:1px solid var(--border);margin-bottom:14px;overflow:hidden;}
+.fcard-head{padding:10px 16px;background:#fafafa;border-bottom:1px solid var(--border);font-size:12px;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:space-between;}
+.fcard-body{padding:16px;}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 20px;}
+.fg2{grid-template-columns:1fr 1fr;}
+.fg3{grid-template-columns:1fr 1fr 1fr;}
+.field-lbl{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+.field-val{font-size:13px;color:var(--text);border-bottom:1px solid #f0f0f0;padding-bottom:4px;}
+.field-input{border:1.5px solid #d1d5db;border-radius:4px;padding:7px 10px;font-size:12px;width:100%;outline:none;font-family:inherit;}
+.field-input:focus{border-color:var(--teal);}
+.field-select{border:1.5px solid #d1d5db;border-radius:4px;padding:7px 10px;font-size:12px;width:100%;outline:none;font-family:inherit;background:#fff;}
+.section-btn{margin:0 16px 12px;padding:6px 14px;font-size:12px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:4px;cursor:pointer;}
+.stbl{width:100%;border-collapse:collapse;}
+.stbl th{background:#f5f5f5;padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border);}
+.stbl td{padding:8px 12px;font-size:12px;border-bottom:1px solid #f5f5f5;}
+.stbl tr:hover td{background:#fafafa;}
+.add-line{display:block;padding:8px 12px;color:var(--purple);font-size:12px;cursor:pointer;}
+.add-line:hover{text-decoration:underline;}
+.stbl tfoot td{border-top:1px solid var(--border);font-weight:600;background:#fafafa;border-bottom:none;}
+.del-btn{background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:2px 4px;}
+.del-btn:hover{color:var(--red);}
+.inv-badge{border:1px solid #d1d5db;border-radius:4px;padding:8px 14px;font-size:12px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;background:#fff;}
+.inv-badge:hover{background:#f5f5f5;}
+.print-area{display:none;}
+@media print{
+  body *{display:none;}
+  .print-area,.print-area *{display:block;}
+  .print-area{
+    position:fixed;inset:0;background:#fff;padding:20px;font-size:12px;
+  }
+}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:#fff;border-radius:8px;width:640px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.2);}
+.mh{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.mh h3{font-size:15px;font-weight:700;}
+.mc{padding:20px;}
+.mf{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+.mrow{display:grid;gap:14px;margin-bottom:14px;}
+.mrow.c2{grid-template-columns:1fr 1fr;}
+.mrow.c3{grid-template-columns:1fr 1fr 1fr;}
+.mrow.c1{grid-template-columns:1fr;}
+.mfield{display:flex;flex-direction:column;gap:5px;}
+.mfield label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+.mfield input,.mfield select,.mfield textarea{border:1.5px solid #d1d5db;border-radius:4px;padding:8px 10px;font-size:12px;font-family:inherit;outline:none;}
+.mfield input:focus,.mfield select:focus,.mfield textarea:focus{border-color:var(--teal);}
+.mfield textarea{resize:vertical;min-height:70px;}
+.xbtn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1;}
+
+/* PRINT RECEIPT */
+.rx-print{font-family:'Inter',sans-serif;color:#000;font-size:12px;padding:20px;}
+.rx-logo{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.rx-logo svg{width:50px;height:50px;}
+.rx-logo h1{font-size:22px;font-weight:900;color:#1a3a6b;letter-spacing:-1px;}
+.rx-logo h1 span{color:#4caf50;}
+.rx-logo p{font-size:11px;color:#6b7280;}
+.rx-hr{border:none;border-top:2px solid #000;margin:10px 0;}
+.rx-hr2{border:none;border-top:1px solid #ccc;margin:8px 0;}
+.rx-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;font-size:12px;margin-bottom:10px;}
+.rx-grid span{color:#6b7280;}
+.rx-grid strong{color:#000;}
+.rx-table{width:100%;border-collapse:collapse;font-size:11px;margin:10px 0;}
+.rx-table th{background:#f0f0f0;border:1px solid #ccc;padding:5px 8px;text-align:left;font-weight:600;}
+.rx-table td{border:1px solid #ddd;padding:5px 8px;}
+.rx-total{text-align:right;font-size:13px;margin-top:10px;}
+.rx-footer{margin-top:20px;font-size:10px;color:#6b7280;text-align:center;border-top:1px solid #ccc;padding-top:10px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:#323232;color:#fff;border-radius:6px;padding:11px 18px;font-size:13px;z-index:9999;box-shadow:var(--shadow2);transform:translateY(80px);transition:transform .3s;display:flex;align-items:center;gap:8px;}
+.toast.show{transform:translateY(0);}
+
+/* PAGE VISIBILITY */
+.page{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.page.active{display:flex;}
+</style>
 </head>
 <body>
-    <!-- ===== SETUP PAGE (Kaliya marka la abuurayo admin cusub) ===== -->
-    <div id="setupPage" class="login-container hidden">
-        <div class="logo" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.8rem;" aria-hidden="true">🏥</div>
-        <h2>🔐 INITIAL ADMIN SETUP</h2>
-        <p style="text-align: center; color: #64748b; margin-bottom: 1.5rem;">
-            This will create your first admin account. <strong>Do this only once!</strong>
-        </p>
-        <form id="setupForm">
-            <div class="form-group">
-                <label for="setupEmail">Admin Email *</label>
-                <input type="email" id="setupEmail" required placeholder="admin@baxnaano.com" autocomplete="email" value="admin@baxnaano.com">
-            </div>
-            <div class="form-group">
-                <label for="setupPassword">Admin Password *</label>
-                <input type="password" id="setupPassword" required placeholder="Ciise2007@Baxnaano!2024" autocomplete="new-password" value="Ciise2007@Baxnaano!2024">
-            </div>
-            <div class="form-group">
-                <label for="setupConfirm">Confirm Password *</label>
-                <input type="password" id="setupConfirm" required placeholder="Ciise2007@Baxnaano!2024" autocomplete="new-password" value="Ciise2007@Baxnaano!2024">
-            </div>
-            <button type="submit" class="btn btn-block" id="setupBtn">🚀 Create Admin Account</button>
-            <div class="error-message" id="setupError" role="alert"></div>
-        </form>
+
+<!-- LOGIN -->
+<div id="loginPage">
+  <div class="lbox">
+    <center>
+   <img src="images/images.png" width="140" style="margin-bottom:90px;"/>
+   </center>
+   <br>
+   <hr>
+   <br>
+   <br>
+    <div class="lerr" id="lerr">❌ Password khalad ah. Isticmaal: <strong>hospital2024</strong></div>
+    <label>Email</label>
+    <input type="email" id="lemail" placeholder="admin@baxnaano.so" value="admin@baxnaano.so"/>
+    <label>Password</label>
+    <input type="password" id="lpass" placeholder="Password" onkeydown="if(event.key==='Enter')login()"/>
+    <button class="lbtn" onclick="login()">Log in</button>
+    <div class="lhint">Password: <code>hospital2024</code></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- TOP NAV -->
+  <div class="topnav" id="topnav">
+    <span class="tn-ham">☰</span>
+    <span class="tn-brand" id="tnBrand">Cashier</span>
+    <nav class="tn-nav" id="tnNav"></nav>
+    <div class="tn-right">
+      <span class="tn-notif" id="tnNotif">3</span>
+      <span style="cursor:pointer;" title="Settings">⚙</span>
+      <span class="tn-user" id="tnUser">Abdinasir</span>
+      <span style="cursor:pointer;color:rgba(255,255,255,.6)" onclick="logout()" title="Logout">⏏</span>
     </div>
+  </div>
 
-    <!-- LOGIN FORM -->
-    <div id="loginPage" class="login-container hidden">
-        <div class="logo" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.8rem;" aria-hidden="true">🏥</div>
-        <h2>Admin Login</h2>
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" required placeholder="admin@baxnaano.com" autocomplete="username">
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required placeholder="Enter password" autocomplete="current-password">
-            </div>
-            <button type="submit" class="btn btn-block" id="loginBtn">🔐 Login</button>
-            <div class="error-message" id="errorMsg" role="alert" aria-live="polite"></div>
-        </form>
+  <!-- PAGES -->
+
+  <!-- ════ CASHIER LIST ════ -->
+  <div class="page" id="pg-cashier-list">
+    <div class="ph"><strong>Cashier's Appointment</strong></div>
+    <div class="abar">
+      <button class="btn btn-teal" onclick="openModal('mCashier')">CREATE</button>
+      <button class="btn btn-outline">IMPORT</button>
     </div>
+    <div class="toolbar">
+      <div class="filter-chip">▼ Triage <span onclick="this.parentElement.remove()">✕</span></div>
+      <div class="filter-chip">▼ Today Appointment <span onclick="this.parentElement.remove()">✕</span></div>
+      <input class="tb-search" type="text" placeholder="Search..." oninput="searchTable('cashierTB',this.value)"/>
+      <div class="tb-right">
+        <button class="tb-btn">▼ Filters</button>
+        <button class="tb-btn">≡ Group By</button>
+        <button class="tb-btn">★ Favorites</button>
+        <span class="pager" id="cashierPager">1-40 / 40 <button>‹</button><button>›</button></span>
+        <button class="tb-btn">☰</button><button class="tb-btn">⊞</button>
+      </div>
+    </div>
+    <div class="table-area">
+      <table class="main-table">
+        <thead><tr>
+          <th style="width:28px"><input type="checkbox"/></th>
+          <th>Queue</th><th>Appointment #</th><th>Patient</th><th>ID#</th>
+          <th>Patient Age</th><th>Appointment Slot</th><th>Patient In Date</th>
+          <th>Patient Type</th><th>Appointment Type</th><th>Appointment Date</th>
+          <th>Doctor</th><th>Branch</th><th>Payment Type</th><th>Status</th>
+        </tr></thead>
+        <tbody id="cashierTB"></tbody>
+      </table>
+    </div>
+  </div>
 
-    <!-- DASHBOARD -->
-    <div id="dashboardPage" class="hidden">
-        <button class="logout-btn" id="logoutBtn" aria-label="Logout">🚪 Logout</button>
-        <div class="container">
-            <h1>🏥 Baxnaano Hospital - Pharmacy Admin</h1>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3 id="totalOrders">0</h3>
-                    <p>Total Orders</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="pendingOrders">0</h3>
-                    <p>Pending Delivery</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="deliveredOrders">0</h3>
-                    <p>Delivered</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="totalRevenue">$0</h3>
-                    <p>Total Revenue</p>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>📸 Upload Gallery Photo</h2>
-                <form id="galleryForm">
-                    <div class="form-group">
-                        <label for="galleryFile">Choose Image *</label>
-                        <input type="file" id="galleryFile" accept="image/*" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="galleryTitle">Title *</label>
-                        <input type="text" id="galleryTitle" placeholder="e.g., Hospital Building" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="galleryDesc">Description</label>
-                        <textarea id="galleryDesc" placeholder="e.g., Main entrance"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-block" id="gallerySubmitBtn">➕ Add to Gallery</button>
-                </form>
-            </div>
-
-            <div class="card">
-                <h2>🏥 Manage Medicines</h2>
-                <form id="medicineForm">
-                    <div class="form-group">
-                        <label for="medName">Medicine Name *</label>
-                        <input type="text" id="medName" placeholder="e.g., Panadol Extra" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="medPrice">Price ($) *</label>
-                        <input type="number" id="medPrice" placeholder="10.99" step="0.01" required min="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="medDesc">Description *</label>
-                        <textarea id="medDesc" placeholder="Description and usage..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="medicineImage">Medicine Image (Optional)</label>
-                        <input type="file" id="medicineImage" accept="image/*">
-                        <img id="medicineImagePreview" class="image-preview" alt="Preview">
-                    </div>
-                    <button type="submit" class="btn btn-block" id="medicineSubmitBtn">➕ Add Medicine</button>
-                </form>
-                <div class="medicine-grid" id="medicineList">
-                    <div class="loading">Loading medicines...</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>🚚 Manage Deliveries</h2>
-                <div class="form-group">
-                    <label for="deliverySearch">Search Orders (Name, Phone, or Order ID)</label>
-                    <input type="text" id="deliverySearch" placeholder="🔍 Search...">
-                </div>
-                <div class="form-group">
-                    <label for="deliveryFilter">Filter Status</label>
-                    <select id="deliveryFilter">
-                        <option value="ALL">All Orders</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="DELIVERED">Delivered</option>
-                        <option value="CANCELLED">Cancelled</option>
-                    </select>
-                </div>
-                <button class="btn" id="exportOrdersBtn" style="margin-bottom: 1rem;">📥 Export All Orders (CSV)</button>
-                <div class="delivery-list" id="deliveryList">
-                    <div class="loading">Loading deliveries...</div>
-                </div>
-            </div>
-
-            <div class="card" style="border: 2px solid var(--accent);">
-                <h2 style="color: var(--accent);">🏥 Upload Hospital Logo</h2>
-                <form id="logoForm">
-                    <div class="form-group">
-                        <label for="logoFile">Choose Logo Image *</label>
-                        <input type="file" id="logoFile" accept="image/*" required>
-                        <small style="color: #64748b; display: block; margin-top: 0.5rem;">Recommended: Square image, max 2MB</small>
-                    </div>
-                    <button type="submit" class="btn btn-block" style="background: var(--accent);" id="logoSubmitBtn">📤 Upload Logo</button>
-                </form>
-                <div id="currentLogo" style="margin-top: 1rem;">
-                    <p style="color: #64748b;">Current logo: 🏥 (default)</p>
-                </div>
-            </div>
-
-            <div class="card" style="background: linear-gradient(135deg, #fef3c7, #fff); border: 2px solid var(--warning);">
-                <h2 style="color: var(--warning);">⚠️ Data Backup & Restore</h2>
-                <p style="margin-bottom: 1rem;"><strong>Export all data</strong> for backup:</p>
-                <button class="btn-warning btn-block" id="exportAllBtn">📤 Export All Data (JSON)</button>
-                <p style="margin: 2rem 0 1rem;"><strong>Import data</strong> from backup:</p>
-                <input type="file" id="importFile" accept=".json" class="hidden">
-                <button class="btn-warning" id="importBtn">📥 Import Data</button>
-                <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">⚠️ Importing will overwrite existing data. Use with caution.</p>
-            </div>
+  <!-- ════ CASHIER FORM ════ -->
+  <div class="page" id="pg-cashier-form">
+    <div class="fbar">
+      <span class="fbread"><a onclick="showPage('cashier-list')">Cashier's Appointment</a> / <span id="cf-id">AP042282</span></span>
+      <div class="fbar-right">
+        <button class="btn btn-outline btn-sm" onclick="printReceipt()">Print ▾</button>
+        <button class="btn btn-outline btn-sm">Action ▾</button>
+        <div class="status-flow">
+          <div class="sf-step" id="sf-draft">DRAFT</div>
+          <div class="sf-step active" id="sf-sched">SCHEDULED</div>
         </div>
+      </div>
     </div>
+    <div class="abar">
+      <button class="btn btn-outline">EDIT</button>
+      <button class="btn btn-teal" onclick="openModal('mCashier')">CREATE</button>
+      <button class="btn btn-red btn-sm">REFUND</button>
+      <button class="btn btn-outline btn-sm" onclick="printReceipt()">PRINT RECEIPT</button>
+      <button class="btn btn-teal btn-sm">PATIENT TRANSFER</button>
+      <button class="btn btn-outline btn-sm">RECALL</button>
+      <button class="btn btn-purple btn-sm">MARK AS COMPLETED</button>
+      <div style="margin-left:auto;">
+        <div class="inv-badge">📋 <span>1</span><br/><small style="font-size:9px">Invoice</small></div>
+      </div>
+    </div>
+    <div class="fview">
+      <div class="fbody">
+        <!-- Patient Info -->
+        <div class="fcard">
+          <div class="fcard-head">Patient Info &amp; Appointment</div>
+          <div class="fcard-body">
+            <div class="fg fg3" style="margin-bottom:14px;">
+              <div><div class="field-lbl">Patient</div><div class="field-val td-link" id="cf-patient">NASRA FARAH ALI</div></div>
+              <div><div class="field-lbl">ID#</div><div class="field-val" id="cf-idnum">0038806</div></div>
+              <div><div class="field-lbl">Sex</div><div class="field-val" id="cf-sex">Female</div></div>
+              <div><div class="field-lbl">Mobile</div><div class="field-val" id="cf-mobile">0610150128</div></div>
+              <div><div class="field-lbl">Patient Age</div><div class="field-val" id="cf-age">23 Y</div></div>
+              <div><div class="field-lbl">Appointment #</div><div class="field-val td-link" id="cf-appt">AP042282</div></div>
+            </div>
+            <div class="fg fg3">
+              <div><div class="field-lbl">Appointment Date</div><div class="field-val" id="cf-date">05/07/2026 06:54:18</div></div>
+              <div><div class="field-lbl">Doctor</div><div class="field-val td-link" id="cf-doctor">DR. YAHYA SHOOLE (Pediatric Gastroenterology)</div></div>
+              <div><div class="field-lbl">Branch</div><div class="field-val" id="cf-branch">HQ</div></div>
+              <div><div class="field-lbl">Patient Type</div><div class="field-val">OPD</div></div>
+              <div><div class="field-lbl">Appointment Type</div><div class="field-val">New</div></div>
+              <div><div class="field-lbl">Payment Type</div><div class="field-val" id="cf-payment">Cash</div></div>
+            </div>
+          </div>
+        </div>
 
-    <!-- ===== FIREBASE V9 API MODULE - DHAN ===== -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { 
-            getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, 
-            query, orderBy, onSnapshot, writeBatch, where, setDoc 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { 
-            getStorage, ref, uploadBytes, getDownloadURL, deleteObject 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-        import { 
-            getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
-            signOut, onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        <!-- Queue -->
+        <div class="fcard">
+          <div class="fcard-head">Queue # <span id="cf-queue" style="color:var(--red);font-size:20px;font-weight:900;margin-left:12px;">1</span></div>
+        </div>
 
-        // TODO: GALI HAGAAGKA FIIREBASE KA
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY_HERE",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+        <!-- Lab -->
+        <div class="fcard">
+          <div class="fcard-head">
+            Lab <span id="cf-labcount">7</span>
+            <button class="btn btn-teal btn-sm" onclick="openModal('mLabReq')">ADD TESTS</button>
+          </div>
+          <table class="stbl">
+            <thead><tr><th>Procedure</th><th>Availability</th><th>Doctor Instructions</th><th>Unit Price</th><th>Discount</th><th></th></tr></thead>
+            <tbody id="cf-labrows">
+              <tr><td>SIDA</td><td><span class="badge b-done">Available</span></td><td></td><td>2.00</td><td>0.00</td><td><button class="del-btn">🗑</button></td></tr>
+              <tr><td>HCV</td><td><span class="badge b-done">Available</span></td><td></td><td>4.00</td><td>0.00</td><td><button class="del-btn">🗑</button></td></tr>
+              <tr><td>HBA1C</td><td><span class="badge b-done">Available</span></td><td></td><td>13.00</td><td>0.00</td><td><button class="del-btn">🗑</button></td></tr>
+              <tr><td>CBC</td><td><span class="badge b-done">Available</span></td><td></td><td>5.00</td><td>0.00</td><td><button class="del-btn">🗑</button></td></tr>
+              <tr><td>CRP</td><td><span class="badge b-done">Available</span></td><td></td><td>3.00</td><td>0.00</td><td><button class="del-btn">🗑</button></td></tr>
+            </tbody>
+            <tfoot><tr><td colspan="3"></td><td id="cf-labtotal">27.00</td><td>0.00</td><td></td></tr></tfoot>
+          </table>
+          <a class="add-line" onclick="openModal('mLabReq')">+ Add a line</a>
+        </div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
-        const auth = getAuth(app);
+        <!-- Imaging -->
+        <div class="fcard">
+          <div class="fcard-head">Imaging <button class="btn btn-teal btn-sm">ADD IMAGING</button></div>
+          <table class="stbl">
+            <thead><tr><th>Procedure</th><th>Doctor Instructions</th><th>Unit Price</th><th>Discount</th><th></th></tr></thead>
+            <tbody id="cf-imgrows"><tr><td colspan="5" style="color:#aaa;font-style:italic;padding:10px 12px;">No imaging added</td></tr></tbody>
+            <tfoot><tr><td colspan="2"></td><td>0.00</td><td>0.00</td><td></td></tr></tfoot>
+          </table>
+          <a class="add-line">+ Add a line</a>
+        </div>
 
-        window.firebaseAPI = {
-            db, storage, auth,
-            collection, getDocs, addDoc, updateDoc, deleteDoc, doc, 
-            query, orderBy, onSnapshot, writeBatch, where, setDoc,
-            ref, uploadBytes, getDownloadURL, deleteObject,
-            createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged
-        };
+        <!-- Pharmacy -->
+        <div class="fcard">
+          <div class="fcard-head">Pharmacy <button class="btn btn-teal btn-sm" onclick="openModal('mPharmForm')">ADD MEDICINE</button></div>
+          <table class="stbl">
+            <thead><tr><th>Brand Name</th><th>Dosage Form</th><th>Route</th><th>Frequency</th><th>Qty</th><th>Unit Price</th><th>Subtotal</th><th></th></tr></thead>
+            <tbody id="cf-pharmrows"><tr><td colspan="8" style="color:#aaa;font-style:italic;padding:10px 12px;">No medicines added</td></tr></tbody>
+            <tfoot><tr><td colspan="5"></td><td>Subtotal:</td><td id="cf-pharmtotal">$0.00</td><td></td></tr></tfoot>
+          </table>
+          <a class="add-line" onclick="openModal('mPharmForm')">+ Add a line</a>
+        </div>
 
-        window.DataManager = {
-            medicines: collection(db, 'medicines'),
-            orders: collection(db, 'orders'),
-            gallery: collection(db, 'gallery'),
-            settings: collection(db, 'settings'),
-            admins: collection(db, 'admins'),
-            
-            async getMedicines() {
-                try {
-                    const snapshot = await getDocs(this.medicines);
-                    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                } catch (error) {
-                    throw new Error("Failed to load medicines: " + error.message);
-                }
-            },
-            
-            async saveMedicine(medicine) {
-                return await addDoc(this.medicines, { ...medicine, createdAt: new Date().toISOString() });
-            },
-            
-            async updateMedicine(id, medicine) {
-                return await updateDoc(doc(db, 'medicines', id), medicine);
-            },
-            
-            async deleteMedicine(id) {
-                return await deleteDoc(doc(db, 'medicines', id));
-            },
-            
-            async getOrders() {
-                const q = query(this.orders, orderBy('timestamp', 'desc'));
-                const snapshot = await getDocs(q);
-                return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            },
-            
-            async updateOrder(id, status) {
-                return await updateDoc(doc(db, 'orders', id), { status, updatedAt: new Date().toISOString() });
-            },
-            
-            async deleteOrder(id) {
-                return await deleteDoc(doc(db, 'orders', id));
-            },
-            
-            async getGallery() {
-                const q = query(this.gallery, orderBy('date', 'desc'));
-                const snapshot = await getDocs(q);
-                return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            },
-            
-            async saveGalleryItem(item) {
-                return await addDoc(this.gallery, { ...item, date: new Date().toISOString().split('T')[0] });
-            },
-            
-            async deleteGalleryItem(id) {
-                const itemRef = doc(db, 'gallery', id);
-                const itemSnap = await getDocs(itemRef);
-                if (itemSnap.exists()) {
-                    const itemData = itemSnap.data();
-                    if (itemData.url) {
-                        await deleteObject(ref(storage, itemData.url));
-                    }
-                    await deleteDoc(itemRef);
-                }
-            },
-            
-            async getSettings() {
-                const snapshot = await getDocs(this.settings);
-                return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            },
-            
-            async saveSetting(key, value) {
-                const settings = await this.getSettings();
-                const existing = settings.find(s => s.key === key);
-                if (existing) {
-                    return await updateDoc(doc(db, 'settings', existing.id), { value, updatedAt: new Date().toISOString() });
-                } else {
-                    return await addDoc(this.settings, { key, value, createdAt: new Date().toISOString() });
-                }
-            },
-            
-            async deleteFile(url) {
-                if (!url) return;
-                try {
-                    await deleteObject(ref(storage, url));
-                } catch (error) {
-                    console.warn("Failed to delete file:", error);
-                }
-            }
-        };
+        <!-- Other Procedure -->
+        <div class="fcard">
+          <div class="fcard-head">Other Procedure</div>
+          <table class="stbl">
+            <thead><tr><th>Procedure</th><th>Doctor Instructions</th><th>Qty</th><th>Unit Price</th><th>Total</th><th>Discount</th><th></th></tr></thead>
+            <tbody><tr><td>HMS Master</td><td></td><td>1</td><td>19.00</td><td>19.00</td><td>0.00</td><td><button class="del-btn">🗑</button></td></tr></tbody>
+          </table>
+          <a class="add-line">+ Add a line</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                try {
-                    const adminSnapshot = await getDocs(collection(db, 'admins'));
-                    const isAdmin = adminSnapshot.docs.some(doc => doc.id === user.uid);
-                    if (isAdmin) {
-                        window.adminApp.showDashboard();
-                    } else {
-                        await signOut(auth);
-                        window.adminApp.showError('❌ Admin access required');
-                    }
-                } catch (e) {
-                    console.error("Admin check failed:", e);
-                }
-            } else {
-                document.getElementById('loginPage')?.classList.remove('hidden');
-                document.getElementById('dashboardPage')?.classList.add('hidden');
-            }
-        });
+  <!-- ════ LAB / SAMPLE COLLECTION ════ -->
+  <div class="page" id="pg-lab">
+    <div class="ph"><strong>Sample Collection</strong></div>
+    <div class="abar">
+      <button class="btn btn-teal" onclick="openModal('mLabNew')">CREATE</button>
+      <button class="btn btn-outline">IMPORT</button>
+    </div>
+    <div class="toolbar">
+      <div class="filter-chip">▼ Today Labtest <span onclick="this.parentElement.remove()">✕</span></div>
+      <input class="tb-search" type="text" placeholder="Search..." oninput="searchTable('labTB',this.value)"/>
+      <div class="tb-right">
+        <button class="tb-btn">▼ Filters</button>
+        <button class="tb-btn">≡ Group By</button>
+        <button class="tb-btn">★ Favorites</button>
+        <span class="pager" id="labPager">1-4 / 4 <button>‹</button><button>›</button></span>
+      </div>
+    </div>
+    <div class="table-area">
+      <table class="main-table">
+        <thead><tr>
+          <th style="width:28px"><input type="checkbox"/></th>
+          <th>Test #</th><th>Patient</th><th>ID#</th>
+          <th>Sex</th><th>Mobile</th><th>Patient Age</th><th>Sample State</th><th>Action</th>
+        </tr></thead>
+        <tbody id="labTB"></tbody>
+      </table>
+    </div>
+  </div>
 
-        (async () => {
-            try {
-                const admins = collection(db, 'admins');
-                const adminSnapshot = await getDocs(admins);
-                if (adminSnapshot.empty) {
-                    document.getElementById('setupPage')?.classList.remove('hidden');
-                } else {
-                    document.getElementById('loginPage')?.classList.remove('hidden');
-                }
-            } catch (e) {
-                console.log("Setup check failed:", e);
-                document.getElementById('loginPage')?.classList.remove('hidden');
-            }
-        })();
+  <!-- ════ PHARMACY LIST ════ -->
+  <div class="page" id="pg-pharmacy-list">
+    <div class="ph"><strong>Pharmacy</strong></div>
+    <div class="abar">
+      <button class="btn btn-teal" onclick="openModal('mPharmNew')">CREATE</button>
+      <button class="btn btn-outline">IMPORT</button>
+    </div>
+    <div class="toolbar">
+      <div class="filter-chip">▼ Today Sale <span onclick="this.parentElement.remove()">✕</span></div>
+      <input class="tb-search" type="text" placeholder="Search..." oninput="searchTable('pharmTB',this.value)"/>
+      <div class="tb-right">
+        <button class="tb-btn">▼ Filters</button>
+        <button class="tb-btn">≡ Group By</button>
+        <button class="tb-btn">★ Favorites</button>
+        <span class="pager" id="pharmPager">1-4 / 4 <button>‹</button><button>›</button></span>
+        <button class="tb-btn">☰</button><button class="tb-btn">⊞</button><button class="tb-btn">📅</button><button class="tb-btn">📊</button><button class="tb-btn">⊙</button>
+      </div>
+    </div>
+    <div class="table-area">
+      <table class="main-table">
+        <thead><tr>
+          <th style="width:28px"><input type="checkbox"/></th>
+          <th>Prescription #</th><th>Patient #</th><th>Date</th>
+          <th>Doctor</th><th>Sales Person</th><th>Payment Method</th>
+          <th>Discount</th><th>Net Amount</th><th>Status</th><th>Action</th>
+        </tr></thead>
+        <tbody id="pharmTB"></tbody>
+        <tfoot><tr><td colspan="7" style="padding:9px 12px;">Total</td><td id="pharmTotal" style="padding:9px 12px;"></td><td colspan="2"></td></tr></tfoot>
+      </table>
+    </div>
+  </div>
 
-        onSnapshot(collection(db, 'medicines'), () => window.adminApp?.loadMedicines());
-        onSnapshot(query(collection(db, 'orders'), orderBy('timestamp', 'desc')), () => {
-            window.adminApp?.loadDeliveries();
-            window.adminApp?.updateStats();
-        });
-        onSnapshot(collection(db, 'gallery'), () => window.adminApp?.loadGallery());
-        onSnapshot(collection(db, 'settings'), () => window.adminApp?.loadSettings());
-    </script>
+  <!-- ════ PHARMACY FORM ════ -->
+  <div class="page" id="pg-pharmacy-form">
+    <div class="fbar">
+      <span class="fbread"><a onclick="showPage('pharmacy-list')">Pharmacy</a> / <span id="pf-id">S84655</span></span>
+      <div class="fbar-right">
+        <button class="btn btn-outline btn-sm">Print ▾</button>
+        <div class="status-flow">
+          <div class="sf-step active">QUOTATION</div>
+          <div class="sf-step">SALES ORDER</div>
+          <div class="sf-step">LOCKED</div>
+        </div>
+      </div>
+    </div>
+    <div class="abar">
+      <button class="btn btn-outline">EDIT</button>
+      <button class="btn btn-outline">DISCARD</button>
+      <div style="margin-left:auto;"><button class="btn btn-outline btn-sm">Customer Preview</button></div>
+    </div>
+    <div class="fview">
+      <div class="fbody">
+        <div class="fcard">
+          <div class="fcard-body">
+            <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:16px;" id="pf-num">S84655</div>
+            <div class="fg fg3">
+              <div><div class="field-lbl">Patient</div><div class="field-val td-link" id="pf-patient">ABDIRAHIIN AHMED MOHAMED</div></div>
+              <div><div class="field-lbl">ID#</div><div class="field-val" id="pf-idnum">0036880</div></div>
+              <div><div class="field-lbl">Sex</div><div class="field-val" id="pf-sex">Male</div></div>
+              <div><div class="field-lbl">Patient Age</div><div class="field-val" id="pf-age">1 Y</div></div>
+              <div><div class="field-lbl">Mobile</div><div class="field-val" id="pf-mobile">0614626423</div></div>
+              <div><div class="field-lbl">Appointment #</div><div class="field-val td-link" id="pf-appt">AP033337</div></div>
+              <div><div class="field-lbl">Prescription Date</div><div class="field-val" id="pf-date">10/23/2025 11:11:39</div></div>
+              <div><div class="field-lbl">Doctor</div><div class="field-val td-link" id="pf-doctor">DR. YAHYA SHOOLE (Pediatric Gastro...)</div></div>
+              <div><div class="field-lbl">Branch</div><div class="field-val">HQ</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="fcard">
+          <div class="fcard-head">Medicine Line <button class="btn btn-teal btn-sm" onclick="openModal('mPharmForm')">+ Add Medicine</button></div>
+          <table class="stbl">
+            <thead><tr><th>Brand Name</th><th>Medicine Desc</th><th>Dosage Form</th><th>Route</th><th>Frequency</th><th>Dose</th><th>Qty</th><th>Available Qty</th><th>Unit Price</th><th>Subtotal</th><th>Total</th><th></th></tr></thead>
+            <tbody id="pf-medrows">
+              <tr><td>ZENTO VIT ORAL</td><td></td><td></td><td>ORALLL</td><td>1x1</td><td>6</td><td>6</td><td>175.00</td><td>0.50</td><td>$3.00</td><td>$3.00</td><td><button class="del-btn">🗑</button></td></tr>
+              <tr><td>SUPERHEMA</td><td></td><td></td><td>ORALLL</td><td>1x1</td><td>20</td><td>20</td><td>316.00</td><td>0.45</td><td>$9.00</td><td>$9.00</td><td><button class="del-btn">🗑</button></td></tr>
+              <tr><td>Prednisolone Sy...</td><td>1</td><td>5ml</td><td>ORALLL</td><td>1x1</td><td>1</td><td>1</td><td>9.00</td><td>2.00</td><td>$2.00</td><td>$2.00</td><td><button class="del-btn">🗑</button></td></tr>
+            </tbody>
+          </table>
+          <a class="add-line" onclick="openModal('mPharmForm')">+ Add a product</a>
+          <div style="text-align:right;padding:12px 16px;font-size:12px;border-top:1px solid var(--border);">
+            <div>Subtotal: <strong>$14.00</strong></div>
+            <div>Discount: <strong>0.00</strong></div>
+            <div>Total Amount: <strong>14.00</strong></div>
+            <div>Balance: <strong>14.00</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <script>
-        class AdminApp {
-            constructor(firebaseAPI) {
-                this.fb = firebaseAPI;
-                this.editingMedicineId = null;
-                this.allDeliveries = [];
-                this.initEventListeners();
-            }
+  <!-- ════ DOCTORS ════ -->
+  <div class="page" id="pg-doctors">
+    <div class="ph"><strong>Doctor's Appointment</strong></div>
+    <div class="abar">
+      <button class="btn btn-teal" onclick="openModal('mDoctorAppt')">CREATE</button>
+      <button class="btn btn-outline">IMPORT</button>
+    </div>
+    <div class="toolbar">
+      <input class="tb-search" type="text" placeholder="Search..." oninput="searchTable('doctorTB',this.value)"/>
+      <div class="tb-right">
+        <button class="tb-btn">▼ Filters</button>
+        <button class="tb-btn">≡ Group By</button>
+        <button class="tb-btn">★ Favorites</button>
+        <span class="pager" id="doctorPager">1-40 / 40</span>
+      </div>
+    </div>
+    <div class="table-area">
+      <table class="main-table">
+        <thead><tr>
+          <th style="width:28px"><input type="checkbox"/></th>
+          <th>Queue</th><th>Appointment #</th><th>Patient</th><th>ID#</th>
+          <th>Patient Age</th><th>Slot</th><th>Patient In Date</th>
+          <th>Patient Type</th><th>Appt Type</th><th>Appt Date</th>
+          <th>Doctor</th><th>Branch</th><th>Payment Type</th><th>Status</th>
+        </tr></thead>
+        <tbody id="doctorTB"></tbody>
+      </table>
+    </div>
+  </div>
 
-            initEventListeners() {
-                document.getElementById('setupForm')?.addEventListener('submit', (e) => this.handleSetup(e));
-                document.getElementById('loginForm')?.addEventListener('submit', (e) => this.login(e));
-                document.getElementById('logoutBtn')?.addEventListener('click', () => this.logout());
-                document.getElementById('medicineForm')?.addEventListener('submit', (e) => this.handleMedicineSubmit(e));
-                document.getElementById('medicineImage')?.addEventListener('change', (e) => this.previewMedicineImage(e));
-                document.getElementById('galleryForm')?.addEventListener('submit', (e) => this.handleGallerySubmit(e));
-                document.getElementById('logoForm')?.addEventListener('submit', (e) => this.handleLogoSubmit(e));
-                document.getElementById('deliverySearch')?.addEventListener('input', (e) => this.searchDeliveries(e.target.value));
-                document.getElementById('deliveryFilter')?.addEventListener('change', () => this.filterDeliveries());
-                document.getElementById('exportOrdersBtn')?.addEventListener('click', () => this.exportOrders());
-                document.getElementById('exportAllBtn')?.addEventListener('click', () => this.exportAllData());
-                document.getElementById('importBtn')?.addEventListener('click', () => document.getElementById('importFile').click());
-                document.getElementById('importFile')?.addEventListener('change', (e) => this.importAllData(e));
-            }
+</div><!-- /app -->
 
-            async handleSetup(event) {
-                event.preventDefault();
-                const setupBtn = document.getElementById('setupBtn');
-                const setupError = document.getElementById('setupError');
-                const email = document.getElementById('setupEmail').value.trim();
-                const password = document.getElementById('setupPassword').value;
-                const confirm = document.getElementById('setupConfirm').value;
+<!-- ═══ MODALS ═══ -->
 
-                setupBtn.disabled = true;
-                setupBtn.textContent = '⏳ Creating...';
+<!-- NEW CASHIER APPOINTMENT -->
+<div class="modal-bg" id="mCashier">
+  <div class="modal">
+    <div class="mh"><h3>➕ New Cashier Appointment</h3><button class="xbtn" onclick="closeModal('mCashier')">✕</button></div>
+    <div class="mc">
+      <div class="mrow c2">
+        <div class="mfield"><label>Patient Name *</label><input type="text" id="mc-patient" placeholder="Full name"/></div>
+        <div class="mfield"><label>Patient ID#</label><input type="text" id="mc-idnum" placeholder="e.g. 0045706"/></div>
+      </div>
+      <div class="mrow c3">
+        <div class="mfield"><label>Sex</label><select id="mc-sex"><option>Male</option><option>Female</option></select></div>
+        <div class="mfield"><label>Age</label><input type="text" id="mc-age" placeholder="e.g. 25 Y"/></div>
+        <div class="mfield"><label>Mobile</label><input type="text" id="mc-mobile" placeholder="06XXXXXXXX"/></div>
+      </div>
+      <div class="mrow c2">
+        <div class="mfield"><label>Doctor *</label>
+          <select id="mc-doctor">
+            <option>DR. YAHYA SHOOLE (Pediatric Gastroenterology)</option>
+            <option>Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)</option>
+            <option>DR. A Y HERSI (Internal Medicine)</option>
+            <option>SADIA OMAR SALIM (Psychology & Speech Therapy)</option>
+          </select>
+        </div>
+        <div class="mfield"><label>Payment Type</label>
+          <select id="mc-payment"><option>Cash</option><option>Free</option><option>Insurance</option></select>
+        </div>
+      </div>
+      <div class="mrow c2">
+        <div class="mfield"><label>Appointment Slot</label>
+          <select id="mc-slot"><option>Day</option><option>Morning</option><option>Evening</option></select>
+        </div>
+        <div class="mfield"><label>Branch</label>
+          <select id="mc-branch"><option>HQ</option><option>Branch 2</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeModal('mCashier')">Cancel</button>
+      <button class="btn btn-teal" onclick="saveCashier()">💾 Save</button>
+    </div>
+  </div>
+</div>
 
-                try {
-                    if (password !== confirm) throw new Error('Passwords do not match!');
-                    if (password.length < 12) throw new Error('Password must be at least 12 characters!');
+<!-- NEW LAB TEST -->
+<div class="modal-bg" id="mLabNew">
+  <div class="modal">
+    <div class="mh"><h3>🧪 New Lab Test Request</h3><button class="xbtn" onclick="closeModal('mLabNew')">✕</button></div>
+    <div class="mc">
+      <div class="mrow c2">
+        <div class="mfield"><label>Patient Name *</label><input type="text" id="ml-patient" placeholder="Full name"/></div>
+        <div class="mfield"><label>Patient ID#</label><input type="text" id="ml-id" placeholder="e.g. 0028245"/></div>
+      </div>
+      <div class="mrow c3">
+        <div class="mfield"><label>Sex</label><select id="ml-sex"><option>Female</option><option>Male</option></select></div>
+        <div class="mfield"><label>Age (Y)</label><input type="number" id="ml-age" placeholder="Age"/></div>
+        <div class="mfield"><label>Mobile</label><input type="text" id="ml-mobile" placeholder="06XXXXXXXX"/></div>
+      </div>
+      <div class="mrow c1">
+        <div class="mfield"><label>Tests / Baaritaanka</label>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;border:1.5px solid #d1d5db;border-radius:4px;padding:10px;">
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-sida"/> SIDA ($2)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-hcv"/> HCV ($4)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-hba1c"/> HBA1C ($13)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-cbc"/> CBC ($5)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-crp"/> CRP ($3)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-ua"/> URINE EXAM ($4)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-vitd"/> VITAMIN D ($15)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-tsh"/> TSH ($10)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-malaria"/> MALARIA ($3)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-aso"/> ASO ($5)</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeModal('mLabNew')">Cancel</button>
+      <button class="btn btn-teal" onclick="saveLab()">💾 Submit</button>
+    </div>
+  </div>
+</div>
 
-                    // ✅ FIXED: Create user and set admin doc with UID
-                    const userCredential = await this.fb.createUserWithEmailAndPassword(this.fb.auth, email, password);
-                    const user = userCredential.user;
+<!-- LAB TESTS IN APPOINTMENT -->
+<div class="modal-bg" id="mLabReq">
+  <div class="modal">
+    <div class="mh"><h3>🧪 Add Lab Tests to Appointment</h3><button class="xbtn" onclick="closeModal('mLabReq')">✕</button></div>
+    <div class="mc">
+      <div class="mrow c1">
+        <div class="mfield"><label>Select Tests</label>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;border:1.5px solid #d1d5db;border-radius:4px;padding:10px;">
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-sida"/> SIDA ($2)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-hcv"/> HCV ($4)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-hba1c"/> HBA1C ($13)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-cbc"/> CBC ($5)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-crp"/> CRP ($3)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-ua"/> URINE EXAM ($4)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-vitd"/> VITAMIN D ($15)</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-tsh"/> TSH ($10)</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeModal('mLabReq')">Cancel</button>
+      <button class="btn btn-teal" onclick="addLabTests()">Add Tests</button>
+    </div>
+  </div>
+</div>
 
-                    await this.fb.setDoc(this.fb.doc(this.fb.db, 'admins', user.uid), {
-                        uid: user.uid,
-                        email: email,
-                        createdAt: new Date().toISOString(),
-                        role: 'admin'
-                    });
+<!-- NEW PHARMACY -->
+<div class="modal-bg" id="mPharmNew">
+  <div class="modal">
+    <div class="mh"><h3>💊 New Prescription</h3><button class="xbtn" onclick="closeModal('mPharmNew')">✕</button></div>
+    <div class="mc">
+      <div class="mrow c2">
+        <div class="mfield"><label>Patient Name *</label><input type="text" id="pn-patient" placeholder="Full name"/></div>
+        <div class="mfield"><label>Patient ID#</label><input type="text" id="pn-id" placeholder="e.g. 0036880"/></div>
+      </div>
+      <div class="mrow c3">
+        <div class="mfield"><label>Sex</label><select id="pn-sex"><option>Male</option><option>Female</option></select></div>
+        <div class="mfield"><label>Age</label><input type="text" id="pn-age" placeholder="e.g. 1 Y"/></div>
+        <div class="mfield"><label>Mobile</label><input type="text" id="pn-mobile" placeholder="06XXXXXXXX"/></div>
+      </div>
+      <div class="mrow c2">
+        <div class="mfield"><label>Doctor *</label>
+          <select id="pn-doctor">
+            <option>DR. YAHYA SHOOLE (Pediatric Gastroenterology)</option>
+            <option>DR. A Y HERSI (Internal Medicine)</option>
+            <option>Dr. HARITH ABDULKADIR (Neurology)</option>
+          </select>
+        </div>
+        <div class="mfield"><label>Appointment #</label><input type="text" id="pn-appt" placeholder="AP0XXXXX"/></div>
+      </div>
+      <div class="mrow c2">
+        <div class="mfield"><label>Medicine Brand Name *</label><input type="text" id="pn-med" placeholder="e.g. Paracetamol 500mg"/></div>
+        <div class="mfield"><label>Route of Admin</label><select id="pn-route"><option>ORALLL</option><option>IV</option><option>IM</option><option>SC</option></select></div>
+      </div>
+      <div class="mrow c3">
+        <div class="mfield"><label>Frequency</label><input type="text" id="pn-freq" placeholder="e.g. 1x1"/></div>
+        <div class="mfield"><label>Quantity</label><input type="number" id="pn-qty" placeholder="1"/></div>
+        <div class="mfield"><label>Unit Price ($)</label><input type="number" id="pn-price" placeholder="0.00"/></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeModal('mPharmNew')">Cancel</button>
+      <button class="btn btn-teal" onclick="savePharm()">💾 Save</button>
+    </div>
+  </div>
+</div>
 
-                    this.showNotification('✅ Admin created successfully! Redirecting to login...', 'success');
-                    setTimeout(() => {
-                        document.getElementById('setupPage').classList.add('hidden');
-                        document.getElementById('loginPage').classList.remove('hidden');
-                    }, 2000);
+<!-- ADD MEDICINE TO FORM -->
+<div class="modal-bg" id="mPharmForm">
+  <div class="modal" style="width:500px;">
+    <div class="mh"><h3>💊 Add Medicine</h3><button class="xbtn" onclick="closeModal('mPharmForm')">✕</button></div>
+    <div class="mc">
+      <div class="mrow c2">
+        <div class="mfield"><label>Brand Name *</label><input type="text" id="pf-brand" placeholder="e.g. SUPERHEMA"/></div>
+        <div class="mfield"><label>Dosage Form</label><input type="text" id="pf-dosage" placeholder="e.g. 5ml"/></div>
+      </div>
+      <div class="mrow c3">
+        <div class="mfield"><label>Route</label><select id="pf-route"><option>ORALLL</option><option>IV</option><option>IM</option></select></div>
+        <div class="mfield"><label>Frequency</label><input type="text" id="pf-freq" placeholder="1x1"/></div>
+        <div class="mfield"><label>Dose</label><input type="number" id="pf-dose" placeholder="1"/></div>
+      </div>
+      <div class="mrow c2">
+        <div class="mfield"><label>Quantity</label><input type="number" id="pf-qty" placeholder="1"/></div>
+        <div class="mfield"><label>Unit Price ($)</label><input type="number" id="pf-uprice" placeholder="0.00"/></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeModal('mPharmForm')">Cancel</button>
+      <button class="btn btn-teal" onclick="addMedLine()">Add Medicine</button>
+    </div>
+  </div>
+</div>
 
-                } catch (error) {
-                    setupError.textContent = `❌ ${error.message}`;
-                    setupError.style.display = 'block';
-                    setTimeout(() => setupError.style.display = 'none', 5000);
-                } finally {
-                    setupBtn.disabled = false;
-                    setupBtn.textContent = '🚀 Create Admin Account';
-                }
-            }
+<!-- DOCTOR APPOINTMENT -->
+<div class="modal-bg" id="mDoctorAppt">
+  <div class="modal">
+    <div class="mh"><h3>👨‍⚕️ New Doctor Appointment</h3><button class="xbtn" onclick="closeModal('mDoctorAppt')">✕</button></div>
+    <div class="mc">
+      <div class="mrow c2">
+        <div class="mfield"><label>Patient Name *</label><input type="text" id="da-patient" placeholder="Full name"/></div>
+        <div class="mfield"><label>Patient ID#</label><input type="text" id="da-id" placeholder="ID number"/></div>
+      </div>
+      <div class="mrow c3">
+        <div class="mfield"><label>Sex</label><select id="da-sex"><option>Male</option><option>Female</option></select></div>
+        <div class="mfield"><label>Age</label><input type="text" id="da-age" placeholder="e.g. 25 Y"/></div>
+        <div class="mfield"><label>Mobile</label><input type="text" id="da-mobile" placeholder="06XXXXXXXX"/></div>
+      </div>
+      <div class="mrow c2">
+        <div class="mfield"><label>Doctor *</label>
+          <select id="da-doctor">
+            <option>DR. YAHYA SHOOLE (Pediatric Gastroenterology)</option>
+            <option>Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)</option>
+            <option>DR. A Y HERSI (Internal Medicine)</option>
+            <option>SADIA OMAR SALIM (Psychology & Speech Therapy)</option>
+          </select>
+        </div>
+        <div class="mfield"><label>Payment Type</label>
+          <select id="da-payment"><option>Cash</option><option>Free</option><option>Insurance</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeModal('mDoctorAppt')">Cancel</button>
+      <button class="btn btn-teal" onclick="saveDoctorAppt()">💾 Save</button>
+    </div>
+  </div>
+</div>
 
-            async login(event) {
-                event.preventDefault();
-                const loginBtn = document.getElementById('loginBtn');
-                const errorMsg = document.getElementById('errorMsg');
-                loginBtn.disabled = true;
-                loginBtn.textContent = '⏳ Logging in...';
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value;
-                
-                try {
-                    await this.fb.signInWithEmailAndPassword(this.fb.auth, email, password);
-                    errorMsg.style.display = 'none';
-                } catch (error) {
-                    errorMsg.textContent = `❌ ${error.message}`;
-                    errorMsg.style.display = 'block';
-                    setTimeout(() => errorMsg.style.display = 'none', 5000);
-                } finally {
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = '🔐 Login';
-                }
-            }
+<!-- PRINT AREA -->
+<div class="print-area" id="printArea"></div>
 
-            logout() {
-                if (confirm('🚪 Are you sure you want to logout?')) {
-                    this.fb.signOut(this.fb.auth);
-                }
-            }
+<!-- TOAST -->
+<div class="toast" id="toastEl"></div>
 
-            showDashboard() {
-                document.getElementById('setupPage')?.classList.add('hidden');
-                document.getElementById('loginPage')?.classList.add('hidden');
-                document.getElementById('dashboardPage')?.classList.remove('hidden');
-                this.loadMedicines();
-                this.loadDeliveries();
-                this.loadGallery();
-                this.loadSettings();
-            }
+<script>
+// ═══ DATA ═══
+let apptCounter = 42315;
+let labCounter = 27420;
+let rxCounter = 84660;
+let queueCounter = 13;
 
-            showError(message) {
-                const errorMsg = document.getElementById('errorMsg');
-                errorMsg.textContent = message;
-                errorMsg.style.display = 'block';
-                setTimeout(() => errorMsg.style.display = 'none', 5000);
-            }
+const DOCTORS = {
+  cashier: {
+    brand:'Cashier',notif:'3',user:'Abdinasir',
+    nav:['Appointment','Follow Ups','Dental Payment','Requests','Vaccination','Inpatient','Billing Payment','Emergency Patients','Maternity Discharge','Cashier Management','Payment','Reports','Patient Ledger','Insurance'],
+    page:'cashier-list'
+  },
+  lab: {
+    brand:'Labtest',notif:'1',user:'Deqo Ali Abdi',
+    nav:['Waiting Samples','Postponed Sample','Samples Collected','Cancelled','Sample Receive','Lab Tests','Completed','Lab Due Result Report','Change Result Report','Reports','Configuration'],
+    page:'lab'
+  },
+  pharmacy: {
+    brand:'Pharmacy',notif:'44423',user:'A.H.E (PHARMACIST)',
+    nav:['OPD Request','IPD Request','All Request','Sales Order','Pharmacy Return','Direct Pharmacy Return','Medicine','Billing Payment','Sale Conflict','Cash Transfer','Reports','Configuration'],
+    page:'pharmacy-list'
+  },
+  doctors: {
+    brand:'Doctors',notif:'0',user:'Dr. Yahya Shoole',
+    nav:['Appointment','Consultation','Admitted Patient','Discharge'],
+    page:'doctors'
+  }
+};
 
-            async loadMedicines() {
-                const list = document.getElementById('medicineList');
-                list.innerHTML = '<div class="loading">Loading medicines...</div>';
-                
-                try {
-                    const medicines = await DataManager.getMedicines();
-                    if (medicines.length === 0) {
-                        list.innerHTML = '<div class="error">No medicines found. Add some to get started.</div>';
-                        return;
-                    }
-                    
-                    list.innerHTML = medicines.map(med => `
-                        <div class="medicine-card-admin">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <strong>${this.escapeHtml(med.name)}</strong>
-                                <span style="color: var(--primary); font-weight: bold;">$${Number(med.price).toFixed(2)}</span>
-                            </div>
-                            <p style="color: #64748b; margin: 0.5rem 0;">${this.escapeHtml(med.description)}</p>
-                            <div style="margin: 0.5rem 0;">
-                                ${med.image ? `<img src="${med.image}" style="max-width: 100px; border-radius: 8px;" alt="${this.escapeHtml(med.name)}">` : '<span style="font-size: 2rem;">💊</span>'}
-                            </div>
-                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-                                <button class="btn" data-edit="${med.id}" style="flex: 1; font-size: 0.9rem; padding: 0.5rem;">✏️ Edit</button>
-                                <button class="btn-danger" data-delete="${med.id}" style="flex: 1; font-size: 0.9rem; padding: 0.5rem;">🗑️ Delete</button>
-                            </div>
-                        </div>
-                    `).join('');
-                    
-                    list.querySelectorAll('[data-edit]').forEach(btn => {
-                        btn.addEventListener('click', () => this.editMedicine(btn.dataset.edit));
-                    });
-                    list.querySelectorAll('[data-delete]').forEach(btn => {
-                        btn.addEventListener('click', () => this.deleteMedicine(btn.dataset.delete));
-                    });
-                } catch (error) {
-                    list.innerHTML = `<div class="error">Failed to load medicines: ${error.message}</div>`;
-                }
-            }
+const db = {
+  cashier: [
+    {queue:1,id:'AP042282',patient:'AKAN ASAD AHMED',pid:'0045706',age:'2 Y',slot:'Day',inDate:'05/07/2026 08:57:00',type:'OPD',apptType:'New',date:'05/07/2026 06:54:18',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',branch:'HQ',payment:'Cash',status:'Waiting'},
+    {queue:1,id:'AP042292',patient:'IBRAHIM MOHAMED OMAR',pid:'0035735',age:'6 Y',slot:'Day',inDate:'05/07/2026 09:23:50',type:'OPD',apptType:'New',date:'05/07/2026 08:50:36',doctor:'SADIA OMAR SALIM (Psychology & Speech Therapy)',branch:'HQ',payment:'Free',status:'Waiting'},
+    {queue:1,id:'AP042275',patient:'DEQO MOHAMED OSMAN',pid:'0045699',age:'34 Y',slot:'Day',inDate:'05/07/2026 09:21:24',type:'OPD',apptType:'New',date:'05/07/2026 07:19:41',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',branch:'HQ',payment:'Cash',status:'Waiting'},
+    {queue:2,id:'AP042286',patient:'AYUB FEYSAL ALI OSMAN',pid:'0045708',age:'5 M',slot:'Day',inDate:'05/07/2026 09:51:04',type:'OPD',apptType:'New',date:'05/07/2026 06:39:42',doctor:'Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)',branch:'HQ',payment:'Cash',status:'Waiting'},
+    {queue:2,id:'AP042276',patient:'ABDIRAHMAN BASHIIR MOHAMED',pid:'0044040',age:'5 Y',slot:'Day',inDate:'05/07/2026 09:18:56',type:'OPD',apptType:'New',date:'05/07/2026 06:39:42',doctor:'Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)',branch:'HQ',payment:'Cash',status:'Waiting'},
+    {queue:3,id:'AP042277',patient:'MADIINA SHIRE WEHLIYE',pid:'0045700',age:'55 Y',slot:'Day',inDate:'05/07/2026 10:23:39',type:'OPD',apptType:'New',date:'05/07/2026 06:41:06',doctor:'Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)',branch:'HQ',payment:'Cash',status:'Waiting'},
+    {queue:3,id:'AP042293',patient:'MANHAL ABDIQANI ABDULLAHI',pid:'0045711',age:'2 Y',slot:'Day',inDate:'05/07/2026 09:13:56',type:'OPD',apptType:'New',date:'05/07/2026 08:51:32',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',branch:'HQ',payment:'Cash',status:'Waiting'},
+    {queue:4,id:'AP042278',patient:'MOHAMED SHUKRI MOALIM HASSAN',pid:'0045701',age:'21 Y',slot:'Day',inDate:'05/07/2026 09:32:27',type:'OPD',apptType:'New',date:'05/07/2026 06:43:07',doctor:'Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)',branch:'HQ',payment:'Cash',status:'Waiting'},
+    {queue:4,id:'AP042294',patient:'AMIIRA MUHUYADIN ABDI',pid:'0023955',age:'6 Y',slot:'Day',inDate:'05/07/2026 09:45:33',type:'OPD',apptType:'New',date:'05/07/2026 08:53:06',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',branch:'HQ',payment:'Cash',status:'Waiting'},
+    {queue:5,id:'AP042279',patient:'SAID HASSAN AYNAB',pid:'0045702',age:'55 Y',slot:'Day',inDate:'05/07/2026 09:42:19',type:'OPD',apptType:'New',date:'05/07/2026 06:48:03',doctor:'Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)',branch:'HQ',payment:'Cash',status:'Waiting'},
+  ],
+  lab: [
+    {id:'27414',patient:'HEYRAM ABDIRAHMAN OLHAYE',pid:'0028245',sex:'Female',mobile:'0617540102',age:'1 Y',state:'Waiting'},
+    {id:'27413',patient:'IQLAAS CABDINASIIR MOHAMED',pid:'0040769',sex:'Female',mobile:'0614696474',age:'17 Y',state:'Waiting'},
+    {id:'27405',patient:'SUHEYLA AHMED NOUR ALI',pid:'0026935',sex:'Female',mobile:'0615883404',age:'10 Y',state:'Waiting'},
+    {id:'27400',patient:'MOHAMED MOHAMED AHMED',pid:'0040411',sex:'Male',mobile:'0618890213',age:'67 Y',state:'Partially Collected'},
+  ],
+  pharmacy: [
+    {id:'S84105',patient:'RAQDA OMAR CABAS',pid:'0036880',date:'10/18/2025 10:02:56',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',discount:0,amount:6.50,status:'Quotation'},
+    {id:'S84103',patient:'MOHAMED ABDULLAHI ASKAR',pid:'0035735',date:'10/18/2025 09:59:08',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',discount:0,amount:2.50,status:'Quotation'},
+    {id:'S84101',patient:'ZAHRA SH ABDULLAHI',pid:'0044040',date:'10/18/2025 09:55:32',doctor:'DR. A Y HERSI (Internal Medicine)',discount:0,amount:1.00,status:'Quotation'},
+    {id:'S84098',patient:'HAFSO IDIRIS MOHAMED',pid:'0023955',date:'10/18/2025 09:20:27',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',discount:0,amount:0.50,status:'Quotation'},
+  ]
+};
 
-            handleMedicineSubmit(event) {
-                event.preventDefault();
-                if (this.editingMedicineId) {
-                    this.updateMedicine();
-                } else {
-                    this.addMedicine();
-                }
-            }
+// ═══ LOGIN ═══
+function login(){
+  const pass = document.getElementById('lpass').value;
+  const err = document.getElementById('lerr');
+  if(pass==='hospital2024'){
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('app').style.display='flex';
+    document.getElementById('app').style.flexDirection='column';
+    err.style.display='none';
+    setModule('cashier');
+    renderAll();
+  } else {
+    err.style.display='block';
+    document.getElementById('lpass').style.borderColor='var(--red)';
+  }
+}
+function logout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('lpass').value='';
+}
 
-            async addMedicine() {
-                const submitBtn = document.getElementById('medicineSubmitBtn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = '⏳ Adding...';
-                
-                const name = document.getElementById('medName').value.trim();
-                const price = parseFloat(document.getElementById('medPrice').value);
-                const description = document.getElementById('medDesc').value.trim();
-                
-                try {
-                    if (!name || isNaN(price) || !description) {
-                        throw new Error('Please fill all required fields');
-                    }
-                    if (price < 0) throw new Error('Price cannot be negative');
-                    
-                    const imageFile = document.getElementById('medicineImage').files[0];
-                    let imageUrl = null;
-                    if (imageFile) {
-                        if (imageFile.size > 5 * 1024 * 1024) {
-                            throw new Error('Image too large! Max 5MB');
-                        }
-                        imageUrl = await this.uploadFile(imageFile, 'medicines');
-                    }
-                    
-                    await DataManager.saveMedicine({ name, price, description, image: imageUrl });
-                    this.showNotification('✅ Medicine added successfully', 'success');
-                    this.clearMedicineForm();
-                } catch (error) {
-                    this.showError(`❌ ${error.message}`);
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = '➕ Add Medicine';
-                }
-            }
+// ═══ MODULE ═══
+let curModule = 'cashier';
+function setModule(mod){
+  curModule = mod;
+  const m = DOCTORS[mod];
+  document.getElementById('tnBrand').textContent = m.brand;
+  document.getElementById('tnNotif').textContent = m.notif;
+  document.getElementById('tnUser').textContent = m.user;
+  const nav = document.getElementById('tnNav');
+  nav.innerHTML = m.nav.map(n=>`<a onclick="navClick(this,'${mod}')">${n}</a>`).join('');
+  nav.querySelector('a').classList.add('active');
+  showPage(m.page);
+}
+function navClick(el,mod){
+  document.querySelectorAll('#tnNav a').forEach(a=>a.classList.remove('active'));
+  el.classList.add('active');
+  const m = DOCTORS[mod];
+  showPage(m.page);
+}
+// Brand click = cycle modules
+document.getElementById('tnBrand') && (document.getElementById('tnBrand').onclick = ()=>{
+  const mods = Object.keys(DOCTORS);
+  const idx = (mods.indexOf(curModule)+1)%mods.length;
+  setModule(mods[idx]);
+});
 
-            async editMedicine(id) {
-                try {
-                    const medicines = await DataManager.getMedicines();
-                    const med = medicines.find(m => m.id === id);
-                    if (med) {
-                        document.getElementById('medName').value = med.name;
-                        document.getElementById('medPrice').value = med.price;
-                        document.getElementById('medDesc').value = med.description;
-                        if (med.image) {
-                            const img = document.getElementById('medicineImagePreview');
-                            img.src = med.image;
-                            img.style.display = 'block';
-                        }
-                        this.editingMedicineId = id;
-                        document.getElementById('medicineSubmitBtn').textContent = '💾 Update Medicine';
-                        document.querySelector('.card h2').scrollIntoView({ behavior: 'smooth' });
-                    }
-                } catch (error) {
-                    this.showError(`❌ Failed to load medicine: ${error.message}`);
-                }
-            }
+// ═══ PAGES ═══
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg = document.getElementById('pg-'+id);
+  if(pg) pg.classList.add('active');
+}
 
-            async updateMedicine() {
-                if (!this.editingMedicineId) return;
-                
-                const submitBtn = document.getElementById('medicineSubmitBtn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = '⏳ Updating...';
-                
-                const name = document.getElementById('medName').value.trim();
-                const price = parseFloat(document.getElementById('medPrice').value);
-                const description = document.getElementById('medDesc').value.trim();
-                
-                try {
-                    if (!name || isNaN(price) || !description) {
-                        throw new Error('Please fill all required fields');
-                    }
-                    if (price < 0) throw new Error('Price cannot be negative');
-                    
-                    const imageFile = document.getElementById('medicineImage').files[0];
-                    let imageUrl = null;
-                    
-                    if (imageFile) {
-                        if (imageFile.size > 5 * 1024 * 1024) {
-                            throw new Error('Image too large! Max 5MB');
-                        }
-                        imageUrl = await this.uploadFile(imageFile, 'medicines');
-                    }
-                    
-                    const updateData = { name, price, description, updatedAt: new Date().toISOString() };
-                    if (imageUrl) updateData.image = imageUrl;
-                    
-                    await DataManager.updateMedicine(this.editingMedicineId, updateData);
-                    this.showNotification('✅ Medicine updated successfully', 'success');
-                    this.clearMedicineForm();
-                    document.getElementById('medicineSubmitBtn').textContent = '➕ Add Medicine';
-                    this.editingMedicineId = null;
-                } catch (error) {
-                    this.showError(`❌ ${error.message}`);
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = '➕ Add Medicine';
-                }
-            }
+// ═══ RENDER CASHIER ═══
+function renderCashier(){
+  const tb = document.getElementById('cashierTB');
+  if(!tb) return;
+  tb.innerHTML = db.cashier.map(r=>`
+    <tr onclick="openCashierForm('${r.id}')">
+      <td><input type="checkbox" onclick="event.stopPropagation()"/></td>
+      <td>${r.queue}</td>
+      <td class="td-link">${r.id}</td>
+      <td>${r.patient}</td>
+      <td style="color:var(--muted);font-size:11px;">${r.pid}</td>
+      <td>${r.age}</td>
+      <td>${r.slot}</td>
+      <td style="font-size:11px;">${r.inDate}</td>
+      <td>${r.type}</td>
+      <td>${r.apptType}</td>
+      <td style="font-size:11px;">${r.date}</td>
+      <td>${r.doctor}</td>
+      <td>${r.branch}</td>
+      <td><span class="badge ${r.payment==='Cash'?'b-cash':'b-free'}">${r.payment}</span></td>
+      <td><span class="badge b-waiting">${r.status}</span></td>
+    </tr>`).join('');
+  document.getElementById('cashierPager').innerHTML = `1-${db.cashier.length} / ${db.cashier.length} <button>‹</button><button>›</button>`;
+}
 
-            async deleteMedicine(id) {
-                if (confirm('🗑️ Delete this medicine? This cannot be undone.')) {
-                    try {
-                        await DataManager.deleteMedicine(id);
-                        this.showNotification('✅ Medicine deleted successfully', 'success');
-                    } catch (error) {
-                        this.showError(`❌ ${error.message}`);
-                    }
-                }
-            }
+function openCashierForm(id){
+  const r = db.cashier.find(x=>x.id===id)||db.cashier[0];
+  document.getElementById('cf-id').textContent = r.id;
+  document.getElementById('cf-patient').textContent = r.patient;
+  document.getElementById('cf-idnum').textContent = r.pid;
+  document.getElementById('cf-sex').textContent = r.sex||'Female';
+  document.getElementById('cf-mobile').textContent = r.mobile||'—';
+  document.getElementById('cf-age').textContent = r.age;
+  document.getElementById('cf-appt').textContent = r.id;
+  document.getElementById('cf-date').textContent = r.date;
+  document.getElementById('cf-doctor').textContent = r.doctor;
+  document.getElementById('cf-branch').textContent = r.branch;
+  document.getElementById('cf-payment').textContent = r.payment;
+  document.getElementById('cf-queue').textContent = r.queue;
+  showPage('cashier-form');
+}
 
-            previewMedicineImage(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    if (file.size > 5 * 1024 * 1024) {
-                        this.showError('❌ File too large! Maximum size is 5MB');
-                        event.target.value = '';
-                        return;
-                    }
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const img = document.getElementById('medicineImagePreview');
-                        img.src = e.target.result;
-                        img.style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
-                }
-            }
+function saveCashier(){
+  const p = document.getElementById('mc-patient').value.trim();
+  if(!p){alert('Patient name required');return;}
+  const id = 'AP0'+apptCounter++;
+  db.cashier.unshift({
+    queue:queueCounter++,id,patient:p.toUpperCase(),
+    pid:document.getElementById('mc-idnum').value||'0000000',
+    age:document.getElementById('mc-age').value||'—',
+    sex:document.getElementById('mc-sex').value,
+    mobile:document.getElementById('mc-mobile').value,
+    slot:document.getElementById('mc-slot').value,
+    inDate:new Date().toLocaleString('en-GB'),
+    type:'OPD',apptType:'New',
+    date:new Date().toLocaleString('en-GB'),
+    doctor:document.getElementById('mc-doctor').value,
+    branch:document.getElementById('mc-branch').value,
+    payment:document.getElementById('mc-payment').value,
+    status:'Waiting'
+  });
+  renderCashier();
+  closeModal('mCashier');
+  document.getElementById('mc-patient').value='';
+  document.getElementById('mc-idnum').value='';
+  document.getElementById('mc-age').value='';
+  document.getElementById('mc-mobile').value='';
+  toast('✅ Appointment saved!');
+}
 
-            clearMedicineForm() {
-                document.getElementById('medicineForm').reset();
-                document.getElementById('medicineImagePreview').style.display = 'none';
-            }
+// ═══ RENDER LAB ═══
+function renderLab(){
+  const tb = document.getElementById('labTB');
+  if(!tb) return;
+  tb.innerHTML = db.lab.map(r=>`
+    <tr>
+      <td><input type="checkbox"/></td>
+      <td class="td-link">${r.id}</td>
+      <td>${r.patient}</td>
+      <td style="color:var(--muted);font-size:11px;">${r.pid}</td>
+      <td>${r.sex}</td>
+      <td>${r.mobile}</td>
+      <td>${r.age}</td>
+      <td><span class="badge ${r.state==='Waiting'?'b-waiting':'b-partial'}">${r.state}</span></td>
+      <td>
+        <button class="btn btn-teal btn-sm" onclick="collectSample('${r.id}',event)">Collect</button>
+        <button class="btn btn-outline btn-sm" onclick="deleteLab('${r.id}',event)">🗑</button>
+      </td>
+    </tr>`).join('');
+  document.getElementById('labPager').innerHTML = `1-${db.lab.length} / ${db.lab.length} <button>‹</button><button>›</button>`;
+}
+function collectSample(id,e){
+  e.stopPropagation();
+  const r=db.lab.find(x=>x.id===id);
+  if(r){r.state='Partially Collected';renderLab();toast('✅ Sample collected!');}
+}
+function deleteLab(id,e){
+  e.stopPropagation();
+  if(confirm('Delete this lab request?')){db.lab=db.lab.filter(x=>x.id!==id);renderLab();toast('✅ Deleted');}
+}
+function saveLab(){
+  const p=document.getElementById('ml-patient').value.trim();
+  if(!p){alert('Patient name required');return;}
+  db.lab.unshift({
+    id:String(labCounter++),patient:p.toUpperCase(),
+    pid:document.getElementById('ml-id').value||'0000000',
+    sex:document.getElementById('ml-sex').value,
+    mobile:document.getElementById('ml-mobile').value,
+    age:(document.getElementById('ml-age').value||'?')+' Y',
+    state:'Waiting'
+  });
+  renderLab();closeModal('mLabNew');
+  document.getElementById('ml-patient').value='';document.getElementById('ml-id').value='';
+  document.getElementById('ml-age').value='';document.getElementById('ml-mobile').value='';
+  toast('✅ Lab request submitted!');
+}
+function addLabTests(){
+  const tests=[
+    {id:'lr-sida',name:'SIDA',price:2},
+    {id:'lr-hcv',name:'HCV',price:4},
+    {id:'lr-hba1c',name:'HBA1C',price:13},
+    {id:'lr-cbc',name:'CBC',price:5},
+    {id:'lr-crp',name:'CRP',price:3},
+    {id:'lr-ua',name:'URINE EXAM',price:4},
+    {id:'lr-vitd',name:'VITAMIN D',price:15},
+    {id:'lr-tsh',name:'TSH',price:10},
+  ];
+  const tbody=document.getElementById('cf-labrows');
+  let total=0;
+  tests.forEach(t=>{
+    if(document.getElementById(t.id)&&document.getElementById(t.id).checked){
+      tbody.innerHTML+=`<tr><td>${t.name}</td><td><span class="badge b-done">Available</span></td><td></td><td>${t.price}.00</td><td>0.00</td><td><button class="del-btn" onclick="this.closest('tr').remove()">🗑</button></td></tr>`;
+      total+=t.price;
+    }
+  });
+  const cur=parseFloat(document.getElementById('cf-labtotal').textContent)||0;
+  document.getElementById('cf-labtotal').textContent=(cur+total).toFixed(2);
+  closeModal('mLabReq');toast('✅ Tests added!');
+}
 
-            async handleGallerySubmit(event) {
-                event.preventDefault();
-                const submitBtn = document.getElementById('gallerySubmitBtn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = '⏳ Uploading...';
-                
-                const file = document.getElementById('galleryFile').files[0];
-                const title = document.getElementById('galleryTitle').value.trim();
-                const desc = document.getElementById('galleryDesc').value.trim();
-                
-                try {
-                    if (!file || !title) {
-                        throw new Error('Please select an image and enter a title');
-                    }
-                    if (file.size > 5 * 1024 * 1024) {
-                        throw new Error('File too large! Maximum size is 5MB');
-                    }
-                    
-                    const imageUrl = await this.uploadFile(file, 'gallery');
-                    await DataManager.saveGalleryItem({ type: 'image', url: imageUrl, title, description: desc });
-                    
-                    this.showNotification('✅ Gallery photo uploaded successfully', 'success');
-                    document.getElementById('galleryForm').reset();
-                } catch (error) {
-                    this.showError(`❌ ${error.message}`);
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = '➕ Add to Gallery';
-                }
-            }
+// ═══ RENDER PHARMACY ═══
+function renderPharm(){
+  const tb=document.getElementById('pharmTB');
+  if(!tb) return;
+  tb.innerHTML=db.pharmacy.map(r=>`
+    <tr onclick="openPharmForm('${r.id}')">
+      <td><input type="checkbox" onclick="event.stopPropagation()"/></td>
+      <td class="td-link">${r.id}</td>
+      <td>${r.patient}</td>
+      <td style="font-size:11px;">${r.date}</td>
+      <td>${r.doctor}</td>
+      <td></td><td></td>
+      <td>$${r.discount.toFixed(2)}</td>
+      <td>$${r.amount.toFixed(2)}</td>
+      <td><span class="badge b-quotation">${r.status}</span></td>
+      <td>
+        <button class="btn btn-green btn-sm" onclick="dispenseRx('${r.id}',event)">Dispense</button>
+        <button class="btn btn-outline btn-sm" onclick="deleteRx('${r.id}',event)">🗑</button>
+      </td>
+    </tr>`).join('');
+  const total=db.pharmacy.reduce((s,r)=>s+r.amount,0);
+  document.getElementById('pharmTotal').textContent='$'+total.toFixed(2);
+  document.getElementById('pharmPager').innerHTML=`1-${db.pharmacy.length} / ${db.pharmacy.length} <button>‹</button><button>›</button>`;
+}
+function openPharmForm(id){
+  const r=db.pharmacy.find(x=>x.id===id)||db.pharmacy[0];
+  document.getElementById('pf-id').textContent=r.id;
+  document.getElementById('pf-num').textContent=r.id;
+  document.getElementById('pf-patient').textContent=r.patient;
+  document.getElementById('pf-idnum').textContent=r.pid||'—';
+  document.getElementById('pf-date').textContent=r.date;
+  document.getElementById('pf-doctor').textContent=r.doctor;
+  showPage('pharmacy-form');
+}
+function dispenseRx(id,e){
+  e.stopPropagation();
+  const r=db.pharmacy.find(x=>x.id===id);
+  if(r){r.status='Done';renderPharm();toast('✅ Dispensed!');}
+}
+function deleteRx(id,e){
+  e.stopPropagation();
+  if(confirm('Delete prescription?')){db.pharmacy=db.pharmacy.filter(x=>x.id!==id);renderPharm();toast('✅ Deleted');}
+}
+function savePharm(){
+  const p=document.getElementById('pn-patient').value.trim();
+  if(!p){alert('Patient name required');return;}
+  const qty=parseFloat(document.getElementById('pn-qty').value)||1;
+  const price=parseFloat(document.getElementById('pn-price').value)||0;
+  const id='S'+rxCounter++;
+  db.pharmacy.unshift({
+    id,patient:p.toUpperCase(),pid:document.getElementById('pn-id').value||'0000000',
+    date:new Date().toLocaleString('en-GB'),
+    doctor:document.getElementById('pn-doctor').value,
+    discount:0,amount:qty*price,status:'Quotation'
+  });
+  renderPharm();closeModal('mPharmNew');
+  document.getElementById('pn-patient').value='';document.getElementById('pn-id').value='';
+  document.getElementById('pn-med').value='';document.getElementById('pn-qty').value='';document.getElementById('pn-price').value='';
+  toast('✅ Prescription saved!');
+}
+function addMedLine(){
+  const brand=document.getElementById('pf-brand').value.trim();
+  if(!brand){alert('Brand name required');return;}
+  const qty=parseFloat(document.getElementById('pf-qty').value)||1;
+  const price=parseFloat(document.getElementById('pf-uprice').value)||0;
+  const sub=(qty*price).toFixed(2);
+  document.getElementById('pf-medrows').innerHTML+=`
+    <tr>
+      <td>${brand}</td>
+      <td>${document.getElementById('pf-dosage').value}</td>
+      <td></td>
+      <td>${document.getElementById('pf-route').value}</td>
+      <td>${document.getElementById('pf-freq').value}</td>
+      <td>${document.getElementById('pf-dose').value}</td>
+      <td>${qty}</td>
+      <td>—</td>
+      <td>${price}</td>
+      <td>$${sub}</td>
+      <td>$${sub}</td>
+      <td><button class="del-btn" onclick="this.closest('tr').remove()">🗑</button></td>
+    </tr>`;
+  closeModal('mPharmForm');
+  document.getElementById('pf-brand').value='';document.getElementById('pf-qty').value='';document.getElementById('pf-uprice').value='';
+  toast('✅ Medicine added!');
+}
 
-            async loadGallery() {
-                const galleryGrid = document.getElementById('galleryGrid');
-                if (!galleryGrid) return;
-                
-                galleryGrid.innerHTML = '<div class="loading">Loading gallery...</div>';
-                
-                try {
-                    const gallery = await DataManager.getGallery();
-                    if (gallery.length === 0) {
-                        galleryGrid.innerHTML = '<div class="error">No gallery images yet.</div>';
-                        return;
-                    }
-                    
-                    galleryGrid.innerHTML = gallery.map(item => `
-                        <div class="gallery-item">
-                            <img src="${item.url}" style="max-width: 100%; border-radius: 8px;" alt="${this.escapeHtml(item.title)}">
-                            <div style="margin-top: 0.5rem;">
-                                <strong>${this.escapeHtml(item.title)}</strong>
-                                <p style="font-size: 0.8rem; color: #64748b;">${this.escapeHtml(item.description || '')}</p>
-                                <button class="btn-danger" data-delete-gallery="${item.id}" style="margin-top: 0.5rem; font-size: 0.8rem; padding: 0.3rem 0.8rem;">🗑️ Delete</button>
-                            </div>
-                        </div>
-                    `).join('');
-                    
-                    galleryGrid.querySelectorAll('[data-delete-gallery]').forEach(btn => {
-                        btn.addEventListener('click', () => this.deleteGalleryItem(btn.dataset.deleteGallery));
-                    });
-                } catch (error) {
-                    galleryGrid.innerHTML = `<div class="error">Failed: ${error.message}</div>`;
-                }
-            }
+// ═══ RENDER DOCTORS ═══
+function renderDoctors(){
+  const tb=document.getElementById('doctorTB');
+  if(!tb) return;
+  tb.innerHTML=db.cashier.map(r=>`
+    <tr>
+      <td><input type="checkbox"/></td>
+      <td>${r.queue}</td>
+      <td class="td-link">${r.id}</td>
+      <td>${r.patient}</td>
+      <td style="color:var(--muted);font-size:11px;">${r.pid}</td>
+      <td>${r.age}</td>
+      <td>${r.slot}</td>
+      <td style="font-size:11px;">${r.inDate}</td>
+      <td>${r.type}</td>
+      <td>${r.apptType}</td>
+      <td style="font-size:11px;">${r.date}</td>
+      <td>${r.doctor}</td>
+      <td>${r.branch}</td>
+      <td><span class="badge ${r.payment==='Cash'?'b-cash':'b-free'}">${r.payment}</span></td>
+      <td><span class="badge b-waiting">${r.status}</span></td>
+    </tr>`).join('');
+}
+function saveDoctorAppt(){
+  const p=document.getElementById('da-patient').value.trim();
+  if(!p){alert('Patient name required');return;}
+  const id='AP0'+apptCounter++;
+  db.cashier.unshift({
+    queue:queueCounter++,id,patient:p.toUpperCase(),
+    pid:document.getElementById('da-id').value||'0000000',
+    age:document.getElementById('da-age').value||'—',
+    sex:document.getElementById('da-sex').value,
+    mobile:document.getElementById('da-mobile').value,
+    slot:'Day',inDate:new Date().toLocaleString('en-GB'),
+    type:'OPD',apptType:'New',date:new Date().toLocaleString('en-GB'),
+    doctor:document.getElementById('da-doctor').value,
+    branch:'HQ',payment:document.getElementById('da-payment').value,status:'Waiting'
+  });
+  renderCashier();renderDoctors();closeModal('mDoctorAppt');
+  document.getElementById('da-patient').value='';document.getElementById('da-id').value='';
+  toast('✅ Appointment created!');
+}
 
-            async deleteGalleryItem(id) {
-                if (!confirm('🗑️ Delete this gallery image?')) return;
-                try {
-                    await DataManager.deleteGalleryItem(id);
-                    this.showNotification('✅ Gallery image deleted', 'success');
-                } catch (error) {
-                    this.showError(`❌ ${error.message}`);
-                }
-            }
+// ═══ PRINT RECEIPT ═══
+function printReceipt(){
+  const apptId=document.getElementById('cf-id').textContent;
+  const patient=document.getElementById('cf-patient').textContent;
+  const pid=document.getElementById('cf-idnum').textContent;
+  const date=document.getElementById('cf-date').textContent;
+  const doctor=document.getElementById('cf-doctor').textContent;
+  const age=document.getElementById('cf-age').textContent;
+  const labRows=document.getElementById('cf-labrows');
+  let labHTML='';
+  if(labRows){
+    labHTML=Array.from(labRows.querySelectorAll('tr')).map(tr=>{
+      const cells=tr.querySelectorAll('td');
+      return `<tr><td>${cells[0]?.textContent||''}</td><td>${cells[3]?.textContent||''}</td><td>${cells[4]?.textContent||''}</td></tr>`;
+    }).join('');
+  }
+  document.getElementById('printArea').innerHTML=`
+    <div class="rx-print">
+      <div class="rx-logo">
+        <svg viewBox="0 0 52 52" width="50" height="50"><circle cx="18" cy="34" r="16" fill="#4caf50" opacity=".85"/><circle cx="34" cy="18" r="16" fill="#1a3a6b" opacity=".85"/><text x="10" y="42" font-size="22" font-weight="bold" fill="#fff" font-family="Arial">B</text></svg>
+        <div><h1 style="font-size:22px;font-weight:900;color:#1a3a6b;font-family:Arial;">BAXNAANO HOSPITAL</h1><p style="font-size:11px;color:#6b7280;">Zoobe, Kasoo Horjeedka Hayat Market, Mogadishu-Somalia<br/>Tel: +252613490055 / +252613490066</p></div>
+      </div>
+      <hr class="rx-hr"/>
+      <div style="text-align:center;font-weight:700;font-size:14px;margin-bottom:10px;">CASHIER RECEIPT</div>
+      <div class="rx-grid">
+        <span>Patient Name:</span><strong>${patient}</strong>
+        <span>Patient ID#:</span><strong>${pid}</strong>
+        <span>Age:</span><strong>${age}</strong>
+        <span>Appointment #:</span><strong>${apptId}</strong>
+        <span>Date:</span><strong>${date}</strong>
+        <span>Doctor:</span><strong>${doctor}</strong>
+      </div>
+      <hr class="rx-hr2"/>
+      <table class="rx-table">
+        <thead><tr><th>Procedure</th><th>Unit Price</th><th>Discount</th></tr></thead>
+        <tbody>${labHTML||'<tr><td colspan="3">No procedures</td></tr>'}</tbody>
+      </table>
+      <hr class="rx-hr2"/>
+      <div class="rx-footer">
+        Report printed by system on ${new Date().toLocaleString()}<br/>
+        Baxnaano Hospital Management System
+      </div>
+    </div>`;
+  window.print();
+}
 
-            async handleLogoSubmit(event) {
-                event.preventDefault();
-                const submitBtn = document.getElementById('logoSubmitBtn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = '⏳ Uploading...';
-                
-                const file = document.getElementById('logoFile').files[0];
-                try {
-                    if (!file) throw new Error('Please select a logo image');
-                    if (file.size > 2 * 1024 * 1024) throw new Error('Logo too large! Max 2MB');
-                    
-                    const logoUrl = await this.uploadFile(file, 'logos');
-                    await DataManager.saveSetting('logo', logoUrl);
-                    
-                    this.showNotification('✅ Logo uploaded successfully', 'success');
-                    document.getElementById('logoForm').reset();
-                    this.loadSettings();
-                } catch (error) {
-                    this.showError(`❌ ${error.message}`);
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = '📤 Upload Logo';
-                }
-            }
+// ═══ SEARCH ═══
+function searchTable(tbId, q){
+  const tb=document.getElementById(tbId);
+  if(!tb) return;
+  const rows=tb.querySelectorAll('tr');
+  rows.forEach(r=>{
+    r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';
+  });
+}
 
-            async loadSettings() {
-                try {
-                    const settings = await DataManager.getSettings();
-                    const logoSetting = settings.find(s => s.key === 'logo');
-                    if (logoSetting?.value) {
-                        document.getElementById('currentLogo').innerHTML = `<img src="${logoSetting.value}" style="max-width: 100px; border-radius: 50%;" alt="Current Logo">`;
-                    }
-                } catch (error) {
-                    console.error("Failed to load logo:", error);
-                }
-            }
+// ═══ MODALS ═══
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-bg').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
+});
 
-            async uploadFile(file, folder) {
-                try {
-                    const storageRef = this.fb.ref(this.fb.storage, `${folder}/${Date.now()}_${file.name}`);
-                    await this.fb.uploadBytes(storageRef, file);
-                    return await this.fb.getDownloadURL(storageRef);
-                } catch (error) {
-                    throw new Error(`Upload failed: ${error.message}`);
-                }
-            }
+// ═══ TOAST ═══
+function toast(msg){
+  const t=document.getElementById('toastEl');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
 
-            async loadDeliveries() {
-                const list = document.getElementById('deliveryList');
-                list.innerHTML = '<div class="loading">Loading deliveries...</div>';
-                
-                try {
-                    this.allDeliveries = await DataManager.getOrders();
-                    if (this.allDeliveries.length === 0) {
-                        list.innerHTML = '<div class="error">No delivery orders found.</div>';
-                        return;
-                    }
-                    this.renderDeliveries(this.allDeliveries);
-                    this.updateStats();
-                } catch (error) {
-                    list.innerHTML = `<div class="error">Failed to load deliveries: ${error.message}</div>`;
-                }
-            }
+// ═══ INIT ═══
+function renderAll(){
+  renderCashier();renderLab();renderPharm();renderDoctors();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('loginPage').style.display!=='none')login();});
 
-            renderDeliveries(deliveries) {
-                const list = document.getElementById('deliveryList');
-                const filter = document.getElementById('deliveryFilter').value;
-                const filtered = filter === 'ALL' ? deliveries : deliveries.filter(d => d.status === filter);
-                
-                if (filtered.length === 0) {
-                    list.innerHTML = '<div class="error">No orders match your filter.</div>';
-                    return;
-                }
-                
-                list.innerHTML = filtered.map(delivery => `
-                    <div class="delivery-item ${delivery.status}">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <strong>Order #${delivery.id.substring(0, 8)}</strong>
-                            <span style="background: ${delivery.status === 'PENDING' ? '#f59e0b' : delivery.status === 'DELIVERED' ? '#10b981' : '#ef4444'}; color: white; padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.85rem;">${delivery.status}</span>
-                        </div>
-                        <p><strong>Customer:</strong> ${this.escapeHtml(delivery.customerName)}</p>
-                        <p><strong>Phone:</strong> <a href="tel:${delivery.customerPhone}" style="color: var(--primary);">${delivery.customerPhone}</a></p>
-                        <p><strong>Address:</strong> ${this.escapeHtml(delivery.deliveryAddress)}</p>
-                        <p><strong>Total:</strong> $${Number(delivery.totalAmount).toFixed(2)}</p>
-                        <p><strong>Time:</strong> ${new Date(delivery.timestamp).toLocaleString()}</p>
-                        <div style="margin: 1rem 0;">
-                            <strong>Medicines:</strong>
-                            <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                                ${delivery.medicines.map(m => `<li>${this.escapeHtml(m.name)} (${m.quantity || 1}) - $${Number(m.price).toFixed(2)}</li>`).join('')}
-                            </ul>
-                        </div>
-                        ${delivery.instructions ? `<p><strong>Instructions:</strong> ${this.escapeHtml(delivery.instructions)}</p>` : ''}
-                        ${delivery.prescription ? `<p><strong>Prescription:</strong><br><img src="${delivery.prescription}" style="max-width: 150px; border-radius: 8px;" alt="Prescription"></p>` : ''}
-                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                            ${delivery.status === 'PENDING' 
-                                ? `<button class="btn-success" data-mark-delivered="${delivery.id}" style="flex: 1; min-width: 150px;">✅ Mark Delivered</button>
-                                   <button class="btn-danger" data-cancel="${delivery.id}" style="flex: 1; min-width: 150px;">❌ Cancel</button>` 
-                                : ''
-                            }
-                            <button class="btn" data-view="${delivery.id}" style="flex: 1; min-width: 150px;">👁️ View Details</button>
-                            <button class="btn-danger" data-delete="${delivery.id}" style="flex: 1; min-width: 150px;">🗑️ Delete</button>
-                        </div>
-                    </div>
-                `).join('');
-                
-                list.querySelectorAll('[data-mark-delivered]').forEach(btn => {
-                    btn.addEventListener('click', () => this.updateDeliveryStatus(btn.dataset.markDelivered, 'DELIVERED'));
-                });
-                list.querySelectorAll('[data-cancel]').forEach(btn => {
-                    btn.addEventListener('click', () => this.updateDeliveryStatus(btn.dataset.cancel, 'CANCELLED'));
-                });
-                list.querySelectorAll('[data-view]').forEach(btn => {
-                    btn.addEventListener('click', () => this.viewDeliveryDetails(btn.dataset.view));
-                });
-                list.querySelectorAll('[data-delete]').forEach(btn => {
-                    btn.addEventListener('click', () => this.deleteDelivery(btn.dataset.delete));
-                });
-            }
-
-            searchDeliveries(query) {
-                if (!query.trim()) {
-                    this.renderDeliveries(this.allDeliveries);
-                    return;
-                }
-                const filtered = this.allDeliveries.filter(d => 
-                    d.customerName.toLowerCase().includes(query.toLowerCase()) ||
-                    d.customerPhone.includes(query) ||
-                    d.id.toLowerCase().includes(query.toLowerCase())
-                );
-                this.renderDeliveries(filtered);
-            }
-
-            filterDeliveries() {
-                this.renderDeliveries(this.allDeliveries);
-            }
-
-            async updateDeliveryStatus(id, newStatus) {
-                try {
-                    await DataManager.updateOrder(id, newStatus);
-                    this.showNotification(`✅ Order marked as ${newStatus}`, 'success');
-                } catch (error) {
-                    this.showError(`❌ ${error.message}`);
-                }
-            }
-
-            viewDeliveryDetails(id) {
-                const delivery = this.allDeliveries.find(d => d.id === id);
-                if (delivery) {
-                    const details = `
-Order ID: ${delivery.id}
-Customer: ${this.escapeHtml(delivery.customerName)}
-Phone: ${delivery.customerPhone}
-Address: ${this.escapeHtml(delivery.deliveryAddress)}
-Total: $${Number(delivery.totalAmount).toFixed(2)}
-Status: ${delivery.status}
-Date: ${new Date(delivery.timestamp).toLocaleString()}
-
-Medicines:
-${delivery.medicines.map(m => `- ${this.escapeHtml(m.name)} (${m.quantity || 1}) - $${Number(m.price).toFixed(2)}`).join('\n')}
-
-${delivery.instructions ? `Instructions: ${this.escapeHtml(delivery.instructions)}` : ''}
-                    `;
-                    alert(details);
-                }
-            }
-
-            async deleteDelivery(id) {
-                if (confirm(`🗑️ Delete order ${id.substring(0, 8)}? This cannot be undone.`)) {
-                    try {
-                        await DataManager.deleteOrder(id);
-                        this.showNotification('✅ Order deleted successfully', 'success');
-                    } catch (error) {
-                        this.showError(`❌ ${error.message}`);
-                    }
-                }
-            }
-
-            exportOrders() {
-                if (this.allDeliveries.length === 0) {
-                    this.showError('❌ No orders to export');
-                    return;
-                }
-                
-                const csv = [
-                    ['Order ID', 'Customer', 'Phone', 'Address', 'Total', 'Status', 'Date', 'Medicines'],
-                    ...this.allDeliveries.map(d => [
-                        d.id, 
-                        `"${this.escapeHtml(d.customerName).replace(/"/g, '""')}"`, 
-                        d.customerPhone, 
-                        `"${this.escapeHtml(d.deliveryAddress).replace(/"/g, '""')}"`, 
-                        Number(d.totalAmount).toFixed(2), 
-                        d.status, 
-                        new Date(d.timestamp).toLocaleString(),
-                        `"${d.medicines.map(m => `${this.escapeHtml(m.name)} (${m.quantity || 1})`).join(', ')}"`
-                    ])
-                ].map(row => row.join(',')).join('\n');
-                
-                this.downloadFile(csv, `baxnaano-orders-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
-                this.showNotification('✅ Orders exported successfully', 'success');
-            }
-
-            updateStats() {
-                const total = this.allDeliveries.length;
-                const pending = this.allDeliveries.filter(d => d.status === 'PENDING').length;
-                const delivered = this.allDeliveries.filter(d => d.status === 'DELIVERED').length;
-                const revenue = this.allDeliveries
-                    .filter(d => d.status !== 'CANCELLED')
-                    .reduce((sum, d) => sum + Number(d.totalAmount), 0);
-                
-                document.getElementById('totalOrders').textContent = total;
-                document.getElementById('pendingOrders').textContent = pending;
-                document.getElementById('deliveredOrders').textContent = delivered;
-                document.getElementById('totalRevenue').textContent = `$${revenue.toFixed(2)}`;
-            }
-
-            async exportAllData() {
-                try {
-                    this.showNotification('⏳ Preparing backup...', 'warning');
-                    const data = {
-                        medicines: await DataManager.getMedicines(),
-                        orders: await DataManager.getOrders(),
-                        gallery: await DataManager.getGallery(),
-                        settings: await DataManager.getSettings(),
-                        exportDate: new Date().toISOString(),
-                        version: '1.0'
-                    };
-                    const json = JSON.stringify(data, null, 2);
-                    this.downloadFile(json, `baxnaano-backup-${new Date().toISOString().split('T')[0]}.json`, 'application/json');
-                    this.showNotification('✅ Full backup exported successfully', 'success');
-                } catch (error) {
-                    this.showError(`❌ ${error.message}`);
-                }
-            }
-
-            async importAllData(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-                
-                if (!confirm('⚠️ WARNING: This will overwrite ALL existing data. Are you absolutely sure?')) {
-                    event.target.value = '';
-                    return;
-                }
-                
-                try {
-                    this.showNotification('⏳ Importing data...', 'warning');
-                    const text = await file.text();
-                    const data = JSON.parse(text);
-                    
-                    if (!data.medicines || !data.orders || !data.gallery || !data.settings) {
-                        throw new Error('Invalid backup file structure');
-                    }
-
-                    const batch = this.fb.writeBatch();
-                    
-                    const existingCollections = ['medicines', 'orders', 'gallery', 'settings'];
-                    for (const colName of existingCollections) {
-                        const colRef = this.fb.collection(this.fb.db, colName);
-                        const snapshot = await this.fb.getDocs(colRef);
-                        snapshot.docs.forEach(doc => batch.delete(doc.ref));
-                    }
-                    
-                    data.medicines.forEach(item => {
-                        const docRef = this.fb.doc(this.fb.db, 'medicines', item.id);
-                        batch.set(docRef, item);
-                    });
-                    
-                    data.orders.forEach(item => {
-                        const docRef = this.fb.doc(this.fb.db, 'orders', item.id);
-                        batch.set(docRef, item);
-                    });
-                    
-                    data.gallery.forEach(item => {
-                        const docRef = this.fb.doc(this.fb.db, 'gallery', item.id);
-                        batch.set(docRef, item);
-                    });
-                    
-                    data.settings.forEach(item => {
-                        const docRef = this.fb.doc(this.fb.db, 'settings', item.id);
-                        batch.set(docRef, item);
-                    });
-                    
-                    await batch.commit();
-                    this.showNotification('✅ Import complete! Refreshing...', 'success');
-                    setTimeout(() => location.reload(), 2000);
-                    
-                } catch (error) {
-                    this.showError(`❌ Import failed: ${error.message}`);
-                } finally {
-                    event.target.value = '';
-                }
-            }
-
-            downloadFile(content, filename, type) {
-                const blob = new Blob([content], { type });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }
-
-            escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
-
-            showNotification(message, type = 'info') {
-                const notification = document.createElement('div');
-                notification.setAttribute('role', 'alert');
-                notification.setAttribute('aria-live', 'polite');
-                notification.className = `notification ${type}`;
-                notification.textContent = message;
-                document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                    notification.style.animation = 'fadeOut 0.5s ease';
-                    setTimeout(() => notification.remove(), 500);
-                }, 5000);
-            }
-        }
-
-        window.adminApp = new AdminApp(window.firebaseAPI);
-    </script>
+// Brand click cycle
+document.getElementById('tnBrand').style.cursor='pointer';
+document.getElementById('tnBrand').title='Click to switch module';
+document.getElementById('tnBrand').onclick=()=>{
+  const mods=Object.keys(DOCTORS);
+  const idx=(mods.indexOf(curModule)+1)%mods.length;
+  setModule(mods[idx]);
+};
+</script>
 </body>
 </html>
