@@ -1,1230 +1,1282 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Odoo</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-<link rel="shortcut icon" href="images/images (66).jpg" type="image/x-icon">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --purple:#6d3b6e;--purple2:#5a2f5b;--teal:#00bcd4;--teal2:#0097a7;
-  --green:#4caf50;--navy:#1a3a6b;--red:#e53935;--orange:#f57c00;
-  --bg:#f3f4f6;--white:#fff;--border:#e0e0e0;
-  --text:#1f2937;--muted:#6b7280;--light:#9ca3af;
-  --shadow:0 1px 3px rgba(0,0,0,.1);--shadow2:0 4px 16px rgba(0,0,0,.12);
-}
-body{font-family:'Inter',sans-serif;font-size:13px;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;}
-
-/* ── LOGIN ── */
-#loginPage{display:flex;align-items:center;justify-content:center;height:100vh;
-  background:linear-gradient(135deg,#fef2f2 0%,#6d3b6e 50%,#0f2548 100%);}
-.lbox{background:#fff;border-radius:8px;width:360px;padding:40px 36px;box-shadow:0 20px 50px rgba(0,0,0,.3);}
-.llogo{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
-.llogo svg{width:52px;height:52px;}
-.llogo h1{font-size:18px;font-weight:700;color:#1a3a6b;line-height:1.3;}
-.llogo p{font-size:11px;color:#6b7280;}
-.lbox label{display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px;}
-.lbox input{width:100%;border:1.5px solid #d1d5db;border-radius:6px;padding:10px 12px;font-size:13px;outline:none;margin-bottom:14px;font-family:inherit;}
-.lbox input:focus{border-color:var(--teal);}
-.lerr{background:#fef2f2;border:1px solid #fca5a5;border-radius:5px;padding:9px 12px;font-size:12px;color:#dc2626;margin-bottom:12px;display:none;}
-.lbtn{width:100%;background:var(--teal);color:#fff;border:none;border-radius:6px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
-.lbtn:hover{background:var(--teal2);}
-.lhint{text-align:center;margin-top:14px;font-size:11px;color:#9ca3af;}
-.lhint code{background:#f3f4f6;padding:2px 7px;border-radius:3px;font-weight:600;color:#374151;}
-
-/* ── SHELL ── */
-#app{display:none;height:100vh;flex-direction:column;}
-
-/* TOP NAV */
-.topnav{
-  background:var(--purple);color:#fff;height:40px;display:flex;
-  align-items:center;padding:0 10px;gap:0;flex-shrink:0;z-index:100;
-}
-.tn-ham{font-size:18px;cursor:pointer;padding:0 8px;color:#ddd;}
-.tn-brand{font-weight:700;font-size:14px;padding:0 12px 0 4px;white-space:nowrap;}
-.tn-nav{display:flex;flex:1;overflow-x:auto;scrollbar-width:none;}
-.tn-nav::-webkit-scrollbar{display:none;}
-.tn-nav a{
-  color:rgba(255,255,255,.75);text-decoration:none;padding:0 10px;
-  height:40px;display:flex;align-items:center;font-size:12px;white-space:nowrap;
-  border-bottom:2px solid transparent;cursor:pointer;transition:all .15s;
-}
-.tn-nav a:hover,.tn-nav a.active{color:#fff;border-bottom-color:#fff;}
-.tn-right{margin-left:auto;display:flex;align-items:center;gap:10px;padding-left:10px;font-size:12px;flex-shrink:0;}
-.tn-notif{background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;}
-.tn-user{color:rgba(255,255,255,.85);white-space:nowrap;}
-
-/* CONTENT AREA */
-.content-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column;}
-
-/* PAGE HEADER BAR */
-.ph{background:#fff;border-bottom:1px solid var(--border);padding:6px 16px;font-size:13px;color:var(--muted);flex-shrink:0;}
-.ph strong{color:var(--text);}
-
-/* ACTION BAR */
-.abar{background:#fff;border-bottom:1px solid var(--border);padding:7px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;}
-.btn{border:none;border-radius:4px;padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px;transition:all .15s;}
-.btn-teal{background:var(--teal);color:#fff;}
-.btn-teal:hover{background:var(--teal2);}
-.btn-purple{background:var(--purple);color:#fff;}
-.btn-purple:hover{background:var(--purple2);}
-.btn-outline{background:#fff;border:1px solid #ccc;color:var(--text);}
-.btn-outline:hover{background:#f5f5f5;}
-.btn-red{background:var(--red);color:#fff;}
-.btn-sm{padding:4px 10px;font-size:11px;}
-.btn-green{background:var(--green);color:#fff;}
-
-/* FILTER / TOOLBAR */
-.toolbar{background:#fff;border-bottom:1px solid var(--border);padding:6px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;}
-.filter-chip{background:var(--purple);color:#fff;border-radius:3px;padding:3px 8px;font-size:11px;display:flex;align-items:center;gap:5px;}
-.filter-chip span{cursor:pointer;opacity:.8;}
-.filter-chip span:hover{opacity:1;}
-.tb-search{border:1px solid #ccc;border-radius:4px;padding:5px 10px;font-size:12px;width:180px;outline:none;font-family:inherit;}
-.tb-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
-.tb-btn{background:#fff;border:1px solid #d1d5db;border-radius:3px;padding:4px 8px;font-size:11px;cursor:pointer;color:var(--muted);}
-.tb-btn:hover{background:#f5f5f5;color:var(--text);}
-.pager{font-size:11px;color:var(--muted);white-space:nowrap;}
-.pager button{background:none;border:none;cursor:pointer;font-size:13px;color:var(--muted);padding:0 2px;}
-
-/* SCROLLABLE TABLE AREA */
-.table-area{flex:1;overflow:auto;}
-.table-area::-webkit-scrollbar{width:5px;height:5px;}
-.table-area::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px;}
-table.main-table{width:100%;border-collapse:collapse;background:#fff;}
-.main-table th{
-  position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);
-  padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);
-  white-space:nowrap;z-index:2;
-}
-.main-table td{padding:9px 12px;font-size:12px;border-bottom:1px solid #f0f0f0;vertical-align:middle;white-space:nowrap;}
-.main-table tr:hover td{background:#faf5fa;}
-.main-table tr{cursor:pointer;}
-.main-table tfoot td{border-top:2px solid var(--border);border-bottom:none;font-weight:700;background:#fafafa;}
-.td-link{color:var(--purple);font-weight:600;}
-
-/* BADGES */
-.badge{display:inline-flex;align-items:center;border-radius:10px;padding:2px 9px;font-size:11px;font-weight:500;}
-.b-waiting{background:#fff3e0;color:#e65100;}
-.b-partial{background:#e3f2fd;color:#1565c0;}
-.b-quotation{background:#ede7f6;color:#512da8;}
-.b-done{background:#e8f5e9;color:#2e7d32;}
-.b-cancelled{background:#ffebee;color:#c62828;}
-.b-scheduled{background:#e3f2fd;color:#1565c0;}
-.b-new{background:#f3e5f5;color:#7b1fa2;}
-.b-locked{background:#fafafa;color:#616161;border:1px solid #ccc;}
-.b-cash{background:#e8f5e9;color:#388e3c;}
-.b-free{background:#e3f2fd;color:#1976d2;}
-
-/* FORM VIEW */
-.fview{flex:1;overflow:auto;background:#f9f9f9;}
-.fview::-webkit-scrollbar{width:5px;}
-.fview::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px;}
-.fbar{background:#fff;border-bottom:1px solid var(--border);padding:6px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;}
-.fbread{font-size:13px;color:var(--muted);}
-.fbread a{color:var(--purple);cursor:pointer;font-weight:500;}
-.fbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
-.status-flow{display:flex;}
-.sf-step{padding:5px 14px;font-size:11px;font-weight:600;background:#f3f4f6;border:1px solid #d1d5db;color:var(--muted);border-left:none;}
-.sf-step:first-child{border-left:1px solid #d1d5db;border-radius:4px 0 0 4px;}
-.sf-step:last-child{border-radius:0 4px 4px 0;}
-.sf-step.active{background:var(--purple);color:#fff;border-color:var(--purple);}
-.fbody{padding:16px;}
-.fcard{background:#fff;border-radius:6px;border:1px solid var(--border);margin-bottom:14px;overflow:hidden;}
-.fcard-head{padding:10px 16px;background:#fafafa;border-bottom:1px solid var(--border);font-size:12px;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:space-between;}
-.fcard-body{padding:16px;}
-.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 20px;}
-.fg2{grid-template-columns:1fr 1fr;}
-.fg3{grid-template-columns:1fr 1fr 1fr;}
-.field-lbl{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
-.field-val{font-size:13px;color:var(--text);border-bottom:1px solid #f0f0f0;padding-bottom:4px;}
-.field-input{border:1.5px solid #d1d5db;border-radius:4px;padding:7px 10px;font-size:12px;width:100%;outline:none;font-family:inherit;}
-.field-input:focus{border-color:var(--teal);}
-.field-select{border:1.5px solid #d1d5db;border-radius:4px;padding:7px 10px;font-size:12px;width:100%;outline:none;font-family:inherit;background:#fff;}
-.section-btn{margin:0 16px 12px;padding:6px 14px;font-size:12px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:4px;cursor:pointer;}
-.stbl{width:100%;border-collapse:collapse;}
-.stbl th{background:#f5f5f5;padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border);}
-.stbl td{padding:8px 12px;font-size:12px;border-bottom:1px solid #f5f5f5;}
-.stbl tr:hover td{background:#fafafa;}
-.add-line{display:block;padding:8px 12px;color:var(--purple);font-size:12px;cursor:pointer;}
-.add-line:hover{text-decoration:underline;}
-.stbl tfoot td{border-top:1px solid var(--border);font-weight:600;background:#fafafa;border-bottom:none;}
-.del-btn{background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:2px 4px;}
-.del-btn:hover{color:var(--red);}
-.inv-badge{border:1px solid #d1d5db;border-radius:4px;padding:8px 14px;font-size:12px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;background:#fff;}
-.inv-badge:hover{background:#f5f5f5;}
-.print-area{display:none;}
-@media print{
-  body *{display:none;}
-  .print-area,.print-area *{display:block;}
-  .print-area{
-    position:fixed;inset:0;background:#fff;padding:20px;font-size:12px;
-  }
-}
-
-/* MODAL */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;}
-.modal-bg.open{display:flex;}
-.modal{background:#fff;border-radius:8px;width:640px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.2);}
-.mh{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.mh h3{font-size:15px;font-weight:700;}
-.mc{padding:20px;}
-.mf{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
-.mrow{display:grid;gap:14px;margin-bottom:14px;}
-.mrow.c2{grid-template-columns:1fr 1fr;}
-.mrow.c3{grid-template-columns:1fr 1fr 1fr;}
-.mrow.c1{grid-template-columns:1fr;}
-.mfield{display:flex;flex-direction:column;gap:5px;}
-.mfield label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
-.mfield input,.mfield select,.mfield textarea{border:1.5px solid #d1d5db;border-radius:4px;padding:8px 10px;font-size:12px;font-family:inherit;outline:none;}
-.mfield input:focus,.mfield select:focus,.mfield textarea:focus{border-color:var(--teal);}
-.mfield textarea{resize:vertical;min-height:70px;}
-.xbtn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1;}
-
-/* PRINT RECEIPT */
-.rx-print{font-family:'Inter',sans-serif;color:#000;font-size:12px;padding:20px;}
-.rx-logo{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-.rx-logo svg{width:50px;height:50px;}
-.rx-logo h1{font-size:22px;font-weight:900;color:#1a3a6b;letter-spacing:-1px;}
-.rx-logo h1 span{color:#4caf50;}
-.rx-logo p{font-size:11px;color:#6b7280;}
-.rx-hr{border:none;border-top:2px solid #000;margin:10px 0;}
-.rx-hr2{border:none;border-top:1px solid #ccc;margin:8px 0;}
-.rx-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;font-size:12px;margin-bottom:10px;}
-.rx-grid span{color:#6b7280;}
-.rx-grid strong{color:#000;}
-.rx-table{width:100%;border-collapse:collapse;font-size:11px;margin:10px 0;}
-.rx-table th{background:#f0f0f0;border:1px solid #ccc;padding:5px 8px;text-align:left;font-weight:600;}
-.rx-table td{border:1px solid #ddd;padding:5px 8px;}
-.rx-total{text-align:right;font-size:13px;margin-top:10px;}
-.rx-footer{margin-top:20px;font-size:10px;color:#6b7280;text-align:center;border-top:1px solid #ccc;padding-top:10px;}
-
-/* TOAST */
-.toast{position:fixed;bottom:20px;right:20px;background:#323232;color:#fff;border-radius:6px;padding:11px 18px;font-size:13px;z-index:9999;box-shadow:var(--shadow2);transform:translateY(80px);transition:transform .3s;display:flex;align-items:center;gap:8px;}
-.toast.show{transform:translateY(0);}
-
-/* PAGE VISIBILITY */
-.page{display:none;flex:1;flex-direction:column;overflow:hidden;}
-.page.active{display:flex;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #f3f4f6; }
+        .sidebar-item { transition: all 0.3s; cursor: pointer; }
+        .sidebar-item:hover, .sidebar-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid #60a5fa; }
+        .card { transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .fade-in { animation: fadeIn 0.4s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .hidden-section { display: none; }
+        .print-only { display: none; }
+        
+        @media print {
+            body * { visibility: hidden; }
+            .print-area, .print-area * { visibility: visible; }
+            .print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+        }
+        
+        .status-badge { padding: 2px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-completed { background: #d1fae5; color: #065f46; }
+        .status-new { background: #dbeafe; color: #1e40af; }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: white; border-radius: 12px; max-height: 90vh; overflow-y: auto; width: 90%; max-width: 700px; padding: 24px; }
+    </style>
 </head>
-<body>
+<body class="text-gray-800">
 
-<!-- LOGIN -->
-<div id="loginPage">
-  <div class="lbox">
-    <center>
-   <img src="images/images.png" width="140" style="margin-bottom:90px;"/>
-   </center>
-   <br>
-   <hr>
-   <br>
-   <br>
-    <div class="lerr" id="lerr">❌ Password khalad ah. Isticmaal: <strong>hospital2024</strong></div>
-    <label>Email</label>
-    <input type="email" id="lemail" placeholder="admin@baxnaano.so" value="admin@baxnaano.so"/>
-    <label>Password</label>
-    <input type="password" id="lpass" placeholder="Password" onkeydown="if(event.key==='Enter')login()"/>
-    <button class="lbtn" onclick="login()">Log in</button>
-    <div class="lhint">Password: <code>hospital2024</code></div>
-  </div>
-</div>
-
-<!-- APP -->
-<div id="app">
-  <!-- TOP NAV -->
-  <div class="topnav" id="topnav">
-    <span class="tn-ham">☰</span>
-    <span class="tn-brand" id="tnBrand">Cashier</span>
-    <nav class="tn-nav" id="tnNav"></nav>
-    <div class="tn-right">
-      <span class="tn-notif" id="tnNotif">3</span>
-      <span style="cursor:pointer;" title="Settings">⚙</span>
-      <span class="tn-user" id="tnUser">Abdinasir</span>
-      <span style="cursor:pointer;color:rgba(255,255,255,.6)" onclick="logout()" title="Logout">⏏</span>
-    </div>
-  </div>
-
-  <!-- PAGES -->
-
-  <!-- ════ CASHIER LIST ════ -->
-  <div class="page" id="pg-cashier-list">
-    <div class="ph"><strong>Cashier's Appointment</strong></div>
-    <div class="abar">
-      <button class="btn btn-teal" onclick="openModal('mCashier')">CREATE</button>
-      <button class="btn btn-outline">IMPORT</button>
-    </div>
-    <div class="toolbar">
-      <div class="filter-chip">▼ Triage <span onclick="this.parentElement.remove()">✕</span></div>
-      <div class="filter-chip">▼ Today Appointment <span onclick="this.parentElement.remove()">✕</span></div>
-      <input class="tb-search" type="text" placeholder="Search..." oninput="searchTable('cashierTB',this.value)"/>
-      <div class="tb-right">
-        <button class="tb-btn">▼ Filters</button>
-        <button class="tb-btn">≡ Group By</button>
-        <button class="tb-btn">★ Favorites</button>
-        <span class="pager" id="cashierPager">1-40 / 40 <button>‹</button><button>›</button></span>
-        <button class="tb-btn">☰</button><button class="tb-btn">⊞</button>
-      </div>
-    </div>
-    <div class="table-area">
-      <table class="main-table">
-        <thead><tr>
-          <th style="width:28px"><input type="checkbox"/></th>
-          <th>Queue</th><th>Appointment #</th><th>Patient</th><th>ID#</th>
-          <th>Patient Age</th><th>Appointment Slot</th><th>Patient In Date</th>
-          <th>Patient Type</th><th>Appointment Type</th><th>Appointment Date</th>
-          <th>Doctor</th><th>Branch</th><th>Payment Type</th><th>Status</th>
-        </tr></thead>
-        <tbody id="cashierTB"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ════ CASHIER FORM ════ -->
-  <div class="page" id="pg-cashier-form">
-    <div class="fbar">
-      <span class="fbread"><a onclick="showPage('cashier-list')">Cashier's Appointment</a> / <span id="cf-id">AP042282</span></span>
-      <div class="fbar-right">
-        <button class="btn btn-outline btn-sm" onclick="printReceipt()">Print ▾</button>
-        <button class="btn btn-outline btn-sm">Action ▾</button>
-        <div class="status-flow">
-          <div class="sf-step" id="sf-draft">DRAFT</div>
-          <div class="sf-step active" id="sf-sched">SCHEDULED</div>
+<div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl no-print">
+        <div class="p-6 border-b border-slate-700">
+            <h1 class="text-xl font-bold tracking-wide"><i class="fas fa-user-md mr-2 text-emerald-400"></i>Doctor MS</h1>
+            <p class="text-xs text-slate-400 mt-1">Hospital Management System</p>
         </div>
-      </div>
-    </div>
-    <div class="abar">
-      <button class="btn btn-outline">EDIT</button>
-      <button class="btn btn-teal" onclick="openModal('mCashier')">CREATE</button>
-      <button class="btn btn-red btn-sm">REFUND</button>
-      <button class="btn btn-outline btn-sm" onclick="printReceipt()">PRINT RECEIPT</button>
-      <button class="btn btn-teal btn-sm">PATIENT TRANSFER</button>
-      <button class="btn btn-outline btn-sm">RECALL</button>
-      <button class="btn btn-purple btn-sm">MARK AS COMPLETED</button>
-      <div style="margin-left:auto;">
-        <div class="inv-badge">📋 <span>1</span><br/><small style="font-size:9px">Invoice</small></div>
-      </div>
-    </div>
-    <div class="fview">
-      <div class="fbody">
-        <!-- Patient Info -->
-        <div class="fcard">
-          <div class="fcard-head">Patient Info &amp; Appointment</div>
-          <div class="fcard-body">
-            <div class="fg fg3" style="margin-bottom:14px;">
-              <div><div class="field-lbl">Patient</div><div class="field-val td-link" id="cf-patient">NASRA FARAH ALI</div></div>
-              <div><div class="field-lbl">ID#</div><div class="field-val" id="cf-idnum">0038806</div></div>
-              <div><div class="field-lbl">Sex</div><div class="field-val" id="cf-sex">Female</div></div>
-              <div><div class="field-lbl">Mobile</div><div class="field-val" id="cf-mobile">0610150128</div></div>
-              <div><div class="field-lbl">Patient Age</div><div class="field-val" id="cf-age">23 Y</div></div>
-              <div><div class="field-lbl">Appointment #</div><div class="field-val td-link" id="cf-appt">AP042282</div></div>
+        <nav class="flex-1 overflow-y-auto py-4">
+            <a onclick="showSection('dashboard')" class="sidebar-item active flex items-center px-6 py-3 text-sm font-medium" id="nav-dashboard">
+                <i class="fas fa-chart-line w-6"></i> Dashboard
+            </a>
+            <a onclick="showSection('patients')" class="sidebar-item flex items-center px-6 py-3 text-sm font-medium" id="nav-patients">
+                <i class="fas fa-procedures w-6"></i> Patients
+            </a>
+            <a onclick="showSection('doctor-work')" class="sidebar-item flex items-center px-6 py-3 text-sm font-medium" id="nav-doctor-work">
+                <i class="fas fa-stethoscope w-6"></i> Doctor Work
+            </a>
+            <a onclick="showSection('lab')" class="sidebar-item flex items-center px-6 py-3 text-sm font-medium" id="nav-lab">
+                <i class="fas fa-flask w-6"></i> Lab Section
+            </a>
+            <a onclick="showSection('settings')" class="sidebar-item flex items-center px-6 py-3 text-sm font-medium" id="nav-settings">
+                <i class="fas fa-cog w-6"></i> Settings
+            </a>
+        </nav>
+        <div class="p-4 border-t border-slate-700">
+            <button onclick="resetAllData()" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                <i class="fas fa-trash-alt mr-2"></i> Reset All Data
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+        <!-- Top Bar -->
+        <header class="bg-white shadow-sm border-b px-8 py-4 flex justify-between items-center sticky top-0 z-30 no-print">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800" id="page-title">Dashboard</h2>
+                <p class="text-sm text-gray-500" id="current-date"></p>
             </div>
-            <div class="fg fg3">
-              <div><div class="field-lbl">Appointment Date</div><div class="field-val" id="cf-date">05/07/2026 06:54:18</div></div>
-              <div><div class="field-lbl">Doctor</div><div class="field-val td-link" id="cf-doctor">DR. YAHYA SHOOLE (Pediatric Gastroenterology)</div></div>
-              <div><div class="field-lbl">Branch</div><div class="field-val" id="cf-branch">HQ</div></div>
-              <div><div class="field-lbl">Patient Type</div><div class="field-val">OPD</div></div>
-              <div><div class="field-lbl">Appointment Type</div><div class="field-val">New</div></div>
-              <div><div class="field-lbl">Payment Type</div><div class="field-val" id="cf-payment">Cash</div></div>
+            <div class="flex items-center gap-4">
+                <div class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold">
+                    <i class="fas fa-check-circle mr-1"></i> System Ready
+                </div>
+                <div class="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-lg">
+                    <i class="fas fa-user-circle text-gray-500 text-xl"></i>
+                    <span class="text-sm font-medium">Dr. Admin</span>
+                </div>
             </div>
-          </div>
+        </header>
+
+        <div class="p-6 max-w-7xl mx-auto">
+            
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="section fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="card bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div><p class="text-sm text-gray-500 mb-1">Total Patients</p><h3 class="text-2xl font-bold" id="dash-patients">0</h3></div>
+                            <div class="bg-blue-100 p-3 rounded-lg"><i class="fas fa-users text-blue-600"></i></div>
+                        </div>
+                    </div>
+                    <div class="card bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div><p class="text-sm text-gray-500 mb-1">Today's Visits</p><h3 class="text-2xl font-bold" id="dash-visits">0</h3></div>
+                            <div class="bg-emerald-100 p-3 rounded-lg"><i class="fas fa-calendar-check text-emerald-600"></i></div>
+                        </div>
+                    </div>
+                    <div class="card bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div><p class="text-sm text-gray-500 mb-1">Pending Lab</p><h3 class="text-2xl font-bold" id="dash-pending-lab">0</h3></div>
+                            <div class="bg-orange-100 p-3 rounded-lg"><i class="fas fa-flask text-orange-600"></i></div>
+                        </div>
+                    </div>
+                    <div class="card bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div><p class="text-sm text-gray-500 mb-1">Completed Labs</p><h3 class="text-2xl font-bold" id="dash-completed-lab">0</h3></div>
+                            <div class="bg-purple-100 p-3 rounded-lg"><i class="fas fa-check-double text-purple-600"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold mb-4">Recent Patients</h3>
+                        <div id="dash-recent-patients" class="space-y-3"></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold mb-4">Pending Lab Requests</h3>
+                        <div id="dash-pending-lab-list" class="space-y-3"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PATIENTS SEARCH & HISTORY -->
+            <section id="patients" class="section hidden-section fade-in">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+                    <h3 class="text-lg font-bold mb-4">Search Patient</h3>
+                    <div class="flex gap-4">
+                        <input type="text" id="search-name" placeholder="Search by Name..." class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500" onkeyup="searchPatients()">
+                        <input type="text" id="search-phone" placeholder="Search by Phone..." class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500" onkeyup="searchPatients()">
+                        <button onclick="openNewPatientModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
+                            <i class="fas fa-plus mr-2"></i>New Patient
+                        </button>
+                    </div>
+                </div>
+
+                <div id="patient-search-results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"></div>
+
+                <div id="patient-history-view" class="hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                            <div>
+                                <h3 class="text-xl font-bold" id="hist-name">Patient Name</h3>
+                                <p class="text-sm text-gray-500" id="hist-info">Age: 25 | Phone: +252...</p>
+                            </div>
+                            <button onclick="startNewVisitFromHistory()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-plus mr-2"></i>New Visit
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="font-bold text-gray-700 mb-4 border-b pb-2">Visit History</h4>
+                            <div id="hist-visits" class="space-y-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DOCTOR WORK -->
+            <section id="doctor-work" class="section hidden-section fade-in">
+                <!-- Step 1: Select or Create Patient -->
+                <div id="doc-step-1" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+                    <h3 class="text-lg font-bold mb-4">Step 1: Select Patient</h3>
+                    <div class="flex gap-4 mb-4">
+                        <input type="text" id="doc-search-patient" placeholder="Type name or phone..." class="flex-1 border border-gray-300 rounded-lg px-4 py-2" onkeyup="docSearchPatient()">
+                        <button onclick="openNewPatientModal()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">New Patient</button>
+                    </div>
+                    <div id="doc-patient-results" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+                </div>
+
+                <!-- Step 2: Visit Form -->
+                <div id="doc-step-2" class="hidden">
+                    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-lg mb-6 flex justify-between items-center">
+                        <div>
+                            <span class="text-sm text-emerald-600 font-medium">Current Patient:</span>
+                            <span class="text-lg font-bold text-emerald-800 ml-2" id="current-patient-name">--</span>
+                            <span class="text-sm text-gray-500 ml-3" id="current-patient-info">--</span>
+                        </div>
+                        <button onclick="clearCurrentPatient()" class="text-red-600 hover:text-red-800 text-sm font-medium">Change Patient</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Left: History & Diagnosis -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                                <h4 class="font-bold mb-3 text-gray-700"><i class="fas fa-history mr-2 text-blue-500"></i>Patient History</h4>
+                                <textarea id="visit-history" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500" placeholder="Enter patient history..."></textarea>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                                <h4 class="font-bold mb-3 text-gray-700"><i class="fas fa-stethoscope mr-2 text-red-500"></i>Diagnosis</h4>
+                                <textarea id="visit-diagnosis" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500" placeholder="Enter diagnosis..."></textarea>
+                            </div>
+
+                            <!-- Medicines -->
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h4 class="font-bold text-gray-700"><i class="fas fa-pills mr-2 text-purple-500"></i>Prescription / Medicines</h4>
+                                    <button onclick="addMedicineRow()" class="text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded-lg hover:bg-purple-200"><i class="fas fa-plus mr-1"></i>Add Medicine</button>
+                                </div>
+                                <div id="medicine-rows" class="space-y-3"></div>
+                                <button onclick="printPrescription()" class="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                    <i class="fas fa-print mr-2"></i>Print Prescription
+                                </button>
+                            </div>
+
+                            <!-- Lab Tests -->
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h4 class="font-bold text-gray-700"><i class="fas fa-flask mr-2 text-orange-500"></i>Lab Tests</h4>
+                                    <button onclick="addLabTestRow()" class="text-sm bg-orange-100 text-orange-700 px-3 py-1 rounded-lg hover:bg-orange-200"><i class="fas fa-plus mr-1"></i>Add Test</button>
+                                </div>
+                                <div id="labtest-rows" class="space-y-3"></div>
+                                <div class="flex gap-3 mt-4">
+                                    <button onclick="sendToLab()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                        <i class="fas fa-paper-plane mr-2"></i>Send to Lab
+                                    </button>
+                                    <button onclick="printLabRequest()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                        <i class="fas fa-print mr-2"></i>Print Lab Request
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Pharmacy -->
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                                <h4 class="font-bold mb-3 text-gray-700"><i class="fas fa-clinic-medical mr-2 text-teal-500"></i>Pharmacy Prescription</h4>
+                                <div id="pharmacy-preview" class="bg-gray-50 p-4 rounded-lg text-sm text-gray-600 mb-3">
+                                    Pharmacy items will be generated from prescribed medicines.
+                                </div>
+                                <button onclick="printPharmacy()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                    <i class="fas fa-print mr-2"></i>Print Pharmacy Prescription
+                                </button>
+                            </div>
+
+                            <button onclick="saveVisit()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-lg shadow-lg">
+                                <i class="fas fa-save mr-2"></i>Save Visit
+                            </button>
+                        </div>
+
+                        <!-- Right: Lab Results & Previous Info -->
+                        <div class="space-y-6">
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                                <h4 class="font-bold mb-3 text-gray-700"><i class="fas fa-vials mr-2 text-pink-500"></i>Lab Results (This Visit)</h4>
+                                <div id="current-lab-results" class="space-y-2 text-sm">
+                                    <p class="text-gray-500 italic">No lab results yet. Send tests to lab first.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                                <h4 class="font-bold mb-3 text-gray-700"><i class="fas fa-clock-rotate-left mr-2 text-gray-500"></i>Previous Visits</h4>
+                                <div id="current-patient-prev-visits" class="space-y-3 text-sm max-h-96 overflow-y-auto"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LAB SECTION -->
+            <section id="lab" class="section hidden-section fade-in">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+                    <h3 class="text-xl font-bold mb-2">Lab Workstation</h3>
+                    <p class="text-sm text-gray-500">Manage incoming lab requests and enter results</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Pending Requests -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-4 border-b border-gray-100 bg-orange-50">
+                            <h4 class="font-bold text-orange-800"><i class="fas fa-inbox mr-2"></i>Pending Requests</h4>
+                        </div>
+                        <div class="p-4 max-h-96 overflow-y-auto" id="lab-pending-list"></div>
+                    </div>
+
+                    <!-- Completed Results -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-4 border-b border-gray-100 bg-emerald-50">
+                            <h4 class="font-bold text-emerald-800"><i class="fas fa-check-circle mr-2"></i>Completed Results</h4>
+                        </div>
+                        <div class="p-4 max-h-96 overflow-y-auto" id="lab-completed-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SETTINGS -->
+            <section id="settings" class="section hidden-section fade-in">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Medicines -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold"><i class="fas fa-pills mr-2 text-purple-500"></i>Medicines</h3>
+                            <button onclick="openSettingsModal('medicine')" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg text-sm">
+                                <i class="fas fa-plus mr-1"></i>Add
+                            </button>
+                        </div>
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-gray-50 text-gray-600 font-medium">
+                                <tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Default Dose</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Action</th></tr>
+                            </thead>
+                            <tbody id="settings-medicines-table" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Lab Tests -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold"><i class="fas fa-flask mr-2 text-orange-500"></i>Lab Tests</h3>
+                            <button onclick="openSettingsModal('labTest')" class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded-lg text-sm">
+                                <i class="fas fa-plus mr-1"></i>Add
+                            </button>
+                        </div>
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-gray-50 text-gray-600 font-medium">
+                                <tr><th class="px-4 py-3">Test Name</th><th class="px-4 py-3">Unit</th><th class="px-4 py-3">Normal Range</th><th class="px-4 py-3">Action</th></tr>
+                            </thead>
+                            <tbody id="settings-labtests-table" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
         </div>
+    </main>
+</div>
 
-        <!-- Queue -->
-        <div class="fcard">
-          <div class="fcard-head">Queue # <span id="cf-queue" style="color:var(--red);font-size:20px;font-weight:900;margin-left:12px;">1</span></div>
+<!-- New Patient Modal -->
+<div id="modal-new-patient" class="modal-overlay">
+    <div class="modal-box">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold">New Patient Registration</h3>
+            <button onclick="closeModal('modal-new-patient')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
         </div>
-
-        <!-- Lab -->
-        <div class="fcard">
-          <div class="fcard-head">
-            Lab <span id="cf-labcount">7</span>
-            <button class="btn btn-teal btn-sm" onclick="openModal('mLabReq')">ADD TESTS</button>
-          </div>
-          <table class="stbl">
-            <thead><tr><th>Procedure</th><th>Availability</th><th>Doctor Instructions</th><th>Unit Price</th><th>Discount</th><th></th></tr></thead>
-            <tbody id="cf-labrows">
-              <tr><td>SIDA</td><td><span class="badge b-done">Available</span></td><td></td><td>2.00</td><td>0.00</td><td><button class="del-btn">🗑</button></td></tr>
-              <tr><td>HCV</td><td><span class="badge b-done">Available</span></td><td></td><td>4.00</td><td>0.00</td><td><button class="del-btn">🗑</button></td></tr>
-              <tr><td>HBA1C</td><td><span class="badge b-done">Available</span></td><td></td><td>13.00</td><td>0.00</td><td><button class="del-btn">🗑</button></td></tr>
-              <tr><td>CBC</td><td><span class="badge b-done">Available</span></td><td></td><td>5.00</td><td>0.00</td><td><button class="del-btn">🗑</button></td></tr>
-              <tr><td>CRP</td><td><span class="badge b-done">Available</span></td><td></td><td>3.00</td><td>0.00</td><td><button class="del-btn">🗑</button></td></tr>
-            </tbody>
-            <tfoot><tr><td colspan="3"></td><td id="cf-labtotal">27.00</td><td>0.00</td><td></td></tr></tfoot>
-          </table>
-          <a class="add-line" onclick="openModal('mLabReq')">+ Add a line</a>
-        </div>
-
-        <!-- Imaging -->
-        <div class="fcard">
-          <div class="fcard-head">Imaging <button class="btn btn-teal btn-sm">ADD IMAGING</button></div>
-          <table class="stbl">
-            <thead><tr><th>Procedure</th><th>Doctor Instructions</th><th>Unit Price</th><th>Discount</th><th></th></tr></thead>
-            <tbody id="cf-imgrows"><tr><td colspan="5" style="color:#aaa;font-style:italic;padding:10px 12px;">No imaging added</td></tr></tbody>
-            <tfoot><tr><td colspan="2"></td><td>0.00</td><td>0.00</td><td></td></tr></tfoot>
-          </table>
-          <a class="add-line">+ Add a line</a>
-        </div>
-
-        <!-- Pharmacy -->
-        <div class="fcard">
-          <div class="fcard-head">Pharmacy <button class="btn btn-teal btn-sm" onclick="openModal('mPharmForm')">ADD MEDICINE</button></div>
-          <table class="stbl">
-            <thead><tr><th>Brand Name</th><th>Dosage Form</th><th>Route</th><th>Frequency</th><th>Qty</th><th>Unit Price</th><th>Subtotal</th><th></th></tr></thead>
-            <tbody id="cf-pharmrows"><tr><td colspan="8" style="color:#aaa;font-style:italic;padding:10px 12px;">No medicines added</td></tr></tbody>
-            <tfoot><tr><td colspan="5"></td><td>Subtotal:</td><td id="cf-pharmtotal">$0.00</td><td></td></tr></tfoot>
-          </table>
-          <a class="add-line" onclick="openModal('mPharmForm')">+ Add a line</a>
-        </div>
-
-        <!-- Other Procedure -->
-        <div class="fcard">
-          <div class="fcard-head">Other Procedure</div>
-          <table class="stbl">
-            <thead><tr><th>Procedure</th><th>Doctor Instructions</th><th>Qty</th><th>Unit Price</th><th>Total</th><th>Discount</th><th></th></tr></thead>
-            <tbody><tr><td>HMS Master</td><td></td><td>1</td><td>19.00</td><td>19.00</td><td>0.00</td><td><button class="del-btn">🗑</button></td></tr></tbody>
-          </table>
-          <a class="add-line">+ Add a line</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ════ LAB / SAMPLE COLLECTION ════ -->
-  <div class="page" id="pg-lab">
-    <div class="ph"><strong>Sample Collection</strong></div>
-    <div class="abar">
-      <button class="btn btn-teal" onclick="openModal('mLabNew')">CREATE</button>
-      <button class="btn btn-outline">IMPORT</button>
-    </div>
-    <div class="toolbar">
-      <div class="filter-chip">▼ Today Labtest <span onclick="this.parentElement.remove()">✕</span></div>
-      <input class="tb-search" type="text" placeholder="Search..." oninput="searchTable('labTB',this.value)"/>
-      <div class="tb-right">
-        <button class="tb-btn">▼ Filters</button>
-        <button class="tb-btn">≡ Group By</button>
-        <button class="tb-btn">★ Favorites</button>
-        <span class="pager" id="labPager">1-4 / 4 <button>‹</button><button>›</button></span>
-      </div>
-    </div>
-    <div class="table-area">
-      <table class="main-table">
-        <thead><tr>
-          <th style="width:28px"><input type="checkbox"/></th>
-          <th>Test #</th><th>Patient</th><th>ID#</th>
-          <th>Sex</th><th>Mobile</th><th>Patient Age</th><th>Sample State</th><th>Action</th>
-        </tr></thead>
-        <tbody id="labTB"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ════ PHARMACY LIST ════ -->
-  <div class="page" id="pg-pharmacy-list">
-    <div class="ph"><strong>Pharmacy</strong></div>
-    <div class="abar">
-      <button class="btn btn-teal" onclick="openModal('mPharmNew')">CREATE</button>
-      <button class="btn btn-outline">IMPORT</button>
-    </div>
-    <div class="toolbar">
-      <div class="filter-chip">▼ Today Sale <span onclick="this.parentElement.remove()">✕</span></div>
-      <input class="tb-search" type="text" placeholder="Search..." oninput="searchTable('pharmTB',this.value)"/>
-      <div class="tb-right">
-        <button class="tb-btn">▼ Filters</button>
-        <button class="tb-btn">≡ Group By</button>
-        <button class="tb-btn">★ Favorites</button>
-        <span class="pager" id="pharmPager">1-4 / 4 <button>‹</button><button>›</button></span>
-        <button class="tb-btn">☰</button><button class="tb-btn">⊞</button><button class="tb-btn">📅</button><button class="tb-btn">📊</button><button class="tb-btn">⊙</button>
-      </div>
-    </div>
-    <div class="table-area">
-      <table class="main-table">
-        <thead><tr>
-          <th style="width:28px"><input type="checkbox"/></th>
-          <th>Prescription #</th><th>Patient #</th><th>Date</th>
-          <th>Doctor</th><th>Sales Person</th><th>Payment Method</th>
-          <th>Discount</th><th>Net Amount</th><th>Status</th><th>Action</th>
-        </tr></thead>
-        <tbody id="pharmTB"></tbody>
-        <tfoot><tr><td colspan="7" style="padding:9px 12px;">Total</td><td id="pharmTotal" style="padding:9px 12px;"></td><td colspan="2"></td></tr></tfoot>
-      </table>
-    </div>
-  </div>
-
-  <!-- ════ PHARMACY FORM ════ -->
-  <div class="page" id="pg-pharmacy-form">
-    <div class="fbar">
-      <span class="fbread"><a onclick="showPage('pharmacy-list')">Pharmacy</a> / <span id="pf-id">S84655</span></span>
-      <div class="fbar-right">
-        <button class="btn btn-outline btn-sm">Print ▾</button>
-        <div class="status-flow">
-          <div class="sf-step active">QUOTATION</div>
-          <div class="sf-step">SALES ORDER</div>
-          <div class="sf-step">LOCKED</div>
-        </div>
-      </div>
-    </div>
-    <div class="abar">
-      <button class="btn btn-outline">EDIT</button>
-      <button class="btn btn-outline">DISCARD</button>
-      <div style="margin-left:auto;"><button class="btn btn-outline btn-sm">Customer Preview</button></div>
-    </div>
-    <div class="fview">
-      <div class="fbody">
-        <div class="fcard">
-          <div class="fcard-body">
-            <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:16px;" id="pf-num">S84655</div>
-            <div class="fg fg3">
-              <div><div class="field-lbl">Patient</div><div class="field-val td-link" id="pf-patient">ABDIRAHIIN AHMED MOHAMED</div></div>
-              <div><div class="field-lbl">ID#</div><div class="field-val" id="pf-idnum">0036880</div></div>
-              <div><div class="field-lbl">Sex</div><div class="field-val" id="pf-sex">Male</div></div>
-              <div><div class="field-lbl">Patient Age</div><div class="field-val" id="pf-age">1 Y</div></div>
-              <div><div class="field-lbl">Mobile</div><div class="field-val" id="pf-mobile">0614626423</div></div>
-              <div><div class="field-lbl">Appointment #</div><div class="field-val td-link" id="pf-appt">AP033337</div></div>
-              <div><div class="field-lbl">Prescription Date</div><div class="field-val" id="pf-date">10/23/2025 11:11:39</div></div>
-              <div><div class="field-lbl">Doctor</div><div class="field-val td-link" id="pf-doctor">DR. YAHYA SHOOLE (Pediatric Gastro...)</div></div>
-              <div><div class="field-lbl">Branch</div><div class="field-val">HQ</div></div>
+        <form onsubmit="saveNewPatient(event)">
+            <div class="space-y-4">
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label><input type="text" id="np-name" required class="w-full border border-gray-300 rounded-lg px-3 py-2"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Age</label><input type="number" id="np-age" required class="w-full border border-gray-300 rounded-lg px-3 py-2"></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label><input type="tel" id="np-phone" required class="w-full border border-gray-300 rounded-lg px-3 py-2"></div>
+                </div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Address (Optional)</label><input type="text" id="np-address" class="w-full border border-gray-300 rounded-lg px-3 py-2"></div>
             </div>
-          </div>
-        </div>
-        <div class="fcard">
-          <div class="fcard-head">Medicine Line <button class="btn btn-teal btn-sm" onclick="openModal('mPharmForm')">+ Add Medicine</button></div>
-          <table class="stbl">
-            <thead><tr><th>Brand Name</th><th>Medicine Desc</th><th>Dosage Form</th><th>Route</th><th>Frequency</th><th>Dose</th><th>Qty</th><th>Available Qty</th><th>Unit Price</th><th>Subtotal</th><th>Total</th><th></th></tr></thead>
-            <tbody id="pf-medrows">
-              <tr><td>ZENTO VIT ORAL</td><td></td><td></td><td>ORALLL</td><td>1x1</td><td>6</td><td>6</td><td>175.00</td><td>0.50</td><td>$3.00</td><td>$3.00</td><td><button class="del-btn">🗑</button></td></tr>
-              <tr><td>SUPERHEMA</td><td></td><td></td><td>ORALLL</td><td>1x1</td><td>20</td><td>20</td><td>316.00</td><td>0.45</td><td>$9.00</td><td>$9.00</td><td><button class="del-btn">🗑</button></td></tr>
-              <tr><td>Prednisolone Sy...</td><td>1</td><td>5ml</td><td>ORALLL</td><td>1x1</td><td>1</td><td>1</td><td>9.00</td><td>2.00</td><td>$2.00</td><td>$2.00</td><td><button class="del-btn">🗑</button></td></tr>
-            </tbody>
-          </table>
-          <a class="add-line" onclick="openModal('mPharmForm')">+ Add a product</a>
-          <div style="text-align:right;padding:12px 16px;font-size:12px;border-top:1px solid var(--border);">
-            <div>Subtotal: <strong>$14.00</strong></div>
-            <div>Discount: <strong>0.00</strong></div>
-            <div>Total Amount: <strong>14.00</strong></div>
-            <div>Balance: <strong>14.00</strong></div>
-          </div>
-        </div>
-      </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" onclick="closeModal('modal-new-patient')" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Register Patient</button>
+            </div>
+        </form>
     </div>
-  </div>
-
-  <!-- ════ DOCTORS ════ -->
-  <div class="page" id="pg-doctors">
-    <div class="ph"><strong>Doctor's Appointment</strong></div>
-    <div class="abar">
-      <button class="btn btn-teal" onclick="openModal('mDoctorAppt')">CREATE</button>
-      <button class="btn btn-outline">IMPORT</button>
-    </div>
-    <div class="toolbar">
-      <input class="tb-search" type="text" placeholder="Search..." oninput="searchTable('doctorTB',this.value)"/>
-      <div class="tb-right">
-        <button class="tb-btn">▼ Filters</button>
-        <button class="tb-btn">≡ Group By</button>
-        <button class="tb-btn">★ Favorites</button>
-        <span class="pager" id="doctorPager">1-40 / 40</span>
-      </div>
-    </div>
-    <div class="table-area">
-      <table class="main-table">
-        <thead><tr>
-          <th style="width:28px"><input type="checkbox"/></th>
-          <th>Queue</th><th>Appointment #</th><th>Patient</th><th>ID#</th>
-          <th>Patient Age</th><th>Slot</th><th>Patient In Date</th>
-          <th>Patient Type</th><th>Appt Type</th><th>Appt Date</th>
-          <th>Doctor</th><th>Branch</th><th>Payment Type</th><th>Status</th>
-        </tr></thead>
-        <tbody id="doctorTB"></tbody>
-      </table>
-    </div>
-  </div>
-
-</div><!-- /app -->
-
-<!-- ═══ MODALS ═══ -->
-
-<!-- NEW CASHIER APPOINTMENT -->
-<div class="modal-bg" id="mCashier">
-  <div class="modal">
-    <div class="mh"><h3>➕ New Cashier Appointment</h3><button class="xbtn" onclick="closeModal('mCashier')">✕</button></div>
-    <div class="mc">
-      <div class="mrow c2">
-        <div class="mfield"><label>Patient Name *</label><input type="text" id="mc-patient" placeholder="Full name"/></div>
-        <div class="mfield"><label>Patient ID#</label><input type="text" id="mc-idnum" placeholder="e.g. 0045706"/></div>
-      </div>
-      <div class="mrow c3">
-        <div class="mfield"><label>Sex</label><select id="mc-sex"><option>Male</option><option>Female</option></select></div>
-        <div class="mfield"><label>Age</label><input type="text" id="mc-age" placeholder="e.g. 25 Y"/></div>
-        <div class="mfield"><label>Mobile</label><input type="text" id="mc-mobile" placeholder="06XXXXXXXX"/></div>
-      </div>
-      <div class="mrow c2">
-        <div class="mfield"><label>Doctor *</label>
-          <select id="mc-doctor">
-            <option>DR. YAHYA SHOOLE (Pediatric Gastroenterology)</option>
-            <option>Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)</option>
-            <option>DR. A Y HERSI (Internal Medicine)</option>
-            <option>SADIA OMAR SALIM (Psychology & Speech Therapy)</option>
-          </select>
-        </div>
-        <div class="mfield"><label>Payment Type</label>
-          <select id="mc-payment"><option>Cash</option><option>Free</option><option>Insurance</option></select>
-        </div>
-      </div>
-      <div class="mrow c2">
-        <div class="mfield"><label>Appointment Slot</label>
-          <select id="mc-slot"><option>Day</option><option>Morning</option><option>Evening</option></select>
-        </div>
-        <div class="mfield"><label>Branch</label>
-          <select id="mc-branch"><option>HQ</option><option>Branch 2</option></select>
-        </div>
-      </div>
-    </div>
-    <div class="mf">
-      <button class="btn btn-outline" onclick="closeModal('mCashier')">Cancel</button>
-      <button class="btn btn-teal" onclick="saveCashier()">💾 Save</button>
-    </div>
-  </div>
 </div>
 
-<!-- NEW LAB TEST -->
-<div class="modal-bg" id="mLabNew">
-  <div class="modal">
-    <div class="mh"><h3>🧪 New Lab Test Request</h3><button class="xbtn" onclick="closeModal('mLabNew')">✕</button></div>
-    <div class="mc">
-      <div class="mrow c2">
-        <div class="mfield"><label>Patient Name *</label><input type="text" id="ml-patient" placeholder="Full name"/></div>
-        <div class="mfield"><label>Patient ID#</label><input type="text" id="ml-id" placeholder="e.g. 0028245"/></div>
-      </div>
-      <div class="mrow c3">
-        <div class="mfield"><label>Sex</label><select id="ml-sex"><option>Female</option><option>Male</option></select></div>
-        <div class="mfield"><label>Age (Y)</label><input type="number" id="ml-age" placeholder="Age"/></div>
-        <div class="mfield"><label>Mobile</label><input type="text" id="ml-mobile" placeholder="06XXXXXXXX"/></div>
-      </div>
-      <div class="mrow c1">
-        <div class="mfield"><label>Tests / Baaritaanka</label>
-          <div style="display:flex;flex-wrap:wrap;gap:10px;border:1.5px solid #d1d5db;border-radius:4px;padding:10px;">
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-sida"/> SIDA ($2)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-hcv"/> HCV ($4)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-hba1c"/> HBA1C ($13)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-cbc"/> CBC ($5)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-crp"/> CRP ($3)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-ua"/> URINE EXAM ($4)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-vitd"/> VITAMIN D ($15)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-tsh"/> TSH ($10)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-malaria"/> MALARIA ($3)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lt-aso"/> ASO ($5)</label>
-          </div>
+<!-- Lab Result Entry Modal -->
+<div id="modal-lab-result" class="modal-overlay">
+    <div class="modal-box">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold">Enter Lab Results</h3>
+            <button onclick="closeModal('modal-lab-result')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
         </div>
-      </div>
+        <div class="bg-blue-50 p-3 rounded-lg mb-4 text-sm">
+            <p><strong>Patient:</strong> <span id="labres-patient">--</span></p>
+            <p><strong>Test:</strong> <span id="labres-test">--</span></p>
+        </div>
+        <form onsubmit="saveLabResult(event)">
+            <input type="hidden" id="labres-patient-id">
+            <input type="hidden" id="labres-visit-id">
+            <input type="hidden" id="labres-test-index">
+            <div class="space-y-4">
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Result</label><input type="text" id="labres-result" required class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="e.g., Normal, Positive, 120 mg/dL"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label><textarea id="labres-notes" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2"></textarea></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Lab Technician Name</label><input type="text" id="labres-tech" required class="w-full border border-gray-300 rounded-lg px-3 py-2"></div>
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" onclick="closeModal('modal-lab-result')" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700">Save Results</button>
+            </div>
+        </form>
     </div>
-    <div class="mf">
-      <button class="btn btn-outline" onclick="closeModal('mLabNew')">Cancel</button>
-      <button class="btn btn-teal" onclick="saveLab()">💾 Submit</button>
-    </div>
-  </div>
 </div>
 
-<!-- LAB TESTS IN APPOINTMENT -->
-<div class="modal-bg" id="mLabReq">
-  <div class="modal">
-    <div class="mh"><h3>🧪 Add Lab Tests to Appointment</h3><button class="xbtn" onclick="closeModal('mLabReq')">✕</button></div>
-    <div class="mc">
-      <div class="mrow c1">
-        <div class="mfield"><label>Select Tests</label>
-          <div style="display:flex;flex-wrap:wrap;gap:10px;border:1.5px solid #d1d5db;border-radius:4px;padding:10px;">
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-sida"/> SIDA ($2)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-hcv"/> HCV ($4)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-hba1c"/> HBA1C ($13)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-cbc"/> CBC ($5)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-crp"/> CRP ($3)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-ua"/> URINE EXAM ($4)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-vitd"/> VITAMIN D ($15)</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);font-weight:400;cursor:pointer;"><input type="checkbox" id="lr-tsh"/> TSH ($10)</label>
-          </div>
+<!-- Settings Modal -->
+<div id="modal-settings" class="modal-overlay">
+    <div class="modal-box">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold" id="settings-modal-title">Add Item</h3>
+            <button onclick="closeModal('modal-settings')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
         </div>
-      </div>
+        <form onsubmit="saveSettingsItem(event)">
+            <input type="hidden" id="settings-type">
+            <input type="hidden" id="settings-edit-id">
+            <div class="space-y-4" id="settings-fields"></div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" onclick="closeModal('modal-settings')" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Save</button>
+            </div>
+        </form>
     </div>
-    <div class="mf">
-      <button class="btn btn-outline" onclick="closeModal('mLabReq')">Cancel</button>
-      <button class="btn btn-teal" onclick="addLabTests()">Add Tests</button>
-    </div>
-  </div>
 </div>
 
-<!-- NEW PHARMACY -->
-<div class="modal-bg" id="mPharmNew">
-  <div class="modal">
-    <div class="mh"><h3>💊 New Prescription</h3><button class="xbtn" onclick="closeModal('mPharmNew')">✕</button></div>
-    <div class="mc">
-      <div class="mrow c2">
-        <div class="mfield"><label>Patient Name *</label><input type="text" id="pn-patient" placeholder="Full name"/></div>
-        <div class="mfield"><label>Patient ID#</label><input type="text" id="pn-id" placeholder="e.g. 0036880"/></div>
-      </div>
-      <div class="mrow c3">
-        <div class="mfield"><label>Sex</label><select id="pn-sex"><option>Male</option><option>Female</option></select></div>
-        <div class="mfield"><label>Age</label><input type="text" id="pn-age" placeholder="e.g. 1 Y"/></div>
-        <div class="mfield"><label>Mobile</label><input type="text" id="pn-mobile" placeholder="06XXXXXXXX"/></div>
-      </div>
-      <div class="mrow c2">
-        <div class="mfield"><label>Doctor *</label>
-          <select id="pn-doctor">
-            <option>DR. YAHYA SHOOLE (Pediatric Gastroenterology)</option>
-            <option>DR. A Y HERSI (Internal Medicine)</option>
-            <option>Dr. HARITH ABDULKADIR (Neurology)</option>
-          </select>
-        </div>
-        <div class="mfield"><label>Appointment #</label><input type="text" id="pn-appt" placeholder="AP0XXXXX"/></div>
-      </div>
-      <div class="mrow c2">
-        <div class="mfield"><label>Medicine Brand Name *</label><input type="text" id="pn-med" placeholder="e.g. Paracetamol 500mg"/></div>
-        <div class="mfield"><label>Route of Admin</label><select id="pn-route"><option>ORALLL</option><option>IV</option><option>IM</option><option>SC</option></select></div>
-      </div>
-      <div class="mrow c3">
-        <div class="mfield"><label>Frequency</label><input type="text" id="pn-freq" placeholder="e.g. 1x1"/></div>
-        <div class="mfield"><label>Quantity</label><input type="number" id="pn-qty" placeholder="1"/></div>
-        <div class="mfield"><label>Unit Price ($)</label><input type="number" id="pn-price" placeholder="0.00"/></div>
-      </div>
+<!-- PRINT AREAS -->
+<div id="print-prescription" class="print-area hidden" style="font-family: Arial, sans-serif;">
+    <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+        <h2 style="margin: 0; font-size: 24px;">MEDICAL PRESCRIPTION</h2>
+        <p style="margin: 5px 0; color: #666;">Dr. Admin | Hospital Management System</p>
     </div>
-    <div class="mf">
-      <button class="btn btn-outline" onclick="closeModal('mPharmNew')">Cancel</button>
-      <button class="btn btn-teal" onclick="savePharm()">💾 Save</button>
+    <div style="margin-bottom: 20px;">
+        <p><strong>Patient:</strong> <span id="print-p-name"></span> | <strong>Age:</strong> <span id="print-p-age"></span> | <strong>Phone:</strong> <span id="print-p-phone"></span></p>
+        <p><strong>Date:</strong> <span id="print-p-date"></span></p>
     </div>
-  </div>
+    <div style="margin-bottom: 20px;">
+        <p><strong>Diagnosis:</strong> <span id="print-p-diagnosis"></span></p>
+    </div>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;" border="1">
+        <thead style="background: #f3f4f6;">
+            <tr><th style="padding: 8px; text-align: left;">#</th><th style="padding: 8px; text-align: left;">Medicine</th><th style="padding: 8px; text-align: left;">Dosage</th><th style="padding: 8px; text-align: left;">Frequency</th><th style="padding: 8px; text-align: left;">Duration</th></tr>
+        </thead>
+        <tbody id="print-p-medicines"></tbody>
+    </table>
+    <div style="margin-top: 40px; text-align: right;">
+        <p>_______________________</p>
+        <p>Doctor's Signature</p>
+    </div>
 </div>
 
-<!-- ADD MEDICINE TO FORM -->
-<div class="modal-bg" id="mPharmForm">
-  <div class="modal" style="width:500px;">
-    <div class="mh"><h3>💊 Add Medicine</h3><button class="xbtn" onclick="closeModal('mPharmForm')">✕</button></div>
-    <div class="mc">
-      <div class="mrow c2">
-        <div class="mfield"><label>Brand Name *</label><input type="text" id="pf-brand" placeholder="e.g. SUPERHEMA"/></div>
-        <div class="mfield"><label>Dosage Form</label><input type="text" id="pf-dosage" placeholder="e.g. 5ml"/></div>
-      </div>
-      <div class="mrow c3">
-        <div class="mfield"><label>Route</label><select id="pf-route"><option>ORALLL</option><option>IV</option><option>IM</option></select></div>
-        <div class="mfield"><label>Frequency</label><input type="text" id="pf-freq" placeholder="1x1"/></div>
-        <div class="mfield"><label>Dose</label><input type="number" id="pf-dose" placeholder="1"/></div>
-      </div>
-      <div class="mrow c2">
-        <div class="mfield"><label>Quantity</label><input type="number" id="pf-qty" placeholder="1"/></div>
-        <div class="mfield"><label>Unit Price ($)</label><input type="number" id="pf-uprice" placeholder="0.00"/></div>
-      </div>
+<div id="print-lab-request" class="print-area hidden" style="font-family: Arial, sans-serif;">
+    <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+        <h2 style="margin: 0; font-size: 24px;">LABORATORY REQUEST</h2>
+        <p style="margin: 5px 0; color: #666;">Hospital Management System</p>
     </div>
-    <div class="mf">
-      <button class="btn btn-outline" onclick="closeModal('mPharmForm')">Cancel</button>
-      <button class="btn btn-teal" onclick="addMedLine()">Add Medicine</button>
+    <div style="margin-bottom: 20px;">
+        <p><strong>Patient:</strong> <span id="print-lr-name"></span> | <strong>Age:</strong> <span id="print-lr-age"></span></p>
+        <p><strong>Phone:</strong> <span id="print-lr-phone"></span> | <strong>Date:</strong> <span id="print-lr-date"></span></p>
     </div>
-  </div>
+    <p><strong>Requested Tests:</strong></p>
+    <ul id="print-lr-tests" style="line-height: 2;"></ul>
+    <div style="margin-top: 40px; text-align: right;">
+        <p>_______________________</p>
+        <p>Doctor's Signature</p>
+    </div>
 </div>
 
-<!-- DOCTOR APPOINTMENT -->
-<div class="modal-bg" id="mDoctorAppt">
-  <div class="modal">
-    <div class="mh"><h3>👨‍⚕️ New Doctor Appointment</h3><button class="xbtn" onclick="closeModal('mDoctorAppt')">✕</button></div>
-    <div class="mc">
-      <div class="mrow c2">
-        <div class="mfield"><label>Patient Name *</label><input type="text" id="da-patient" placeholder="Full name"/></div>
-        <div class="mfield"><label>Patient ID#</label><input type="text" id="da-id" placeholder="ID number"/></div>
-      </div>
-      <div class="mrow c3">
-        <div class="mfield"><label>Sex</label><select id="da-sex"><option>Male</option><option>Female</option></select></div>
-        <div class="mfield"><label>Age</label><input type="text" id="da-age" placeholder="e.g. 25 Y"/></div>
-        <div class="mfield"><label>Mobile</label><input type="text" id="da-mobile" placeholder="06XXXXXXXX"/></div>
-      </div>
-      <div class="mrow c2">
-        <div class="mfield"><label>Doctor *</label>
-          <select id="da-doctor">
-            <option>DR. YAHYA SHOOLE (Pediatric Gastroenterology)</option>
-            <option>Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)</option>
-            <option>DR. A Y HERSI (Internal Medicine)</option>
-            <option>SADIA OMAR SALIM (Psychology & Speech Therapy)</option>
-          </select>
-        </div>
-        <div class="mfield"><label>Payment Type</label>
-          <select id="da-payment"><option>Cash</option><option>Free</option><option>Insurance</option></select>
-        </div>
-      </div>
+<div id="print-lab-result" class="print-area hidden" style="font-family: Arial, sans-serif;">
+    <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+        <h2 style="margin: 0; font-size: 24px;">LABORATORY RESULT</h2>
+        <p style="margin: 5px 0; color: #666;">Hospital Management System</p>
     </div>
-    <div class="mf">
-      <button class="btn btn-outline" onclick="closeModal('mDoctorAppt')">Cancel</button>
-      <button class="btn btn-teal" onclick="saveDoctorAppt()">💾 Save</button>
+    <div style="margin-bottom: 20px;">
+        <p><strong>Patient:</strong> <span id="print-lres-name"></span> | <strong>Age:</strong> <span id="print-lres-age"></span></p>
+        <p><strong>Date:</strong> <span id="print-lres-date"></span></p>
     </div>
-  </div>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;" border="1">
+        <thead style="background: #f3f4f6;">
+            <tr><th style="padding: 8px; text-align: left;">Test</th><th style="padding: 8px; text-align: left;">Result</th><th style="padding: 8px; text-align: left;">Normal Range</th><th style="padding: 8px; text-align: left;">Status</th></tr>
+        </thead>
+        <tbody id="print-lres-results"></tbody>
+    </table>
+    <div style="margin-top: 20px;">
+        <p><strong>Lab Technician:</strong> <span id="print-lres-tech"></span></p>
+    </div>
+    <div style="margin-top: 40px; text-align: right;">
+        <p>_______________________</p>
+        <p>Authorized Signature</p>
+    </div>
 </div>
 
-<!-- PRINT AREA -->
-<div class="print-area" id="printArea"></div>
-
-<!-- TOAST -->
-<div class="toast" id="toastEl"></div>
+<div id="print-pharmacy" class="print-area hidden" style="font-family: Arial, sans-serif;">
+    <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+        <h2 style="margin: 0; font-size: 24px;">PHARMACY PRESCRIPTION</h2>
+        <p style="margin: 5px 0; color: #666;">Hospital Management System</p>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <p><strong>Patient:</strong> <span id="print-ph-name"></span> | <strong>Age:</strong> <span id="print-ph-age"></span></p>
+        <p><strong>Date:</strong> <span id="print-ph-date"></span></p>
+    </div>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;" border="1">
+        <thead style="background: #f3f4f6;">
+            <tr><th style="padding: 8px; text-align: left;">#</th><th style="padding: 8px; text-align: left;">Medicine</th><th style="padding: 8px; text-align: left;">Qty</th><th style="padding: 8px; text-align: left;">Instructions</th></tr>
+        </thead>
+        <tbody id="print-ph-medicines"></tbody>
+    </table>
+    <div style="margin-top: 40px; text-align: right;">
+        <p>_______________________</p>
+        <p>Doctor's Signature</p>
+    </div>
+</div>
 
 <script>
-// ═══ DATA ═══
-let apptCounter = 42315;
-let labCounter = 27420;
-let rxCounter = 84660;
-let queueCounter = 13;
-
-const DOCTORS = {
-  cashier: {
-    brand:'Cashier',notif:'3',user:'Abdinasir',
-    nav:['Appointment','Follow Ups','Dental Payment','Requests','Vaccination','Inpatient','Billing Payment','Emergency Patients','Maternity Discharge','Cashier Management','Payment','Reports','Patient Ledger','Insurance'],
-    page:'cashier-list'
-  },
-  lab: {
-    brand:'Labtest',notif:'1',user:'Deqo Ali Abdi',
-    nav:['Waiting Samples','Postponed Sample','Samples Collected','Cancelled','Sample Receive','Lab Tests','Completed','Lab Due Result Report','Change Result Report','Reports','Configuration'],
-    page:'lab'
-  },
-  pharmacy: {
-    brand:'Pharmacy',notif:'44423',user:'A.H.E (PHARMACIST)',
-    nav:['OPD Request','IPD Request','All Request','Sales Order','Pharmacy Return','Direct Pharmacy Return','Medicine','Billing Payment','Sale Conflict','Cash Transfer','Reports','Configuration'],
-    page:'pharmacy-list'
-  },
-  doctors: {
-    brand:'Doctors',notif:'0',user:'Dr. Yahya Shoole',
-    nav:['Appointment','Consultation','Admitted Patient','Discharge'],
-    page:'doctors'
-  }
+// ================= STORAGE =================
+const Store = {
+    get: (k) => JSON.parse(localStorage.getItem(k) || '[]'),
+    set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+    add: (k, item) => { const d = Store.get(k); item.id = Date.now(); d.push(item); Store.set(k, d); return item; },
+    update: (k, id, item) => { const d = Store.get(k).map(x => x.id == id ? {...x, ...item} : x); Store.set(k, d); },
+    del: (k, id) => { const d = Store.get(k).filter(x => x.id != id); Store.set(k, d); }
 };
 
-const db = {
-  cashier: [
-    {queue:1,id:'AP042282',patient:'AKAN ASAD AHMED',pid:'0045706',age:'2 Y',slot:'Day',inDate:'05/07/2026 08:57:00',type:'OPD',apptType:'New',date:'05/07/2026 06:54:18',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',branch:'HQ',payment:'Cash',status:'Waiting'},
-    {queue:1,id:'AP042292',patient:'IBRAHIM MOHAMED OMAR',pid:'0035735',age:'6 Y',slot:'Day',inDate:'05/07/2026 09:23:50',type:'OPD',apptType:'New',date:'05/07/2026 08:50:36',doctor:'SADIA OMAR SALIM (Psychology & Speech Therapy)',branch:'HQ',payment:'Free',status:'Waiting'},
-    {queue:1,id:'AP042275',patient:'DEQO MOHAMED OSMAN',pid:'0045699',age:'34 Y',slot:'Day',inDate:'05/07/2026 09:21:24',type:'OPD',apptType:'New',date:'05/07/2026 07:19:41',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',branch:'HQ',payment:'Cash',status:'Waiting'},
-    {queue:2,id:'AP042286',patient:'AYUB FEYSAL ALI OSMAN',pid:'0045708',age:'5 M',slot:'Day',inDate:'05/07/2026 09:51:04',type:'OPD',apptType:'New',date:'05/07/2026 06:39:42',doctor:'Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)',branch:'HQ',payment:'Cash',status:'Waiting'},
-    {queue:2,id:'AP042276',patient:'ABDIRAHMAN BASHIIR MOHAMED',pid:'0044040',age:'5 Y',slot:'Day',inDate:'05/07/2026 09:18:56',type:'OPD',apptType:'New',date:'05/07/2026 06:39:42',doctor:'Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)',branch:'HQ',payment:'Cash',status:'Waiting'},
-    {queue:3,id:'AP042277',patient:'MADIINA SHIRE WEHLIYE',pid:'0045700',age:'55 Y',slot:'Day',inDate:'05/07/2026 10:23:39',type:'OPD',apptType:'New',date:'05/07/2026 06:41:06',doctor:'Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)',branch:'HQ',payment:'Cash',status:'Waiting'},
-    {queue:3,id:'AP042293',patient:'MANHAL ABDIQANI ABDULLAHI',pid:'0045711',age:'2 Y',slot:'Day',inDate:'05/07/2026 09:13:56',type:'OPD',apptType:'New',date:'05/07/2026 08:51:32',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',branch:'HQ',payment:'Cash',status:'Waiting'},
-    {queue:4,id:'AP042278',patient:'MOHAMED SHUKRI MOALIM HASSAN',pid:'0045701',age:'21 Y',slot:'Day',inDate:'05/07/2026 09:32:27',type:'OPD',apptType:'New',date:'05/07/2026 06:43:07',doctor:'Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)',branch:'HQ',payment:'Cash',status:'Waiting'},
-    {queue:4,id:'AP042294',patient:'AMIIRA MUHUYADIN ABDI',pid:'0023955',age:'6 Y',slot:'Day',inDate:'05/07/2026 09:45:33',type:'OPD',apptType:'New',date:'05/07/2026 08:53:06',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',branch:'HQ',payment:'Cash',status:'Waiting'},
-    {queue:5,id:'AP042279',patient:'SAID HASSAN AYNAB',pid:'0045702',age:'55 Y',slot:'Day',inDate:'05/07/2026 09:42:19',type:'OPD',apptType:'New',date:'05/07/2026 06:48:03',doctor:'Dr. HARITH ABDULKADIR SHEIKH MOHAMUD (Neurology)',branch:'HQ',payment:'Cash',status:'Waiting'},
-  ],
-  lab: [
-    {id:'27414',patient:'HEYRAM ABDIRAHMAN OLHAYE',pid:'0028245',sex:'Female',mobile:'0617540102',age:'1 Y',state:'Waiting'},
-    {id:'27413',patient:'IQLAAS CABDINASIIR MOHAMED',pid:'0040769',sex:'Female',mobile:'0614696474',age:'17 Y',state:'Waiting'},
-    {id:'27405',patient:'SUHEYLA AHMED NOUR ALI',pid:'0026935',sex:'Female',mobile:'0615883404',age:'10 Y',state:'Waiting'},
-    {id:'27400',patient:'MOHAMED MOHAMED AHMED',pid:'0040411',sex:'Male',mobile:'0618890213',age:'67 Y',state:'Partially Collected'},
-  ],
-  pharmacy: [
-    {id:'S84105',patient:'RAQDA OMAR CABAS',pid:'0036880',date:'10/18/2025 10:02:56',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',discount:0,amount:6.50,status:'Quotation'},
-    {id:'S84103',patient:'MOHAMED ABDULLAHI ASKAR',pid:'0035735',date:'10/18/2025 09:59:08',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',discount:0,amount:2.50,status:'Quotation'},
-    {id:'S84101',patient:'ZAHRA SH ABDULLAHI',pid:'0044040',date:'10/18/2025 09:55:32',doctor:'DR. A Y HERSI (Internal Medicine)',discount:0,amount:1.00,status:'Quotation'},
-    {id:'S84098',patient:'HAFSO IDIRIS MOHAMED',pid:'0023955',date:'10/18/2025 09:20:27',doctor:'DR. YAHYA SHOOLE (Pediatric Gastroenterology)',discount:0,amount:0.50,status:'Quotation'},
-  ]
-};
+// ================= STATE =================
+let currentPatient = null;
+let currentVisit = null; // For new visit being created
 
-// ═══ LOGIN ═══
-function login(){
-  const pass = document.getElementById('lpass').value;
-  const err = document.getElementById('lerr');
-  if(pass==='hospital2024'){
-    document.getElementById('loginPage').style.display='none';
-    document.getElementById('app').style.display='flex';
-    document.getElementById('app').style.flexDirection='column';
-    err.style.display='none';
-    setModule('cashier');
-    renderAll();
-  } else {
-    err.style.display='block';
-    document.getElementById('lpass').style.borderColor='var(--red)';
-  }
-}
-function logout(){
-  document.getElementById('app').style.display='none';
-  document.getElementById('loginPage').style.display='flex';
-  document.getElementById('lpass').value='';
-}
-
-// ═══ MODULE ═══
-let curModule = 'cashier';
-function setModule(mod){
-  curModule = mod;
-  const m = DOCTORS[mod];
-  document.getElementById('tnBrand').textContent = m.brand;
-  document.getElementById('tnNotif').textContent = m.notif;
-  document.getElementById('tnUser').textContent = m.user;
-  const nav = document.getElementById('tnNav');
-  nav.innerHTML = m.nav.map(n=>`<a onclick="navClick(this,'${mod}')">${n}</a>`).join('');
-  nav.querySelector('a').classList.add('active');
-  showPage(m.page);
-}
-function navClick(el,mod){
-  document.querySelectorAll('#tnNav a').forEach(a=>a.classList.remove('active'));
-  el.classList.add('active');
-  const m = DOCTORS[mod];
-  showPage(m.page);
-}
-// Brand click = cycle modules
-document.getElementById('tnBrand') && (document.getElementById('tnBrand').onclick = ()=>{
-  const mods = Object.keys(DOCTORS);
-  const idx = (mods.indexOf(curModule)+1)%mods.length;
-  setModule(mods[idx]);
-});
-
-// ═══ PAGES ═══
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const pg = document.getElementById('pg-'+id);
-  if(pg) pg.classList.add('active');
+// ================= INIT DEMO DATA =================
+function initData() {
+    if (localStorage.getItem('dms_init')) return;
+    
+    // Medicines
+    Store.set('medicines', [
+        {id: 1, name: 'Paracetamol', dosage: '500mg', type: 'Tablet'},
+        {id: 2, name: 'Amoxicillin', dosage: '250mg', type: 'Capsule'},
+        {id: 3, name: 'Metronidazole', dosage: '400mg', type: 'Tablet'},
+        {id: 4, name: 'Artemether-Lumefantrine', dosage: '20/120mg', type: 'Tablet'},
+        {id: 5, name: 'Ibuprofen', dosage: '400mg', type: 'Tablet'}
+    ]);
+    
+    // Lab Tests
+    Store.set('labTests', [
+        {id: 1, name: 'CBC (Complete Blood Count)', unit: 'various', normalRange: 'Normal'},
+        {id: 2, name: 'Malaria Test (RDT)', unit: '', normalRange: 'Negative'},
+        {id: 3, name: 'Blood Sugar (Fasting)', unit: 'mg/dL', normalRange: '70-100'},
+        {id: 4, name: 'Blood Sugar (Random)', unit: 'mg/dL', normalRange: '70-140'},
+        {id: 5, name: 'Urinalysis', unit: '', normalRange: 'Normal'},
+        {id: 6, name: 'HIV Test', unit: '', normalRange: 'Negative'}
+    ]);
+    
+    // Demo Patient
+    const demoPatient = {
+        id: 1001,
+        name: 'Axmed Cali Xasan',
+        age: 28,
+        phone: '+25261xxxxxx1',
+        address: 'Mogadishu, Hodan District',
+        visits: [
+            {
+                visitId: 5001,
+                date: '2026-05-28',
+                history: 'Fever, chills, and headache for 3 days. No vomiting.',
+                diagnosis: 'Uncomplicated Malaria',
+                medicines: [
+                    {name: 'Artemether-Lumefantrine', dosage: '20/120mg', frequency: 'Twice daily', duration: '3 days', qty: 6},
+                    {name: 'Paracetamol', dosage: '500mg', frequency: 'Every 6 hours', duration: '3 days', qty: 12}
+                ],
+                labTests: [
+                    {testName: 'Malaria Test (RDT)', status: 'completed', result: 'Positive', resultDate: '2026-05-28 10:30', technician: 'Lab Tech Faadumo', notes: 'P. falciparum detected'},
+                    {testName: 'CBC (Complete Blood Count)', status: 'completed', result: 'Normal', resultDate: '2026-05-28 11:00', technician: 'Lab Tech Faadumo', notes: 'Hb slightly low'}
+                ],
+                pharmacyPrinted: true,
+                prescriptionPrinted: true,
+                labRequestPrinted: true
+            }
+        ]
+    };
+    
+    Store.set('patients', [demoPatient]);
+    localStorage.setItem('dms_init', 'true');
 }
 
-// ═══ RENDER CASHIER ═══
-function renderCashier(){
-  const tb = document.getElementById('cashierTB');
-  if(!tb) return;
-  tb.innerHTML = db.cashier.map(r=>`
-    <tr onclick="openCashierForm('${r.id}')">
-      <td><input type="checkbox" onclick="event.stopPropagation()"/></td>
-      <td>${r.queue}</td>
-      <td class="td-link">${r.id}</td>
-      <td>${r.patient}</td>
-      <td style="color:var(--muted);font-size:11px;">${r.pid}</td>
-      <td>${r.age}</td>
-      <td>${r.slot}</td>
-      <td style="font-size:11px;">${r.inDate}</td>
-      <td>${r.type}</td>
-      <td>${r.apptType}</td>
-      <td style="font-size:11px;">${r.date}</td>
-      <td>${r.doctor}</td>
-      <td>${r.branch}</td>
-      <td><span class="badge ${r.payment==='Cash'?'b-cash':'b-free'}">${r.payment}</span></td>
-      <td><span class="badge b-waiting">${r.status}</span></td>
-    </tr>`).join('');
-  document.getElementById('cashierPager').innerHTML = `1-${db.cashier.length} / ${db.cashier.length} <button>‹</button><button>›</button>`;
-}
-
-function openCashierForm(id){
-  const r = db.cashier.find(x=>x.id===id)||db.cashier[0];
-  document.getElementById('cf-id').textContent = r.id;
-  document.getElementById('cf-patient').textContent = r.patient;
-  document.getElementById('cf-idnum').textContent = r.pid;
-  document.getElementById('cf-sex').textContent = r.sex||'Female';
-  document.getElementById('cf-mobile').textContent = r.mobile||'—';
-  document.getElementById('cf-age').textContent = r.age;
-  document.getElementById('cf-appt').textContent = r.id;
-  document.getElementById('cf-date').textContent = r.date;
-  document.getElementById('cf-doctor').textContent = r.doctor;
-  document.getElementById('cf-branch').textContent = r.branch;
-  document.getElementById('cf-payment').textContent = r.payment;
-  document.getElementById('cf-queue').textContent = r.queue;
-  showPage('cashier-form');
-}
-
-function saveCashier(){
-  const p = document.getElementById('mc-patient').value.trim();
-  if(!p){alert('Patient name required');return;}
-  const id = 'AP0'+apptCounter++;
-  db.cashier.unshift({
-    queue:queueCounter++,id,patient:p.toUpperCase(),
-    pid:document.getElementById('mc-idnum').value||'0000000',
-    age:document.getElementById('mc-age').value||'—',
-    sex:document.getElementById('mc-sex').value,
-    mobile:document.getElementById('mc-mobile').value,
-    slot:document.getElementById('mc-slot').value,
-    inDate:new Date().toLocaleString('en-GB'),
-    type:'OPD',apptType:'New',
-    date:new Date().toLocaleString('en-GB'),
-    doctor:document.getElementById('mc-doctor').value,
-    branch:document.getElementById('mc-branch').value,
-    payment:document.getElementById('mc-payment').value,
-    status:'Waiting'
-  });
-  renderCashier();
-  closeModal('mCashier');
-  document.getElementById('mc-patient').value='';
-  document.getElementById('mc-idnum').value='';
-  document.getElementById('mc-age').value='';
-  document.getElementById('mc-mobile').value='';
-  toast('✅ Appointment saved!');
-}
-
-// ═══ RENDER LAB ═══
-function renderLab(){
-  const tb = document.getElementById('labTB');
-  if(!tb) return;
-  tb.innerHTML = db.lab.map(r=>`
-    <tr>
-      <td><input type="checkbox"/></td>
-      <td class="td-link">${r.id}</td>
-      <td>${r.patient}</td>
-      <td style="color:var(--muted);font-size:11px;">${r.pid}</td>
-      <td>${r.sex}</td>
-      <td>${r.mobile}</td>
-      <td>${r.age}</td>
-      <td><span class="badge ${r.state==='Waiting'?'b-waiting':'b-partial'}">${r.state}</span></td>
-      <td>
-        <button class="btn btn-teal btn-sm" onclick="collectSample('${r.id}',event)">Collect</button>
-        <button class="btn btn-outline btn-sm" onclick="deleteLab('${r.id}',event)">🗑</button>
-      </td>
-    </tr>`).join('');
-  document.getElementById('labPager').innerHTML = `1-${db.lab.length} / ${db.lab.length} <button>‹</button><button>›</button>`;
-}
-function collectSample(id,e){
-  e.stopPropagation();
-  const r=db.lab.find(x=>x.id===id);
-  if(r){r.state='Partially Collected';renderLab();toast('✅ Sample collected!');}
-}
-function deleteLab(id,e){
-  e.stopPropagation();
-  if(confirm('Delete this lab request?')){db.lab=db.lab.filter(x=>x.id!==id);renderLab();toast('✅ Deleted');}
-}
-function saveLab(){
-  const p=document.getElementById('ml-patient').value.trim();
-  if(!p){alert('Patient name required');return;}
-  db.lab.unshift({
-    id:String(labCounter++),patient:p.toUpperCase(),
-    pid:document.getElementById('ml-id').value||'0000000',
-    sex:document.getElementById('ml-sex').value,
-    mobile:document.getElementById('ml-mobile').value,
-    age:(document.getElementById('ml-age').value||'?')+' Y',
-    state:'Waiting'
-  });
-  renderLab();closeModal('mLabNew');
-  document.getElementById('ml-patient').value='';document.getElementById('ml-id').value='';
-  document.getElementById('ml-age').value='';document.getElementById('ml-mobile').value='';
-  toast('✅ Lab request submitted!');
-}
-function addLabTests(){
-  const tests=[
-    {id:'lr-sida',name:'SIDA',price:2},
-    {id:'lr-hcv',name:'HCV',price:4},
-    {id:'lr-hba1c',name:'HBA1C',price:13},
-    {id:'lr-cbc',name:'CBC',price:5},
-    {id:'lr-crp',name:'CRP',price:3},
-    {id:'lr-ua',name:'URINE EXAM',price:4},
-    {id:'lr-vitd',name:'VITAMIN D',price:15},
-    {id:'lr-tsh',name:'TSH',price:10},
-  ];
-  const tbody=document.getElementById('cf-labrows');
-  let total=0;
-  tests.forEach(t=>{
-    if(document.getElementById(t.id)&&document.getElementById(t.id).checked){
-      tbody.innerHTML+=`<tr><td>${t.name}</td><td><span class="badge b-done">Available</span></td><td></td><td>${t.price}.00</td><td>0.00</td><td><button class="del-btn" onclick="this.closest('tr').remove()">🗑</button></td></tr>`;
-      total+=t.price;
+// ================= NAVIGATION =================
+function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('hidden-section'));
+    document.getElementById(id).classList.remove('hidden-section');
+    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+    document.getElementById('nav-'+id).classList.add('active');
+    
+    const titles = {
+        dashboard: 'Dashboard', patients: 'Patient Search & History', 
+        'doctor-work': 'Doctor Workstation', lab: 'Laboratory', settings: 'Settings'
+    };
+    document.getElementById('page-title').textContent = titles[id];
+    
+    if (id === 'dashboard') updateDashboard();
+    if (id === 'patients') { document.getElementById('patient-history-view').classList.add('hidden'); searchPatients(); }
+    if (id === 'lab') renderLab();
+    if (id === 'settings') renderSettings();
+    if (id === 'doctor-work') {
+        if (!currentPatient) {
+            document.getElementById('doc-step-1').classList.remove('hidden');
+            document.getElementById('doc-step-2').classList.add('hidden');
+        }
     }
-  });
-  const cur=parseFloat(document.getElementById('cf-labtotal').textContent)||0;
-  document.getElementById('cf-labtotal').textContent=(cur+total).toFixed(2);
-  closeModal('mLabReq');toast('✅ Tests added!');
 }
 
-// ═══ RENDER PHARMACY ═══
-function renderPharm(){
-  const tb=document.getElementById('pharmTB');
-  if(!tb) return;
-  tb.innerHTML=db.pharmacy.map(r=>`
-    <tr onclick="openPharmForm('${r.id}')">
-      <td><input type="checkbox" onclick="event.stopPropagation()"/></td>
-      <td class="td-link">${r.id}</td>
-      <td>${r.patient}</td>
-      <td style="font-size:11px;">${r.date}</td>
-      <td>${r.doctor}</td>
-      <td></td><td></td>
-      <td>$${r.discount.toFixed(2)}</td>
-      <td>$${r.amount.toFixed(2)}</td>
-      <td><span class="badge b-quotation">${r.status}</span></td>
-      <td>
-        <button class="btn btn-green btn-sm" onclick="dispenseRx('${r.id}',event)">Dispense</button>
-        <button class="btn btn-outline btn-sm" onclick="deleteRx('${r.id}',event)">🗑</button>
-      </td>
-    </tr>`).join('');
-  const total=db.pharmacy.reduce((s,r)=>s+r.amount,0);
-  document.getElementById('pharmTotal').textContent='$'+total.toFixed(2);
-  document.getElementById('pharmPager').innerHTML=`1-${db.pharmacy.length} / ${db.pharmacy.length} <button>‹</button><button>›</button>`;
-}
-function openPharmForm(id){
-  const r=db.pharmacy.find(x=>x.id===id)||db.pharmacy[0];
-  document.getElementById('pf-id').textContent=r.id;
-  document.getElementById('pf-num').textContent=r.id;
-  document.getElementById('pf-patient').textContent=r.patient;
-  document.getElementById('pf-idnum').textContent=r.pid||'—';
-  document.getElementById('pf-date').textContent=r.date;
-  document.getElementById('pf-doctor').textContent=r.doctor;
-  showPage('pharmacy-form');
-}
-function dispenseRx(id,e){
-  e.stopPropagation();
-  const r=db.pharmacy.find(x=>x.id===id);
-  if(r){r.status='Done';renderPharm();toast('✅ Dispensed!');}
-}
-function deleteRx(id,e){
-  e.stopPropagation();
-  if(confirm('Delete prescription?')){db.pharmacy=db.pharmacy.filter(x=>x.id!==id);renderPharm();toast('✅ Deleted');}
-}
-function savePharm(){
-  const p=document.getElementById('pn-patient').value.trim();
-  if(!p){alert('Patient name required');return;}
-  const qty=parseFloat(document.getElementById('pn-qty').value)||1;
-  const price=parseFloat(document.getElementById('pn-price').value)||0;
-  const id='S'+rxCounter++;
-  db.pharmacy.unshift({
-    id,patient:p.toUpperCase(),pid:document.getElementById('pn-id').value||'0000000',
-    date:new Date().toLocaleString('en-GB'),
-    doctor:document.getElementById('pn-doctor').value,
-    discount:0,amount:qty*price,status:'Quotation'
-  });
-  renderPharm();closeModal('mPharmNew');
-  document.getElementById('pn-patient').value='';document.getElementById('pn-id').value='';
-  document.getElementById('pn-med').value='';document.getElementById('pn-qty').value='';document.getElementById('pn-price').value='';
-  toast('✅ Prescription saved!');
-}
-function addMedLine(){
-  const brand=document.getElementById('pf-brand').value.trim();
-  if(!brand){alert('Brand name required');return;}
-  const qty=parseFloat(document.getElementById('pf-qty').value)||1;
-  const price=parseFloat(document.getElementById('pf-uprice').value)||0;
-  const sub=(qty*price).toFixed(2);
-  document.getElementById('pf-medrows').innerHTML+=`
-    <tr>
-      <td>${brand}</td>
-      <td>${document.getElementById('pf-dosage').value}</td>
-      <td></td>
-      <td>${document.getElementById('pf-route').value}</td>
-      <td>${document.getElementById('pf-freq').value}</td>
-      <td>${document.getElementById('pf-dose').value}</td>
-      <td>${qty}</td>
-      <td>—</td>
-      <td>${price}</td>
-      <td>$${sub}</td>
-      <td>$${sub}</td>
-      <td><button class="del-btn" onclick="this.closest('tr').remove()">🗑</button></td>
-    </tr>`;
-  closeModal('mPharmForm');
-  document.getElementById('pf-brand').value='';document.getElementById('pf-qty').value='';document.getElementById('pf-uprice').value='';
-  toast('✅ Medicine added!');
+// ================= PATIENT MANAGEMENT =================
+function openNewPatientModal() {
+    document.getElementById('np-name').value = '';
+    document.getElementById('np-age').value = '';
+    document.getElementById('np-phone').value = '';
+    document.getElementById('np-address').value = '';
+    openModal('modal-new-patient');
 }
 
-// ═══ RENDER DOCTORS ═══
-function renderDoctors(){
-  const tb=document.getElementById('doctorTB');
-  if(!tb) return;
-  tb.innerHTML=db.cashier.map(r=>`
-    <tr>
-      <td><input type="checkbox"/></td>
-      <td>${r.queue}</td>
-      <td class="td-link">${r.id}</td>
-      <td>${r.patient}</td>
-      <td style="color:var(--muted);font-size:11px;">${r.pid}</td>
-      <td>${r.age}</td>
-      <td>${r.slot}</td>
-      <td style="font-size:11px;">${r.inDate}</td>
-      <td>${r.type}</td>
-      <td>${r.apptType}</td>
-      <td style="font-size:11px;">${r.date}</td>
-      <td>${r.doctor}</td>
-      <td>${r.branch}</td>
-      <td><span class="badge ${r.payment==='Cash'?'b-cash':'b-free'}">${r.payment}</span></td>
-      <td><span class="badge b-waiting">${r.status}</span></td>
-    </tr>`).join('');
-}
-function saveDoctorAppt(){
-  const p=document.getElementById('da-patient').value.trim();
-  if(!p){alert('Patient name required');return;}
-  const id='AP0'+apptCounter++;
-  db.cashier.unshift({
-    queue:queueCounter++,id,patient:p.toUpperCase(),
-    pid:document.getElementById('da-id').value||'0000000',
-    age:document.getElementById('da-age').value||'—',
-    sex:document.getElementById('da-sex').value,
-    mobile:document.getElementById('da-mobile').value,
-    slot:'Day',inDate:new Date().toLocaleString('en-GB'),
-    type:'OPD',apptType:'New',date:new Date().toLocaleString('en-GB'),
-    doctor:document.getElementById('da-doctor').value,
-    branch:'HQ',payment:document.getElementById('da-payment').value,status:'Waiting'
-  });
-  renderCashier();renderDoctors();closeModal('mDoctorAppt');
-  document.getElementById('da-patient').value='';document.getElementById('da-id').value='';
-  toast('✅ Appointment created!');
+function saveNewPatient(e) {
+    e.preventDefault();
+    const patient = {
+        id: Date.now(),
+        name: document.getElementById('np-name').value,
+        age: document.getElementById('np-age').value,
+        phone: document.getElementById('np-phone').value,
+        address: document.getElementById('np-address').value,
+        visits: []
+    };
+    Store.add('patients', patient);
+    closeModal('modal-new-patient');
+    
+    // If in doctor work, select this patient
+    if (!document.getElementById('doctor-work').classList.contains('hidden-section')) {
+        selectPatientForDoctor(patient.id);
+    } else {
+        searchPatients();
+        showSection('patients');
+    }
 }
 
-// ═══ PRINT RECEIPT ═══
-function printReceipt(){
-  const apptId=document.getElementById('cf-id').textContent;
-  const patient=document.getElementById('cf-patient').textContent;
-  const pid=document.getElementById('cf-idnum').textContent;
-  const date=document.getElementById('cf-date').textContent;
-  const doctor=document.getElementById('cf-doctor').textContent;
-  const age=document.getElementById('cf-age').textContent;
-  const labRows=document.getElementById('cf-labrows');
-  let labHTML='';
-  if(labRows){
-    labHTML=Array.from(labRows.querySelectorAll('tr')).map(tr=>{
-      const cells=tr.querySelectorAll('td');
-      return `<tr><td>${cells[0]?.textContent||''}</td><td>${cells[3]?.textContent||''}</td><td>${cells[4]?.textContent||''}</td></tr>`;
-    }).join('');
-  }
-  document.getElementById('printArea').innerHTML=`
-    <div class="rx-print">
-      <div class="rx-logo">
-        <svg viewBox="0 0 52 52" width="50" height="50"><circle cx="18" cy="34" r="16" fill="#4caf50" opacity=".85"/><circle cx="34" cy="18" r="16" fill="#1a3a6b" opacity=".85"/><text x="10" y="42" font-size="22" font-weight="bold" fill="#fff" font-family="Arial">B</text></svg>
-        <div><h1 style="font-size:22px;font-weight:900;color:#1a3a6b;font-family:Arial;">BAXNAANO HOSPITAL</h1><p style="font-size:11px;color:#6b7280;">Zoobe, Kasoo Horjeedka Hayat Market, Mogadishu-Somalia<br/>Tel: +252613490055 / +252613490066</p></div>
-      </div>
-      <hr class="rx-hr"/>
-      <div style="text-align:center;font-weight:700;font-size:14px;margin-bottom:10px;">CASHIER RECEIPT</div>
-      <div class="rx-grid">
-        <span>Patient Name:</span><strong>${patient}</strong>
-        <span>Patient ID#:</span><strong>${pid}</strong>
-        <span>Age:</span><strong>${age}</strong>
-        <span>Appointment #:</span><strong>${apptId}</strong>
-        <span>Date:</span><strong>${date}</strong>
-        <span>Doctor:</span><strong>${doctor}</strong>
-      </div>
-      <hr class="rx-hr2"/>
-      <table class="rx-table">
-        <thead><tr><th>Procedure</th><th>Unit Price</th><th>Discount</th></tr></thead>
-        <tbody>${labHTML||'<tr><td colspan="3">No procedures</td></tr>'}</tbody>
-      </table>
-      <hr class="rx-hr2"/>
-      <div class="rx-footer">
-        Report printed by system on ${new Date().toLocaleString()}<br/>
-        Baxnaano Hospital Management System
-      </div>
-    </div>`;
-  window.print();
+function searchPatients() {
+    const nameQ = document.getElementById('search-name').value.toLowerCase();
+    const phoneQ = document.getElementById('search-phone').value.toLowerCase();
+    const patients = Store.get('patients');
+    
+    const filtered = patients.filter(p => 
+        (nameQ === '' || p.name.toLowerCase().includes(nameQ)) &&
+        (phoneQ === '' || p.phone.toLowerCase().includes(phoneQ))
+    );
+    
+    const container = document.getElementById('patient-search-results');
+    if (filtered.length === 0) {
+        container.innerHTML = '<div class="col-span-full text-center text-gray-500 py-8">No patients found</div>';
+        return;
+    }
+    
+    container.innerHTML = filtered.map(p => `
+        <div class="card bg-white p-4 rounded-xl shadow-sm border border-gray-100 cursor-pointer hover:border-blue-300" onclick="viewPatientHistory(${p.id})">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">${p.name.charAt(0)}</div>
+                <div>
+                    <h4 class="font-bold text-gray-800">${p.name}</h4>
+                    <p class="text-xs text-gray-500">${p.phone}</p>
+                </div>
+            </div>
+            <div class="flex justify-between text-sm text-gray-600 mt-3">
+                <span>Age: ${p.age}</span>
+                <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs">${p.visits.length} visits</span>
+            </div>
+        </div>
+    `).join('');
 }
 
-// ═══ SEARCH ═══
-function searchTable(tbId, q){
-  const tb=document.getElementById(tbId);
-  if(!tb) return;
-  const rows=tb.querySelectorAll('tr');
-  rows.forEach(r=>{
-    r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';
-  });
+function viewPatientHistory(patientId) {
+    const patient = Store.get('patients').find(p => p.id == patientId);
+    if (!patient) return;
+    
+    document.getElementById('hist-name').textContent = patient.name;
+    document.getElementById('hist-info').textContent = `Age: ${patient.age} | Phone: ${patient.phone} | ${patient.address || ''}`;
+    
+    const visitsContainer = document.getElementById('hist-visits');
+    if (patient.visits.length === 0) {
+        visitsContainer.innerHTML = '<p class="text-gray-500 italic">No visit history</p>';
+    } else {
+        visitsContainer.innerHTML = patient.visits.slice().reverse().map((v, idx) => {
+            const meds = v.medicines.map(m => `<span class="inline-block bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs mr-1 mb-1">${m.name}</span>`).join('');
+            const labs = v.labTests.map(l => `
+                <div class="flex justify-between items-center py-1 border-b border-gray-100 last:border-0">
+                    <span class="text-sm">${l.testName}</span>
+                    <span class="text-xs font-medium ${l.status=='completed'?'text-emerald-600':'text-orange-600'}">${l.result || 'Pending'}</span>
+                </div>
+            `).join('');
+            
+            return `
+            <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold text-gray-700"><i class="fas fa-calendar-day mr-2 text-blue-500"></i>Visit Date: ${v.date}</span>
+                    <span class="text-xs text-gray-500">Visit #${patient.visits.length - idx}</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="text-gray-500 mb-1"><strong>History:</strong></p>
+                        <p class="text-gray-700 mb-2">${v.history || 'N/A'}</p>
+                        <p class="text-gray-500 mb-1"><strong>Diagnosis:</strong></p>
+                        <p class="text-gray-700 font-medium text-red-600">${v.diagnosis || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 mb-1"><strong>Medicines:</strong></p>
+                        <div class="mb-2">${meds || 'None'}</div>
+                        <p class="text-gray-500 mb-1"><strong>Lab Results:</strong></p>
+                        <div class="bg-white p-2 rounded border">${labs || 'No tests'}</div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+    
+    document.getElementById('patient-history-view').classList.remove('hidden');
+    document.getElementById('patient-history-view').dataset.patientId = patientId;
 }
 
-// ═══ MODALS ═══
-function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('.modal-bg').forEach(m=>{
-  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
-});
-
-// ═══ TOAST ═══
-function toast(msg){
-  const t=document.getElementById('toastEl');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
+function startNewVisitFromHistory() {
+    const patientId = document.getElementById('patient-history-view').dataset.patientId;
+    showSection('doctor-work');
+    selectPatientForDoctor(patientId);
 }
 
-// ═══ INIT ═══
-function renderAll(){
-  renderCashier();renderLab();renderPharm();renderDoctors();
+// ================= DOCTOR WORK =================
+function docSearchPatient() {
+    const q = document.getElementById('doc-search-patient').value.toLowerCase();
+    if (q.length < 2) { document.getElementById('doc-patient-results').innerHTML = ''; return; }
+    
+    const patients = Store.get('patients').filter(p => 
+        p.name.toLowerCase().includes(q) || p.phone.toLowerCase().includes(q)
+    );
+    
+    document.getElementById('doc-patient-results').innerHTML = patients.map(p => `
+        <div class="bg-gray-50 p-3 rounded-lg cursor-pointer hover:bg-blue-50 border border-gray-200 hover:border-blue-300" onclick="selectPatientForDoctor(${p.id})">
+            <p class="font-medium text-sm">${p.name}</p>
+            <p class="text-xs text-gray-500">${p.phone} | Age: ${p.age}</p>
+        </div>
+    `).join('') || '<p class="text-gray-500 text-sm">No patients found</p>';
 }
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('loginPage').style.display!=='none')login();});
 
-// Brand click cycle
-document.getElementById('tnBrand').style.cursor='pointer';
-document.getElementById('tnBrand').title='Click to switch module';
-document.getElementById('tnBrand').onclick=()=>{
-  const mods=Object.keys(DOCTORS);
-  const idx=(mods.indexOf(curModule)+1)%mods.length;
-  setModule(mods[idx]);
-};
+function selectPatientForDoctor(patientId) {
+    const patient = Store.get('patients').find(p => p.id == patientId);
+    if (!patient) return;
+    
+    currentPatient = patient;
+    currentVisit = {
+        visitId: Date.now(),
+        date: new Date().toISOString().split('T')[0],
+        history: '',
+        diagnosis: '',
+        medicines: [],
+        labTests: [],
+        prescriptionPrinted: false,
+        labRequestPrinted: false,
+        pharmacyPrinted: false
+    };
+    
+    document.getElementById('current-patient-name').textContent = patient.name;
+    document.getElementById('current-patient-info').textContent = `Age: ${patient.age} | Phone: ${patient.phone}`;
+    document.getElementById('doc-step-1').classList.add('hidden');
+    document.getElementById('doc-step-2').classList.remove('hidden');
+    
+    // Load previous visits
+    const prevVisits = patient.visits.slice().reverse();
+    document.getElementById('current-patient-prev-visits').innerHTML = prevVisits.map(v => `
+        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <p class="font-medium text-xs text-gray-600">${v.date}</p>
+            <p class="text-sm text-gray-800 font-medium">${v.diagnosis || 'No diagnosis'}</p>
+            <p class="text-xs text-gray-500 mt-1">${v.medicines.length} meds, ${v.labTests.length} tests</p>
+        </div>
+    `).join('') || '<p class="text-gray-500 italic text-xs">No previous visits</p>';
+    
+    // Reset form
+    document.getElementById('visit-history').value = '';
+    document.getElementById('visit-diagnosis').value = '';
+    document.getElementById('medicine-rows').innerHTML = '';
+    document.getElementById('labtest-rows').innerHTML = '';
+    document.getElementById('current-lab-results').innerHTML = '<p class="text-gray-500 italic">No lab results yet. Send tests to lab first.</p>';
+    
+    addMedicineRow();
+    addLabTestRow();
+}
+
+function clearCurrentPatient() {
+    currentPatient = null;
+    currentVisit = null;
+    document.getElementById('doc-step-1').classList.remove('hidden');
+    document.getElementById('doc-step-2').classList.add('hidden');
+    document.getElementById('doc-search-patient').value = '';
+    document.getElementById('doc-patient-results').innerHTML = '';
+}
+
+function addMedicineRow() {
+    const medicines = Store.get('medicines');
+    if (medicines.length === 0) {
+        alert('Please add medicines in Settings first!');
+        return;
+    }
+    
+    const options = medicines.map(m => `<option value="${m.name}" data-dose="${m.dosage}">${m.name} (${m.dosage})</option>`).join('');
+    const div = document.createElement('div');
+    div.className = 'grid grid-cols-12 gap-2 items-end bg-gray-50 p-3 rounded-lg border border-gray-200 medicine-row';
+    div.innerHTML = `
+        <div class="col-span-3">
+            <label class="text-xs font-medium text-gray-600">Medicine</label>
+            <select class="med-name w-full border border-gray-300 rounded px-2 py-1 text-sm" onchange="updateMedDose(this)">${options}</select>
+        </div>
+        <div class="col-span-2">
+            <label class="text-xs font-medium text-gray-600">Dose</label>
+            <input type="text" class="med-dose w-full border border-gray-300 rounded px-2 py-1 text-sm" value="${medicines[0].dosage}">
+        </div>
+        <div class="col-span-3">
+            <label class="text-xs font-medium text-gray-600">Frequency</label>
+            <input type="text" class="med-freq w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder="e.g. 3x daily">
+        </div>
+        <div class="col-span-2">
+            <label class="text-xs font-medium text-gray-600">Duration</label>
+            <input type="text" class="med-dur w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder="e.g. 5 days">
+        </div>
+        <div class="col-span-1">
+            <label class="text-xs font-medium text-gray-600">Qty</label>
+            <input type="number" class="med-qty w-full border border-gray-300 rounded px-2 py-1 text-sm" value="1">
+        </div>
+        <div class="col-span-1">
+            <button type="button" onclick="this.closest('.medicine-row').remove()" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+        </div>
+    `;
+    document.getElementById('medicine-rows').appendChild(div);
+}
+
+function updateMedDose(select) {
+    const dose = select.options[select.selectedIndex].dataset.dose;
+    select.closest('.medicine-row').querySelector('.med-dose').value = dose;
+}
+
+function addLabTestRow() {
+    const tests = Store.get('labTests');
+    if (tests.length === 0) {
+        alert('Please add lab tests in Settings first!');
+        return;
+    }
+    
+    const options = tests.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+    const div = document.createElement('div');
+    div.className = 'flex gap-2 items-center bg-gray-50 p-3 rounded-lg border border-gray-200 labtest-row';
+    div.innerHTML = `
+        <select class="lab-test-name flex-1 border border-gray-300 rounded px-2 py-1 text-sm">${options}</select>
+        <button type="button" onclick="this.closest('.labtest-row').remove()" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+    `;
+    document.getElementById('labtest-rows').appendChild(div);
+}
+
+function getMedicinesFromForm() {
+    const rows = document.querySelectorAll('.medicine-row');
+    return Array.from(rows).map(row => ({
+        name: row.querySelector('.med-name').value,
+        dosage: row.querySelector('.med-dose').value,
+        frequency: row.querySelector('.med-freq').value,
+        duration: row.querySelector('.med-dur').value,
+        qty: row.querySelector('.med-qty').value
+    }));
+}
+
+function getLabTestsFromForm() {
+    const rows = document.querySelectorAll('.labtest-row');
+    return Array.from(rows).map(row => ({
+        testName: row.querySelector('.lab-test-name').value,
+        status: 'pending',
+        result: '',
+        resultDate: '',
+        technician: '',
+        notes: ''
+    }));
+}
+
+function saveVisit() {
+    if (!currentPatient || !currentVisit) return;
+    
+    currentVisit.history = document.getElementById('visit-history').value;
+    currentVisit.diagnosis = document.getElementById('visit-diagnosis').value;
+    currentVisit.medicines = getMedicinesFromForm();
+    currentVisit.labTests = getLabTestsFromForm();
+    
+    // Update patient
+    const patients = Store.get('patients');
+    const pIndex = patients.findIndex(p => p.id == currentPatient.id);
+    if (pIndex > -1) {
+        patients[pIndex].visits.push(currentVisit);
+        Store.set('patients', patients);
+        currentPatient = patients[pIndex];
+    }
+    
+    alert('Visit saved successfully!');
+    clearCurrentPatient();
+    updateDashboard();
+}
+
+// ================= PRINTING =================
+function printPrescription() {
+    if (!currentPatient) return;
+    const meds = getMedicinesFromForm();
+    if (meds.length === 0) { alert('Add medicines first'); return; }
+    
+    document.getElementById('print-p-name').textContent = currentPatient.name;
+    document.getElementById('print-p-age').textContent = currentPatient.age;
+    document.getElementById('print-p-phone').textContent = currentPatient.phone;
+    document.getElementById('print-p-date').textContent = new Date().toLocaleDateString();
+    document.getElementById('print-p-diagnosis').textContent = document.getElementById('visit-diagnosis').value || 'N/A';
+    
+    document.getElementById('print-p-medicines').innerHTML = meds.map((m, i) => `
+        <tr><td style="padding: 8px;">${i+1}</td><td style="padding: 8px;">${m.name}</td><td style="padding: 8px;">${m.dosage}</td><td style="padding: 8px;">${m.frequency}</td><td style="padding: 8px;">${m.duration}</td></tr>
+    `).join('');
+    
+    const printArea = document.getElementById('print-prescription');
+    printArea.classList.remove('hidden');
+    window.print();
+    setTimeout(() => printArea.classList.add('hidden'), 500);
+}
+
+function printLabRequest() {
+    if (!currentPatient) return;
+    const tests = getLabTestsFromForm();
+    if (tests.length === 0) { alert('Add lab tests first'); return; }
+    
+    document.getElementById('print-lr-name').textContent = currentPatient.name;
+    document.getElementById('print-lr-age').textContent = currentPatient.age;
+    document.getElementById('print-lr-phone').textContent = currentPatient.phone;
+    document.getElementById('print-lr-date').textContent = new Date().toLocaleDateString();
+    document.getElementById('print-lr-tests').innerHTML = tests.map(t => `<li>${t.testName}</li>`).join('');
+    
+    const printArea = document.getElementById('print-lab-request');
+    printArea.classList.remove('hidden');
+    window.print();
+    setTimeout(() => printArea.classList.add('hidden'), 500);
+}
+
+function printPharmacy() {
+    if (!currentPatient) return;
+    const meds = getMedicinesFromForm();
+    if (meds.length === 0) { alert('Add medicines first'); return; }
+    
+    document.getElementById('print-ph-name').textContent = currentPatient.name;
+    document.getElementById('print-ph-age').textContent = currentPatient.age;
+    document.getElementById('print-ph-date').textContent = new Date().toLocaleDateString();
+    document.getElementById('print-ph-medicines').innerHTML = meds.map((m, i) => `
+        <tr><td style="padding: 8px;">${i+1}</td><td style="padding: 8px;">${m.name}</td><td style="padding: 8px;">${m.qty}</td><td style="padding: 8px;">${m.frequency} for ${m.duration}</td></tr>
+    `).join('');
+    
+    const printArea = document.getElementById('print-pharmacy');
+    printArea.classList.remove('hidden');
+    window.print();
+    setTimeout(() => printArea.classList.add('hidden'), 500);
+}
+
+function printLabResult(patientId, visitId, testIndex) {
+    const patient = Store.get('patients').find(p => p.id == patientId);
+    if (!patient) return;
+    const visit = patient.visits.find(v => v.visitId == visitId);
+    if (!visit) return;
+    const test = visit.labTests[testIndex];
+    if (!test || test.status !== 'completed') { alert('Result not ready'); return; }
+    
+    document.getElementById('print-lres-name').textContent = patient.name;
+    document.getElementById('print-lres-age').textContent = patient.age;
+    document.getElementById('print-lres-date').textContent = test.resultDate;
+    document.getElementById('print-lres-tech').textContent = test.technician;
+    
+    const labTestsSettings = Store.get('labTests');
+    const testSetting = labTestsSettings.find(t => t.name === test.testName);
+    
+    document.getElementById('print-lres-results').innerHTML = `
+        <tr>
+            <td style="padding: 8px;">${test.testName}</td>
+            <td style="padding: 8px; font-weight: bold;">${test.result}</td>
+            <td style="padding: 8px;">${testSetting ? testSetting.normalRange : 'N/A'}</td>
+            <td style="padding: 8px;">${test.result.toLowerCase() === 'normal' || test.result.toLowerCase() === 'negative' ? 'Normal' : 'Abnormal'}</td>
+        </tr>
+    `;
+    
+    const printArea = document.getElementById('print-lab-result');
+    printArea.classList.remove('hidden');
+    window.print();
+    setTimeout(() => printArea.classList.add('hidden'), 500);
+}
+
+// ================= LAB SECTION =================
+function renderLab() {
+    const patients = Store.get('patients');
+    let pending = [];
+    let completed = [];
+    
+    patients.forEach(p => {
+        p.visits.forEach(v => {
+            v.labTests.forEach((t, idx) => {
+                const item = {patient: p, visit: v, test: t, testIndex: idx, patientId: p.id, visitId: v.visitId};
+                if (t.status === 'pending') pending.push(item);
+                else completed.push(item);
+            });
+        });
+    });
+    
+    // Pending
+    const pendingContainer = document.getElementById('lab-pending-list');
+    if (pending.length === 0) {
+        pendingContainer.innerHTML = '<p class="text-gray-500 text-center py-8 italic">No pending lab requests</p>';
+    } else {
+        pendingContainer.innerHTML = pending.map(item => `
+            <div class="bg-white border border-orange-200 rounded-lg p-4 mb-3">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-bold text-gray-800">${item.patient.name}</p>
+                        <p class="text-xs text-gray-500">Age: ${item.patient.age} | ${item.patient.phone}</p>
+                        <p class="text-sm text-orange-700 font-medium mt-1"><i class="fas fa-vial mr-1"></i>${item.test.testName}</p>
+                        <p class="text-xs text-gray-400">Requested: ${item.visit.date}</p>
+                    </div>
+                    <button onclick="openLabResultModal(${item.patientId}, ${item.visitId}, ${item.testIndex})" class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium">
+                        <i class="fas fa-edit mr-1"></i>Enter Result
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Completed
+    const completedContainer = document.getElementById('lab-completed-list');
+    if (completed.length === 0) {
+        completedContainer.innerHTML = '<p class="text-gray-500 text-center py-8 italic">No completed results</p>';
+    } else {
+        completedContainer.innerHTML = completed.slice().reverse().map(item => `
+            <div class="bg-white border border-emerald-200 rounded-lg p-4 mb-3">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-bold text-gray-800">${item.patient.name}</p>
+                        <p class="text-sm text-emerald-700 font-medium mt-1">${item.test.testName}: <span class="font-bold">${item.test.result}</span></p>
+                        <p class="text-xs text-gray-400">By: ${item.test.technician} | ${item.test.resultDate}</p>
+                    </div>
+                    <button onclick="printLabResult(${item.patientId}, ${item.visitId}, ${item.testIndex})" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium">
+                        <i class="fas fa-print mr-1"></i>Print
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Update dashboard counts
+    document.getElementById('dash-pending-lab').textContent = pending.length;
+    document.getElementById('dash-completed-lab').textContent = completed.length;
+}
+
+function openLabResultModal(patientId, visitId, testIndex) {
+    const patient = Store.get('patients').find(p => p.id == patientId);
+    const visit = patient.visits.find(v => v.visitId == visitId);
+    const test = visit.labTests[testIndex];
+    
+    document.getElementById('labres-patient').textContent = patient.name;
+    document.getElementById('labres-test').textContent = test.testName;
+    document.getElementById('labres-patient-id').value = patientId;
+    document.getElementById('labres-visit-id').value = visitId;
+    document.getElementById('labres-test-index').value = testIndex;
+    document.getElementById('labres-result').value = '';
+    document.getElementById('labres-notes').value = '';
+    document.getElementById('labres-tech').value = '';
+    
+    openModal('modal-lab-result');
+}
+
+function saveLabResult(e) {
+    e.preventDefault();
+    const patientId = document.getElementById('labres-patient-id').value;
+    const visitId = document.getElementById('labres-visit-id').value;
+    const testIndex = document.getElementById('labres-test-index').value;
+    
+    const patients = Store.get('patients');
+    const pIndex = patients.findIndex(p => p.id == patientId);
+    const vIndex = patients[pIndex].visits.findIndex(v => v.visitId == visitId);
+    
+    patients[pIndex].visits[vIndex].labTests[testIndex] = {
+        ...patients[pIndex].visits[vIndex].labTests[testIndex],
+        status: 'completed',
+        result: document.getElementById('labres-result').value,
+        notes: document.getElementById('labres-notes').value,
+        resultDate: new Date().toLocaleString(),
+        technician: document.getElementById('labres-tech').value
+    };
+    
+    Store.set('patients', patients);
+    closeModal('modal-lab-result');
+    renderLab();
+    
+    // If doctor is viewing this patient, update the lab results display
+    if (currentPatient && currentPatient.id == patientId) {
+        updateCurrentLabResults(patients[pIndex].visits[vIndex]);
+    }
+    
+    // Update dashboard
+    updateDashboard();
+}
+
+function updateCurrentLabResults(visit) {
+    const container = document.getElementById('current-lab-results');
+    const completed = visit.labTests.filter(t => t.status === 'completed');
+    
+    if (completed.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 italic">No lab results yet. Send tests to lab first.</p>';
+        return;
+    }
+    
+    container.innerHTML = completed.map(t => `
+        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+            <div class="flex justify-between items-center">
+                <span class="font-medium text-sm text-gray-700">${t.testName}</span>
+                <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Completed</span>
+            </div>
+            <p class="text-lg font-bold text-emerald-700 mt-1">${t.result}</p>
+            <p class="text-xs text-gray-500">By ${t.technician} on ${t.resultDate}</p>
+            ${t.notes ? `<p class="text-xs text-gray-600 mt-1 italic">Note: ${t.notes}</p>` : ''}
+        </div>
+    `).join('');
+}
+
+// ================= SETTINGS =================
+function renderSettings() {
+    // Medicines
+    const medicines = Store.get('medicines');
+    document.getElementById('settings-medicines-table').innerHTML = medicines.map(m => `
+        <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3 font-medium">${m.name}</td>
+            <td class="px-4 py-3">${m.dosage}</td>
+            <td class="px-4 py-3"><span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs">${m.type}</span></td>
+            <td class="px-4 py-3">
+                <button onclick="editSettingsItem('medicine', ${m.id})" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
+                <button onclick="deleteSettingsItem('medicines', ${m.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+    `).join('') || '<tr><td colspan="4" class="text-center py-4 text-gray-500">No medicines added</td></tr>';
+    
+    // Lab Tests
+    const tests = Store.get('labTests');
+    document.getElementById('settings-labtests-table').innerHTML = tests.map(t => `
+        <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3 font-medium">${t.name}</td>
+            <td class="px-4 py-3">${t.unit}</td>
+            <td class="px-4 py-3 text-sm text-gray-600">${t.normalRange}</td>
+            <td class="px-4 py-3">
+                <button onclick="editSettingsItem('labTest', ${t.id})" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
+                <button onclick="deleteSettingsItem('labTests', ${t.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+    `).join('') || '<tr><td colspan="4" class="text-center py-4 text-gray-500">No lab tests added</td></tr>';
+}
+
+function openSettingsModal(type, editId = null) {
+    document.getElementById('settings-type').value = type;
+    document.getElementById('settings-edit-id').value = editId || '';
+    
+    const fieldsDiv = document.getElementById('settings-fields');
+    if (type === 'medicine') {
+        document.getElementById('settings-modal-title').textContent = editId ? 'Edit Medicine' : 'Add Medicine';
+        const data = editId ? Store.get('medicines').find(m => m.id == editId) : {};
+        fieldsDiv.innerHTML = `
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Medicine Name</label><input type="text" id="set-med-name" value="${data.name||''}" required class="w-full border border-gray-300 rounded-lg px-3 py-2"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Default Dosage</label><input type="text" id="set-med-dose" value="${data.dosage||''}" required class="w-full border border-gray-300 rounded-lg px-3 py-2"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Type</label><input type="text" id="set-med-type" value="${data.type||''}" placeholder="Tablet, Syrup, Injection..." class="w-full border border-gray-300 rounded-lg px-3 py-2"></div>
+        `;
+    } else {
+        document.getElementById('settings-modal-title').textContent = editId ? 'Edit Lab Test' : 'Add Lab Test';
+        const data = editId ? Store.get('labTests').find(t => t.id == editId) : {};
+        fieldsDiv.innerHTML = `
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Test Name</label><input type="text" id="set-lab-name" value="${data.name||''}" required class="w-full border border-gray-300 rounded-lg px-3 py-2"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Unit</label><input type="text" id="set-lab-unit" value="${data.unit||''}" placeholder="mg/dL, etc" class="w-full border border-gray-300 rounded-lg px-3 py-2"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Normal Range</label><input type="text" id="set-lab-range" value="${data.normalRange||''}" placeholder="e.g. 70-100" class="w-full border border-gray-300 rounded-lg px-3 py-2"></div>
+        `;
+    }
+    openModal('modal-settings');
+}
+
+function saveSettingsItem(e) {
+    e.preventDefault();
+    const type = document.getElementById('settings-type').value;
+    const editId = document.getElementById('settings-edit-id').value;
+    
+    if (type === 'medicine') {
+        const item = {
+            name: document.getElementById('set-med-name').value,
+            dosage: document.getElementById('set-med-dose').value,
+            type: document.getElementById('set-med-type').value || 'Tablet'
+        };
+        if (editId) Store.update('medicines', editId, item);
+        else Store.add('medicines', item);
+    } else {
+        const item = {
+            name: document.getElementById('set-lab-name').value,
+            unit: document.getElementById('set-lab-unit').value,
+            normalRange: document.getElementById('set-lab-range').value
+        };
+        if (editId) Store.update('labTests', editId, item);
+        else Store.add('labTests', item);
+    }
+    
+    closeModal('modal-settings');
+    renderSettings();
+}
+
+function editSettingsItem(type, id) {
+    openSettingsModal(type, id);
+}
+
+function deleteSettingsItem(key, id) {
+    if (confirm('Are you sure? This may affect existing records.')) {
+        Store.del(key, id);
+        renderSettings();
+    }
+}
+
+// ================= DASHBOARD =================
+function updateDashboard() {
+    const patients = Store.get('patients');
+    const today = new Date().toISOString().split('T')[0];
+    
+    let totalVisits = 0;
+    let pendingLab = 0;
+    let completedLab = 0;
+    let todayVisits = 0;
+    
+    patients.forEach(p => {
+        p.visits.forEach(v => {
+            totalVisits++;
+            if (v.date === today) todayVisits++;
+            v.labTests.forEach(t => {
+                if (t.status === 'pending') pendingLab++;
+                else if (t.status === 'completed') completedLab++;
+            });
+        });
+    });
+    
+    document.getElementById('dash-patients').textContent = patients.length;
+    document.getElementById('dash-visits').textContent = todayVisits;
+    document.getElementById('dash-pending-lab').textContent = pendingLab;
+    document.getElementById('dash-completed-lab').textContent = completedLab;
+    
+    // Recent patients
+    const recent = patients.slice().reverse().slice(0, 5);
+    document.getElementById('dash-recent-patients').innerHTML = recent.map(p => `
+        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-blue-50" onclick="showSection('patients'); viewPatientHistory(${p.id})">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold">${p.name.charAt(0)}</div>
+                <div>
+                    <p class="font-medium text-sm">${p.name}</p>
+                    <p class="text-xs text-gray-500">${p.phone}</p>
+                </div>
+            </div>
+            <span class="text-xs text-gray-400">${p.visits.length} visits</span>
+        </div>
+    `).join('') || '<p class="text-gray-500 italic">No patients yet</p>';
+    
+    // Pending lab list
+    let pendingItems = [];
+    patients.forEach(p => {
+        p.visits.forEach(v => {
+            v.labTests.forEach(t => {
+                if (t.status === 'pending') pendingItems.push({patient: p, test: t});
+            });
+        });
+    });
+    
+    document.getElementById('dash-pending-lab-list').innerHTML = pendingItems.slice(0, 5).map(item => `
+        <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-100">
+            <div>
+                <p class="font-medium text-sm text-gray-800">${item.patient.name}</p>
+                <p class="text-xs text-orange-600">${item.test.testName}</p>
+            </div>
+            <span class="status-badge status-pending">Pending</span>
+        </div>
+    `).join('') || '<p class="text-gray-500 italic text-center py-4">No pending lab requests</p>';
+}
+
+// ================= UTILS =================
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+function resetAllData() {
+    if (confirm('WARNING: This will delete ALL data permanently. Are you sure?')) {
+        localStorage.removeItem('dms_init');
+        ['patients', 'medicines', 'labTests'].forEach(k => localStorage.removeItem(k));
+        location.reload();
+    }
+}
+
+// ================= INIT =================
+document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+initData();
+updateDashboard();
+showSection('dashboard');
 </script>
+
 </body>
 </html>
