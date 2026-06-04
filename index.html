@@ -20,6 +20,45 @@
             --sidebar-width: 240px; --topbar-height: 44px;
         }
         body { font-family: 'Lato', sans-serif; background: var(--odoo-bg); color: var(--odoo-text); font-size: 13px; line-height: 1.5; }
+
+        /* ============================================================
+           LOGIN SCREEN
+        ============================================================ */
+        #login-screen {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; background: linear-gradient(135deg, #5c3d55 0%, #714B67 50%, #3a8f4a 100%);
+            position: fixed; inset: 0; z-index: 9999;
+        }
+        .login-card {
+            background: white; border-radius: 10px; padding: 40px 36px;
+            width: 100%; max-width: 420px; box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+        }
+        .login-logo { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+        .login-logo-circle {
+            width: 58px; height: 58px; border-radius: 50%;
+            background: linear-gradient(135deg, #714B67, #3a8f4a);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 26px; font-weight: 900;
+        }
+        .login-hosp-name { font-size: 26px; font-weight: 900; color: #714B67; line-height: 1; }
+        .login-hosp-sub  { font-size: 12px; font-weight: 700; color: #3a8f4a; letter-spacing: 3px; }
+        .login-title { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 22px; border-bottom: 2px solid #f0eeee; padding-bottom: 12px; }
+        .login-field { margin-bottom: 16px; }
+        .login-field label { display: block; font-size: 11px; font-weight: 700; color: #717171; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px; }
+        .login-field select,
+        .login-field input { width: 100%; padding: 9px 12px; border: 1px solid #d0c7cb; border-radius: 5px; font-size: 13px; font-family: 'Lato', sans-serif; color: #333; background: white; transition: border-color 0.15s, box-shadow 0.15s; }
+        .login-field select:focus,
+        .login-field input:focus { outline: none; border-color: #714B67; box-shadow: 0 0 0 3px rgba(113,75,103,0.12); }
+        .login-btn { width: 100%; padding: 10px; background: #714B67; color: white; border: none; border-radius: 5px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Lato', sans-serif; transition: background 0.15s; margin-top: 6px; }
+        .login-btn:hover { background: #5c3d55; }
+        .login-error { color: #e74c3c; font-size: 12px; margin-top: 8px; display: none; text-align: center; font-weight: 600; }
+
+        /* ============================================================
+           MAIN APP (hidden until logged in)
+        ============================================================ */
+        #main-app { display: none; }
+
+        /* ---- Top Bar ---- */
         .odoo-topbar { position: fixed; top: 0; left: 0; right: 0; height: var(--topbar-height); background: var(--odoo-purple); display: flex; align-items: center; z-index: 1000; padding: 0 8px; gap: 0; }
         .odoo-topbar .home-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 4px; color: rgba(255,255,255,0.85); cursor: pointer; font-size: 16px; transition: background 0.15s; flex-shrink: 0; }
         .odoo-topbar .home-btn:hover { background: rgba(255,255,255,0.15); }
@@ -33,10 +72,18 @@
         .odoo-topbar-right { display: flex; align-items: center; gap: 2px; flex-shrink: 0; margin-left: auto; }
         .odoo-topbar-right .icon-btn { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 4px; color: rgba(255,255,255,0.80); cursor: pointer; font-size: 14px; position: relative; transition: background 0.15s; }
         .odoo-topbar-right .icon-btn:hover { background: rgba(255,255,255,0.15); color: white; }
-        .odoo-topbar-right .badge { position: absolute; top: 3px; right: 3px; background: #e74c3c; color: white; font-size: 9px; font-weight: 700; min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
-        .odoo-topbar-right .user-menu { display: flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 4px; cursor: pointer; color: white; font-size: 13px; font-weight: 600; transition: background 0.15s; }
+        .odoo-topbar-right .badge-notif { position: absolute; top: 3px; right: 3px; background: #e74c3c; color: white; font-size: 9px; font-weight: 700; min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
+        .odoo-topbar-right .user-menu { display: flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 4px; cursor: pointer; color: white; font-size: 13px; font-weight: 600; transition: background 0.15s; position: relative; }
         .odoo-topbar-right .user-menu:hover { background: rgba(255,255,255,0.15); }
         .odoo-topbar-right .user-menu .avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; }
+        .user-dropdown { display: none; position: absolute; top: 42px; right: 0; background: white; border: 1px solid var(--odoo-border); border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); min-width: 160px; z-index: 2000; }
+        .user-dropdown.open { display: block; }
+        .user-dropdown-item { padding: 9px 14px; font-size: 13px; color: var(--odoo-text); cursor: pointer; transition: background 0.12s; }
+        .user-dropdown-item:hover { background: var(--odoo-purple-xlight); color: var(--odoo-purple-dark); }
+        .user-dropdown-item.logout { color: var(--odoo-red); }
+        .user-dropdown-item.logout:hover { background: #fdecea; }
+
+        /* ---- Layout ---- */
         .layout { display: flex; height: 100vh; padding-top: var(--topbar-height); }
         .sidebar { width: var(--sidebar-width); background: white; border-right: 1px solid var(--odoo-border); display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden; }
         .sidebar-header { padding: 16px 16px 12px; border-bottom: 1px solid var(--odoo-border); background: var(--odoo-purple-xlight); }
@@ -54,6 +101,8 @@
         .content-header .breadcrumb .crumb-main { font-size: 16px; font-weight: 700; color: var(--odoo-text); }
         .content-header .header-right { display: flex; align-items: center; gap: 8px; }
         .content-body { padding: 20px 24px; }
+
+        /* ---- Buttons ---- */
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: all 0.15s; font-family: 'Lato', sans-serif; white-space: nowrap; }
         .btn-primary { background: var(--odoo-purple); color: white; border-color: var(--odoo-purple-dark); }
         .btn-primary:hover { background: var(--odoo-purple-dark); }
@@ -70,11 +119,15 @@
         .btn-sm { padding: 4px 10px; font-size: 12px; }
         .btn-lg { padding: 9px 20px; font-size: 14px; }
         .btn-full { width: 100%; justify-content: center; }
+
+        /* ---- Panels ---- */
         .panel { background: white; border: 1px solid var(--odoo-border); border-radius: 4px; margin-bottom: 16px; }
         .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--odoo-border); display: flex; align-items: center; justify-content: space-between; background: #fafafa; }
         .panel-header h3, .panel-header h4 { font-size: 13px; font-weight: 700; color: var(--odoo-text); display: flex; align-items: center; gap: 7px; }
         .panel-header h3 i, .panel-header h4 i { color: var(--odoo-purple-light); }
         .panel-body { padding: 16px; }
+
+        /* ---- Stat Cards ---- */
         .stat-cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px; }
         .stat-card { background: white; border: 1px solid var(--odoo-border); border-radius: 4px; padding: 16px; display: flex; align-items: center; gap: 12px; transition: box-shadow 0.15s; }
         .stat-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
@@ -86,6 +139,8 @@
         .icon-yellow { background: #fef9c3; color: #854d0e; }
         .icon-orange { background: #ffedd5; color: #c2410c; }
         .icon-purple { background: #ede9fe; color: #6d28d9; }
+
+        /* ---- Forms ---- */
         .form-group { margin-bottom: 12px; }
         .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--odoo-text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
         .form-control, .form-select, textarea.form-control { width: 100%; padding: 7px 10px; border: 1px solid var(--odoo-border); border-radius: 4px; font-size: 13px; font-family: 'Lato', sans-serif; color: var(--odoo-text); background: white; transition: border-color 0.15s, box-shadow 0.15s; }
@@ -93,23 +148,33 @@
         .form-row { display: grid; gap: 12px; }
         .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
         .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+        /* ---- Tables ---- */
         .odoo-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .odoo-table thead tr { background: #f8f5f7; border-bottom: 2px solid var(--odoo-border); }
         .odoo-table th { padding: 9px 12px; text-align: left; font-size: 12px; font-weight: 700; color: var(--odoo-purple-dark); text-transform: uppercase; letter-spacing: 0.4px; }
         .odoo-table td { padding: 10px 12px; border-bottom: 1px solid #f0edf0; color: var(--odoo-text); vertical-align: middle; }
         .odoo-table tbody tr:hover { background: #fdf9fc; }
         .odoo-table tbody tr:last-child td { border-bottom: none; }
+
+        /* ---- Badges ---- */
         .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
         .badge-pending { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
         .badge-completed { background: #d4edda; color: #155724; border: 1px solid #28a745; }
         .badge-new { background: #cce5ff; color: #004085; border: 1px solid #3498db; }
         .badge-purple { background: var(--odoo-purple-xlight); color: var(--odoo-purple-dark); border: 1px solid var(--odoo-purple-light); }
+
+        /* ---- Search ---- */
         .search-bar { display: flex; align-items: center; gap: 8px; background: white; border: 1px solid var(--odoo-border); border-radius: 4px; padding: 5px 10px; flex: 1; }
         .search-bar i { color: var(--odoo-text-muted); font-size: 13px; }
         .search-bar input { border: none; outline: none; font-size: 13px; font-family: 'Lato', sans-serif; color: var(--odoo-text); flex: 1; min-width: 0; background: transparent; }
+
+        /* ---- Patient Cards ---- */
         .patient-card { background: white; border: 1px solid var(--odoo-border); border-radius: 4px; padding: 14px; cursor: pointer; transition: all 0.15s; }
         .patient-card:hover { border-color: var(--odoo-purple-light); box-shadow: 0 2px 8px rgba(113,75,103,0.12); }
         .patient-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--odoo-purple); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+
+        /* ---- Modals ---- */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 2000; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: white; border-radius: 6px; max-height: 90vh; overflow-y: auto; width: 90%; max-width: 640px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
@@ -119,8 +184,13 @@
         .modal-header .close-btn:hover { background: rgba(113,75,103,0.15); color: var(--odoo-purple-dark); }
         .modal-body { padding: 20px; }
         .modal-footer { padding: 12px 20px; border-top: 1px solid var(--odoo-border); display: flex; justify-content: flex-end; gap: 8px; background: #fafafa; }
-        .section { display: block; }
+
+        /* ---- Sections ---- */
+        .section { display: block; animation: fadeSlide 0.25s ease; }
         .hidden-section { display: none !important; }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ---- Misc ---- */
         .patient-banner { background: linear-gradient(135deg, var(--odoo-purple-xlight), #ede0ea); border: 1px solid var(--odoo-purple-light); border-radius: 4px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
         .patient-banner .pname { font-size: 16px; font-weight: 700; color: var(--odoo-purple-dark); }
         .patient-banner .pinfo { font-size: 12px; color: var(--odoo-purple-light); margin-top: 2px; }
@@ -137,16 +207,23 @@
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
         .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; color: var(--odoo-text-muted); text-align: center; }
         .empty-state .empty-icon { width: 80px; height: 80px; background: var(--odoo-purple-xlight); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--odoo-purple-light); margin-bottom: 16px; }
-        .empty-state h4 { font-size: 15px; font-weight: 700; color: var(--odoo-text); margin-bottom: 6px; }
-        .section { animation: fadeSlide 0.25s ease; }
-        @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         ::-webkit-scrollbar { width: 7px; height: 7px; }
         ::-webkit-scrollbar-track { background: #f1edf0; }
         ::-webkit-scrollbar-thumb { background: var(--odoo-purple-light); border-radius: 4px; }
 
-        /* ========== PRINT AREAS ========== */
-        #print-prescription, #print-lab-request, #print-lab-result, #print-pharmacy { display: none; }
+        /* ============================================================
+           HOME GRID OVERLAY
+        ============================================================ */
+        #home-grid-overlay { display:none; position:fixed; inset:0; top:44px; background:rgba(90,60,80,0.97); z-index:999; overflow-y:auto; }
+        .home-app-icon { display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; padding:10px; border-radius:8px; transition:background 0.15s; }
+        .home-app-icon:hover { background:rgba(255,255,255,0.1); }
+        .app-icon-bg { width:64px; height:64px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:26px; color:white; }
+        .home-app-icon span { color:rgba(255,255,255,0.9); font-size:11px; font-weight:600; text-align:center; max-width:70px; line-height:1.3; }
 
+        /* ============================================================
+           PRINT AREAS
+        ============================================================ */
+        #print-prescription, #print-lab-request, #print-lab-result, #print-pharmacy { display: none; }
         @media print {
             body * { visibility: hidden; }
             .print-doc.active, .print-doc.active * { visibility: visible; }
@@ -154,31 +231,13 @@
             .no-print { display: none !important; }
         }
 
-        /* ===== BAXNAANO PRESCRIPTION PRINT STYLE ===== */
-        .rx-print-wrap {
-            font-family: Arial, sans-serif;
-            padding: 20px 30px;
-            color: #222;
-            max-width: 210mm;
-            margin: 0 auto;
-        }
-        .rx-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #714B67;
-            margin-bottom: 14px;
-        }
+        /* Prescription print */
+        .rx-print-wrap { font-family: Arial, sans-serif; padding: 20px 30px; color: #222; max-width: 210mm; margin: 0 auto; }
+        .rx-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 3px solid #714B67; margin-bottom: 14px; }
         .rx-logo-area { display: flex; align-items: center; gap: 14px; }
-        .rx-logo-circle {
-            width: 60px; height: 60px; border-radius: 50%;
-            background: linear-gradient(135deg, #714B67, #3a8f4a);
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 28px; font-weight: 900;
-        }
+        .rx-logo-circle { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #714B67, #3a8f4a); display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; font-weight: 900; }
         .rx-hosp-name { font-size: 28px; font-weight: 900; color: #714B67; letter-spacing: 1px; line-height: 1; }
-        .rx-hosp-sub { font-size: 15px; font-weight: 700; color: #3a8f4a; letter-spacing: 3px; }
+        .rx-hosp-sub  { font-size: 15px; font-weight: 700; color: #3a8f4a; letter-spacing: 3px; }
         .rx-contact { text-align: right; font-size: 11px; color: #666; }
         .rx-meta-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 12px; }
         .rx-meta-table td { padding: 3px 8px; }
@@ -195,31 +254,13 @@
         .rx-sig-line { border-top: 1px solid #555; width: 160px; margin: 0 auto 4px; padding-top: 4px; }
         .rx-footer-bar { margin-top: 20px; background: #714B67; color: white; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; border-radius: 0 0 4px 4px; }
 
-        /* ===== LAB REQUEST PRINT STYLE (matches Image 2) ===== */
-        .lr-print-wrap {
-            font-family: Arial, sans-serif;
-            padding: 20px 30px;
-            color: #222;
-            max-width: 210mm;
-            margin: 0 auto;
-        }
-        .lr-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #222;
-            margin-bottom: 16px;
-        }
+        /* Lab request print */
+        .lr-print-wrap { font-family: Arial, sans-serif; padding: 20px 30px; color: #222; max-width: 210mm; margin: 0 auto; }
+        .lr-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 3px solid #222; margin-bottom: 16px; }
         .lr-logo-area { display: flex; align-items: center; gap: 12px; }
-        .lr-logo-circle {
-            width: 56px; height: 56px; border-radius: 50%;
-            background: linear-gradient(135deg, #714B67, #3a8f4a);
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 26px; font-weight: 900;
-        }
+        .lr-logo-circle { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #714B67, #3a8f4a); display: flex; align-items: center; justify-content: center; color: white; font-size: 26px; font-weight: 900; }
         .lr-hosp-name { font-size: 26px; font-weight: 900; color: #222; letter-spacing: 1px; line-height: 1.1; }
-        .lr-hosp-sub { font-size: 13px; font-weight: 700; color: #555; letter-spacing: 3px; }
+        .lr-hosp-sub  { font-size: 13px; font-weight: 700; color: #555; letter-spacing: 3px; }
         .lr-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; font-size: 12px; margin-bottom: 16px; }
         .lr-meta-row { padding: 3px 0; }
         .lr-meta-label { font-weight: 700; }
@@ -236,9 +277,46 @@
 </head>
 <body>
 
+<!-- ============================================================
+     LOGIN SCREEN
+============================================================ -->
+<div id="login-screen">
+    <div class="login-card">
+        <div class="login-logo">
+            <div class="login-logo-circle">B</div>
+            <div>
+                <div class="login-hosp-name">BAXNAANO</div>
+                <div class="login-hosp-sub">HOSPITAL</div>
+            </div>
+        </div>
+        <div class="login-title"><i class="fas fa-user-md" style="margin-right:8px; color:#714B67;"></i>Doctor Portal – Sign In</div>
+        <div class="login-field">
+            <label>Select Doctor</label>
+            <select id="login-doctor">
+                <option value="">-- Select Your Account --</option>
+                <option value="harith">Dr. Harith Abdulkadir Sheikh Mohamud</option>
+                <option value="yaxye">Dr. Yaxye</option>
+                <option value="hersi">Dr. Hersi</option>
+            </select>
+        </div>
+        <div class="login-field">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="Enter your password" onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <p class="login-error" id="login-error"><i class="fas fa-exclamation-circle"></i> Incorrect password. Please try again.</p>
+        <button class="login-btn" onclick="doLogin()"><i class="fas fa-sign-in-alt" style="margin-right:6px;"></i>Sign In</button>
+        <p style="font-size:11px; color:#aaa; text-align:center; margin-top:16px;">Baxnaano Hospital Management System &copy; 2026</p>
+    </div>
+</div>
+
+<!-- ============================================================
+     MAIN APP
+============================================================ -->
+<div id="main-app">
+
 <header class="odoo-topbar no-print">
     <div class="home-btn" title="Home" onclick="showHomeGrid()"><i class="fas fa-th"></i></div>
-    <span class="app-name">Doctors</span>
+    <span class="app-name">Doctor MS</span>
     <div class="nav-divider"></div>
     <nav class="odoo-topnav-tabs">
         <div class="nav-tab active" onclick="showSection('dashboard'); setActiveTab(this)" id="tab-dashboard">Dashboard</div>
@@ -248,48 +326,44 @@
         <div class="nav-tab" onclick="showSection('settings'); setActiveTab(this)" id="tab-settings">Settings</div>
     </nav>
     <div class="odoo-topbar-right">
-        <div class="icon-btn" title="Messages"><i class="fas fa-comment-dots"></i><span class="badge">694</span></div>
+        <div class="icon-btn" title="Messages"><i class="fas fa-comment-dots"></i><span class="badge-notif">3</span></div>
         <div class="icon-btn" title="Activities"><i class="fas fa-clock"></i></div>
-        <div class="user-menu" id="doctor-name-display">
-            <div class="avatar" id="doctor-avatar-initials">DH</div>
-            <span id="doctor-name">Dr Yaxye</span>
+        <div class="user-menu" id="user-menu-btn" onclick="toggleUserDropdown()">
+            <div class="avatar" id="doctor-avatar-initials">--</div>
+            <span id="doctor-name-display">Sign in</span>
             <i class="fas fa-caret-down" style="font-size:10px; opacity:0.7;"></i>
+            <div class="user-dropdown" id="user-dropdown">
+                <div class="user-dropdown-item"><i class="fas fa-user" style="margin-right:8px; color:#714B67;"></i><span id="dropdown-fullname">Not signed in</span></div>
+                <div class="user-dropdown-item" style="border-top:1px solid #f0edf0;" onclick="doLogout()"><i class="fas fa-sign-out-alt" style="margin-right:8px;" class="logout"></i><span class="logout">Sign Out</span></div>
+            </div>
         </div>
     </div>
 </header>
 
-<div id="home-grid-overlay" style="display:none; position:fixed; inset:0; top:44px; background:rgba(90,60,80,0.97); z-index:999; overflow-y:auto;">
+<div id="home-grid-overlay">
     <div style="max-width:700px; margin:40px auto; padding:0 20px;">
         <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:20px; justify-items:center;">
-            <div class="home-app-icon" onclick="hideHomeGrid(); showSection('dashboard'); setActiveTabById('tab-dashboard')"><div class="app-icon-bg" style="background:#e84393;"><i class="fas fa-comment-dots"></i></div><span>Discuss</span></div>
+            <div class="home-app-icon" onclick="hideHomeGrid(); showSection('dashboard');"><div class="app-icon-bg" style="background:#e84393;"><i class="fas fa-comment-dots"></i></div><span>Discuss</span></div>
             <div class="home-app-icon" onclick="hideHomeGrid()"><div class="app-icon-bg" style="background:#7c5cbf;"><i class="fas fa-procedures"></i></div><span>OT</span></div>
             <div class="home-app-icon" onclick="hideHomeGrid()"><div class="app-icon-bg" style="background:#a8a800;"><i class="fas fa-calendar-alt"></i></div><span>Calendar</span></div>
             <div class="home-app-icon" onclick="hideHomeGrid()"><div class="app-icon-bg" style="background:#3a6e8f;"><i class="fas fa-cash-register"></i></div><span>Cashier</span></div>
-            <div class="home-app-icon" onclick="hideHomeGrid()"><div class="app-icon-bg" style="background:#c0392b;"><i class="fas fa-chart-pie"></i></div><span>My Dashboard</span></div>
-            <div class="home-app-icon" onclick="hideHomeGrid(); showSection('doctor-work'); setActiveTabById('tab-doctor-work')"><div class="app-icon-bg" style="background:#3498db;"><i class="fas fa-user-md"></i></div><span>Doctors</span></div>
+            <div class="home-app-icon" onclick="hideHomeGrid()"><div class="app-icon-bg" style="background:#c0392b;"><i class="fas fa-chart-pie"></i></div><span>Dashboard</span></div>
+            <div class="home-app-icon" onclick="hideHomeGrid(); showSection('doctor-work');"><div class="app-icon-bg" style="background:#3498db;"><i class="fas fa-user-md"></i></div><span>Doctors</span></div>
             <div class="home-app-icon" onclick="hideHomeGrid()"><div class="app-icon-bg" style="background:#f39c12;"><i class="fas fa-file-medical"></i></div><span>Medical Report</span></div>
             <div class="home-app-icon" onclick="hideHomeGrid()"><div class="app-icon-bg" style="background:#8e44ad;"><i class="fas fa-x-ray"></i></div><span>Radiology</span></div>
-            <div class="home-app-icon" onclick="hideHomeGrid(); showSection('lab'); setActiveTabById('tab-lab')"><div class="app-icon-bg" style="background:#a8b500;"><i class="fas fa-flask"></i></div><span>Labtest</span></div>
+            <div class="home-app-icon" onclick="hideHomeGrid(); showSection('lab');"><div class="app-icon-bg" style="background:#a8b500;"><i class="fas fa-flask"></i></div><span>Labtest</span></div>
             <div class="home-app-icon" onclick="hideHomeGrid()"><div class="app-icon-bg" style="background:#27ae60;"><i class="fas fa-users"></i></div><span>Employees</span></div>
             <div class="home-app-icon" onclick="hideHomeGrid()"><div class="app-icon-bg" style="background:#7d8c00;"><i class="fas fa-user-cog"></i></div><span>Time Off</span></div>
             <div class="home-app-icon" onclick="hideHomeGrid()"><div class="app-icon-bg" style="background:#636e72;"><i class="fas fa-dollar-sign"></i></div><span>Expenses</span></div>
-            <div class="home-app-icon" onclick="hideHomeGrid()"><div class="app-icon-bg" style="background:#2980b9;"><i class="fas fa-building"></i></div><span>Employee Advance</span></div>
-            <div class="home-app-icon" onclick="hideHomeGrid(); showSection('settings'); setActiveTabById('tab-settings')"><div class="app-icon-bg" style="background:#555;"><i class="fas fa-wrench"></i></div><span>Asset Management</span></div>
         </div>
     </div>
 </div>
-<style>
-.home-app-icon { display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; padding:10px; border-radius:8px; transition:background 0.15s; }
-.home-app-icon:hover { background:rgba(255,255,255,0.1); }
-.app-icon-bg { width:64px; height:64px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:26px; color:white; }
-.home-app-icon span { color:rgba(255,255,255,0.9); font-size:11px; font-weight:600; text-align:center; max-width:70px; line-height:1.3; }
-</style>
 
 <div class="layout">
     <aside class="sidebar no-print">
         <div class="sidebar-header">
             <h2><i class="fas fa-user-md" style="color:var(--odoo-purple);"></i> Doctor MS</h2>
-            <p>Hospital Management System</p>
+            <p>Baxnaano Hospital System</p>
         </div>
         <nav>
             <div class="sidebar-item active" onclick="showSection('dashboard')" id="nav-dashboard"><i class="fas fa-chart-line"></i> Dashboard</div>
@@ -307,14 +381,14 @@
         <div class="content-header no-print">
             <div class="breadcrumb"><span class="crumb-main" id="page-title">Dashboard</span></div>
             <div class="header-right">
-                <span class="meta" id="current-date"></span>
+                <span id="current-date" style="font-size:12px; color:var(--odoo-text-muted);"></span>
                 <span class="badge badge-purple"><i class="fas fa-check-circle" style="margin-right:4px;"></i> System Ready</span>
             </div>
         </div>
 
         <div class="content-body">
 
-            <!-- DASHBOARD -->
+            <!-- ====================== DASHBOARD ====================== -->
             <section id="dashboard" class="section">
                 <div class="stat-cards">
                     <div class="stat-card"><div class="stat-icon icon-blue"><i class="fas fa-users"></i></div><div><div class="stat-val" id="dash-patients">0</div><div class="stat-label">Total Patients</div></div></div>
@@ -329,7 +403,7 @@
                 </div>
             </section>
 
-            <!-- PATIENTS -->
+            <!-- ====================== PATIENTS ====================== -->
             <section id="patients" class="section hidden-section">
                 <div class="panel">
                     <div class="panel-header"><h3><i class="fas fa-search"></i> Search Patient</h3><button onclick="openNewPatientModal()" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> New Patient</button></div>
@@ -344,7 +418,7 @@
                 <div id="patient-history-view" style="display:none;">
                     <div class="panel">
                         <div class="panel-header">
-                            <div><h3 id="hist-name" style="font-size:15px;">Patient Name</h3><p style="font-size:12px; color:var(--odoo-text-muted); margin-top:3px;" id="hist-info">Age: 25 | Phone: ...</p></div>
+                            <div><h3 id="hist-name" style="font-size:15px;">Patient Name</h3><p style="font-size:12px; color:var(--odoo-text-muted); margin-top:3px;" id="hist-info">Age: -- | Phone: --</p></div>
                             <button onclick="startNewVisitFromHistory()" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> New Visit</button>
                         </div>
                         <div class="panel-body">
@@ -355,7 +429,7 @@
                 </div>
             </section>
 
-            <!-- DOCTOR WORK -->
+            <!-- ====================== DOCTOR WORK ====================== -->
             <section id="doctor-work" class="section hidden-section">
                 <div id="doc-step-1" class="panel">
                     <div class="panel-header"><h3><i class="fas fa-user-plus"></i> Step 1: Select Patient</h3></div>
@@ -420,7 +494,7 @@
                 </div>
             </section>
 
-            <!-- LAB -->
+            <!-- ====================== LAB ====================== -->
             <section id="lab" class="section hidden-section">
                 <div class="panel" style="margin-bottom:12px;"><div class="panel-header"><h3><i class="fas fa-flask"></i> Lab Workstation</h3></div><div class="panel-body" style="padding:10px 16px;"><p style="font-size:12px; color:var(--odoo-text-muted);">Manage incoming lab requests and enter results</p></div></div>
                 <div class="grid-2">
@@ -429,7 +503,7 @@
                 </div>
             </section>
 
-            <!-- SETTINGS -->
+            <!-- ====================== SETTINGS ====================== -->
             <section id="settings" class="section hidden-section">
                 <div class="grid-2">
                     <div class="panel">
@@ -443,19 +517,34 @@
                 </div>
             </section>
 
-        </div>
+        </div><!-- content-body -->
     </main>
-</div>
+</div><!-- layout -->
 
-<!-- MODALS -->
+</div><!-- main-app -->
+
+<!-- ============================================================
+     MODALS
+============================================================ -->
 <div id="modal-new-patient" class="modal-overlay">
     <div class="modal-box">
         <div class="modal-header"><h3><i class="fas fa-user-plus" style="margin-right:8px;"></i>New Patient Registration</h3><div class="close-btn" onclick="closeModal('modal-new-patient')"><i class="fas fa-times"></i></div></div>
         <form onsubmit="saveNewPatient(event)">
             <div class="modal-body">
                 <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="np-name" required class="form-control" placeholder="Patient full name"></div>
-                <div class="form-row cols-2"><div class="form-group"><label class="form-label">Age</label><input type="number" id="np-age" required class="form-control" placeholder="Age"></div><div class="form-group"><label class="form-label">Phone Number</label><input type="tel" id="np-phone" required class="form-control" placeholder="+252..."></div></div>
-                <div class="form-group"><label class="form-label">Address (Optional)</label><input type="text" id="np-address" class="form-control" placeholder="District, City"></div>
+                <div class="form-row cols-2">
+                    <div class="form-group"><label class="form-label">Age</label><input type="number" id="np-age" required class="form-control" placeholder="Age"></div>
+                    <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" id="np-phone" required class="form-control" placeholder="+252..."></div>
+                </div>
+                <div class="form-row cols-2">
+                    <div class="form-group"><label class="form-label">Sex</label>
+                        <select id="np-sex" class="form-select">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label class="form-label">Address (Optional)</label><input type="text" id="np-address" class="form-control" placeholder="District, City"></div>
+                </div>
             </div>
             <div class="modal-footer"><button type="button" onclick="closeModal('modal-new-patient')" class="btn btn-secondary">Cancel</button><button type="submit" class="btn btn-primary">Register Patient</button></div>
         </form>
@@ -471,7 +560,9 @@
                     <p><strong style="color:var(--odoo-purple-dark);">Patient:</strong> <span id="labres-patient">--</span></p>
                     <p><strong style="color:var(--odoo-purple-dark);">Test:</strong> <span id="labres-test">--</span></p>
                 </div>
-                <input type="hidden" id="labres-patient-id"><input type="hidden" id="labres-visit-id"><input type="hidden" id="labres-test-index">
+                <input type="hidden" id="labres-patient-id">
+                <input type="hidden" id="labres-visit-id">
+                <input type="hidden" id="labres-test-index">
                 <div class="form-group"><label class="form-label">Result</label><input type="text" id="labres-result" required class="form-control" placeholder="e.g., Normal, Positive, 120 mg/dL"></div>
                 <div class="form-group"><label class="form-label">Notes (Optional)</label><textarea id="labres-notes" rows="2" class="form-control"></textarea></div>
                 <div class="form-group"><label class="form-label">Lab Technician Name</label><input type="text" id="labres-tech" required class="form-control"></div>
@@ -491,26 +582,25 @@
     </div>
 </div>
 
-<!-- ===== PRINT AREAS ===== -->
+<!-- ============================================================
+     PRINT DOCUMENTS
+============================================================ -->
 
-<!-- PRESCRIPTION - Baxnaano style -->
+<!-- PRESCRIPTION -->
 <div id="print-prescription" class="print-doc">
     <div class="rx-print-wrap">
         <div class="rx-header">
             <div class="rx-logo-area">
                 <div class="rx-logo-circle">B</div>
-                <div>
-                    <div class="rx-hosp-name">BAXNAANO</div>
-                    <div class="rx-hosp-sub">HOSPITAL</div>
-                </div>
+                <div><div class="rx-hosp-name">BAXNAANO</div><div class="rx-hosp-sub">HOSPITAL</div></div>
             </div>
             <div class="rx-contact">
-                <div>+252613490055 / +252613490066</div>
+                <div>+252 613 490 055 / +252 613 490 066</div>
                 <div>Zoobe, Kasoo Horjeedka Hayat Market</div>
                 <div>Mogadishu, Somalia</div>
             </div>
         </div>
-
+        <h2 style="text-align:center; color:#714B67; margin:6px 0 12px; font-size:16px; font-family:Arial;">MEDICAL PRESCRIPTION</h2>
         <table class="rx-meta-table">
             <tr>
                 <td class="rx-meta-label">Patient Name:</td><td class="rx-meta-val" id="rx-p-name">--</td>
@@ -530,12 +620,11 @@
             </tr>
         </table>
         <hr class="rx-divider">
-
         <table class="rx-med-table">
             <thead>
                 <tr>
-                    <th>Medicine Brand Name</th>
-                    <th>Form/Route</th>
+                    <th>Medicine / Brand Name</th>
+                    <th>Form / Route</th>
                     <th>Frequency</th>
                     <th>Time to Take</th>
                     <th>Dose</th>
@@ -545,35 +634,35 @@
             </thead>
             <tbody id="rx-med-rows"></tbody>
         </table>
-
         <div class="rx-sig-area">
             <div class="rx-sig-box">
                 <div class="rx-sig-line"></div>
-                <div>Doctor's Signature</div>
-                <div style="margin-top:3px; color:#555; font-size:11px;" id="rx-sig-name">--</div>
+                <div>Doctor's Signature &amp; Stamp</div>
+                <div style="margin-top:4px; color:#555; font-size:11px; font-weight:700;" id="rx-sig-name">--</div>
             </div>
         </div>
-
         <div class="rx-footer-bar">
-            <span><i class="fas fa-phone" style="margin-right:4px;"></i>+252613490055 / +252613490066</span>
-            <span><i class="fas fa-map-marker-alt" style="margin-right:4px;"></i>Zoobe, Kasoo Horjeedka Hayat Market, Mogadishu-Somalia</span>
+            <span><i class="fas fa-phone" style="margin-right:4px;"></i>+252 613 490 055 / +252 613 490 066</span>
+            <span><i class="fas fa-map-marker-alt" style="margin-right:4px;"></i>Zoobe, Kasoo Horjeedka Hayat Market, Mogadishu, Somalia</span>
         </div>
     </div>
 </div>
 
-<!-- LAB REQUEST - Baxnaano style (matches Image 2) -->
+<!-- LAB REQUEST -->
 <div id="print-lab-request" class="print-doc">
     <div class="lr-print-wrap">
         <div class="lr-header">
             <div class="lr-logo-area">
                 <div class="lr-logo-circle">B</div>
-                <div>
-                    <div class="lr-hosp-name">BAXNAANO</div>
-                    <div class="lr-hosp-sub">HOSPITAL</div>
-                </div>
+                <div><div class="lr-hosp-name">BAXNAANO</div><div class="lr-hosp-sub">HOSPITAL</div></div>
+            </div>
+            <div style="text-align:right; font-size:11px; color:#666;">
+                <div>+252 613 490 055 / +252 613 490 066</div>
+                <div>Zoobe, Kasoo Horjeedka Hayat Market</div>
+                <div>Mogadishu, Somalia</div>
             </div>
         </div>
-
+        <h2 style="text-align:center; color:#222; margin:6px 0 14px; font-size:16px; font-family:Arial;">LABORATORY REQUEST FORM</h2>
         <div class="lr-meta-grid">
             <div>
                 <div class="lr-meta-row"><span class="lr-meta-label">Patient Name: </span><span id="lr-p-name">--</span></div>
@@ -584,39 +673,36 @@
             <div>
                 <div class="lr-meta-row"><span class="lr-meta-label">Patient ID#: </span><span id="lr-p-id">--</span></div>
                 <div class="lr-meta-row"><span class="lr-meta-label">Sex: </span><span id="lr-p-sex">--</span></div>
-                <div class="lr-meta-row"><span class="lr-meta-label">Doctor: </span><span id="lr-p-doctor">--</span></div>
+                <div class="lr-meta-row"><span class="lr-meta-label">Requesting Doctor: </span><span id="lr-p-doctor">--</span></div>
             </div>
         </div>
         <hr style="border:none; border-top:1px solid #ccc; margin: 8px 0 12px;">
-
         <table class="lr-tests-table">
             <thead>
                 <tr>
                     <th>Panel</th>
-                    <th>Quantity</th>
+                    <th>Test Name</th>
                     <th>Department</th>
                     <th>Order</th>
                 </tr>
             </thead>
             <tbody id="lr-test-rows"></tbody>
         </table>
-
         <div class="lr-sig-area">
             <div class="lr-sig-box">
                 <div class="lr-sig-line"></div>
-                <div>Doctor's Signature</div>
-                <div style="margin-top:3px; color:#555; font-size:11px;" id="lr-sig-name">--</div>
+                <div>Doctor's Signature &amp; Stamp</div>
+                <div style="margin-top:4px; color:#555; font-size:11px; font-weight:700;" id="lr-sig-name">--</div>
             </div>
         </div>
-
         <div class="lr-footer-bar">
-            <span><i class="fas fa-phone" style="margin-right:4px;"></i>+252613490055 / +252613490066</span>
-            <span><i class="fas fa-map-marker-alt" style="margin-right:4px;"></i>Zoobe, Kasoo Horjeedka Hayat Market, Mogadishu-Somalia</span>
+            <span><i class="fas fa-phone" style="margin-right:4px;"></i>+252 613 490 055 / +252 613 490 066</span>
+            <span><i class="fas fa-map-marker-alt" style="margin-right:4px;"></i>Zoobe, Kasoo Horjeedka Hayat Market, Mogadishu, Somalia</span>
         </div>
     </div>
 </div>
 
-<!-- LAB RESULT PRINT -->
+<!-- LAB RESULT -->
 <div id="print-lab-result" class="print-doc">
     <div class="rx-print-wrap">
         <div class="rx-header">
@@ -624,27 +710,38 @@
                 <div class="rx-logo-circle">B</div>
                 <div><div class="rx-hosp-name">BAXNAANO</div><div class="rx-hosp-sub">HOSPITAL</div></div>
             </div>
-            <div class="rx-contact"><div>+252613490055 / +252613490066</div><div>Zoobe, Kasoo Horjeedka Hayat Market</div><div>Mogadishu, Somalia</div></div>
+            <div class="rx-contact">
+                <div>+252 613 490 055 / +252 613 490 066</div>
+                <div>Zoobe, Kasoo Horjeedka Hayat Market</div>
+                <div>Mogadishu, Somalia</div>
+            </div>
         </div>
-        <h2 style="text-align:center; color:#714B67; margin:10px 0; font-size:18px;">LABORATORY RESULT</h2>
+        <h2 style="text-align:center; color:#714B67; margin:10px 0; font-size:18px; font-family:Arial;">LABORATORY RESULT</h2>
         <table class="rx-meta-table">
             <tr><td class="rx-meta-label">Patient:</td><td class="rx-meta-val" id="lres-p-name">--</td><td class="rx-meta-label">Age:</td><td class="rx-meta-val" id="lres-p-age">--</td></tr>
-            <tr><td class="rx-meta-label">Date:</td><td class="rx-meta-val" id="lres-p-date">--</td><td class="rx-meta-label">Doctor:</td><td class="rx-meta-val" id="lres-p-doctor">--</td></tr>
+            <tr><td class="rx-meta-label">Date:</td><td class="rx-meta-val" id="lres-p-date">--</td><td class="rx-meta-label">Requesting Doctor:</td><td class="rx-meta-val" id="lres-p-doctor">--</td></tr>
         </table>
         <hr class="rx-divider">
         <table class="rx-med-table">
             <thead><tr><th>Test</th><th>Result</th><th>Normal Range</th><th>Status</th></tr></thead>
             <tbody id="lres-rows"></tbody>
         </table>
-        <div style="margin-top:12px; font-size:12px;"><strong>Lab Technician:</strong> <span id="lres-tech">--</span></div>
+        <div style="margin-top:12px; font-size:12px; font-family:Arial;"><strong>Lab Technician:</strong> <span id="lres-tech">--</span></div>
         <div class="rx-sig-area">
-            <div class="rx-sig-box"><div class="rx-sig-line"></div><div>Authorized Signature</div><div style="margin-top:3px; color:#555; font-size:11px;" id="lres-sig-name">--</div></div>
+            <div class="rx-sig-box">
+                <div class="rx-sig-line"></div>
+                <div>Authorized Signature</div>
+                <div style="margin-top:4px; color:#555; font-size:11px; font-weight:700;" id="lres-sig-name">--</div>
+            </div>
         </div>
-        <div class="rx-footer-bar"><span><i class="fas fa-phone" style="margin-right:4px;"></i>+252613490055 / +252613490066</span><span><i class="fas fa-map-marker-alt" style="margin-right:4px;"></i>Zoobe, Kasoo Horjeedka Hayat Market, Mogadishu-Somalia</span></div>
+        <div class="rx-footer-bar">
+            <span><i class="fas fa-phone" style="margin-right:4px;"></i>+252 613 490 055 / +252 613 490 066</span>
+            <span><i class="fas fa-map-marker-alt" style="margin-right:4px;"></i>Zoobe, Kasoo Horjeedka Hayat Market, Mogadishu, Somalia</span>
+        </div>
     </div>
 </div>
 
-<!-- PHARMACY PRINT -->
+<!-- PHARMACY -->
 <div id="print-pharmacy" class="print-doc">
     <div class="rx-print-wrap">
         <div class="rx-header">
@@ -652,137 +749,247 @@
                 <div class="rx-logo-circle">B</div>
                 <div><div class="rx-hosp-name">BAXNAANO</div><div class="rx-hosp-sub">PHARMACY</div></div>
             </div>
-            <div class="rx-contact"><div>+252613490055 / +252613490066</div><div>Zoobe, Kasoo Horjeedka Hayat Market</div><div>Mogadishu, Somalia</div></div>
+            <div class="rx-contact">
+                <div>+252 613 490 055 / +252 613 490 066</div>
+                <div>Zoobe, Kasoo Horjeedka Hayat Market</div>
+                <div>Mogadishu, Somalia</div>
+            </div>
         </div>
-        <h2 style="text-align:center; color:#714B67; margin:10px 0; font-size:18px;">PHARMACY PRESCRIPTION</h2>
+        <h2 style="text-align:center; color:#714B67; margin:10px 0; font-size:18px; font-family:Arial;">PHARMACY DISPENSING SLIP</h2>
         <table class="rx-meta-table">
             <tr><td class="rx-meta-label">Patient:</td><td class="rx-meta-val" id="ph-p-name">--</td><td class="rx-meta-label">Age:</td><td class="rx-meta-val" id="ph-p-age">--</td></tr>
-            <tr><td class="rx-meta-label">Date:</td><td class="rx-meta-val" id="ph-p-date">--</td><td class="rx-meta-label">Doctor:</td><td class="rx-meta-val" id="ph-p-doctor">--</td></tr>
+            <tr><td class="rx-meta-label">Date:</td><td class="rx-meta-val" id="ph-p-date">--</td><td class="rx-meta-label">Prescribing Doctor:</td><td class="rx-meta-val" id="ph-p-doctor">--</td></tr>
         </table>
         <hr class="rx-divider">
         <table class="rx-med-table">
-            <thead><tr><th>#</th><th>Medicine</th><th>Qty</th><th>Instructions</th></tr></thead>
+            <thead><tr><th>#</th><th>Medicine &amp; Strength</th><th>Qty</th><th>Dosage Instructions</th></tr></thead>
             <tbody id="ph-med-rows"></tbody>
         </table>
         <div class="rx-sig-area">
-            <div class="rx-sig-box"><div class="rx-sig-line"></div><div>Doctor's Signature</div><div style="margin-top:3px; color:#555; font-size:11px;" id="ph-sig-name">--</div></div>
+            <div class="rx-sig-box">
+                <div class="rx-sig-line"></div>
+                <div>Doctor's Signature &amp; Stamp</div>
+                <div style="margin-top:4px; color:#555; font-size:11px; font-weight:700;" id="ph-sig-name">--</div>
+            </div>
         </div>
-        <div class="rx-footer-bar"><span><i class="fas fa-phone" style="margin-right:4px;"></i>+252613490055 / +252613490066</span><span><i class="fas fa-map-marker-alt" style="margin-right:4px;"></i>Zoobe, Kasoo Horjeedka Hayat Market, Mogadishu-Somalia</span></div>
+        <div class="rx-footer-bar">
+            <span><i class="fas fa-phone" style="margin-right:4px;"></i>+252 613 490 055 / +252 613 490 066</span>
+            <span><i class="fas fa-map-marker-alt" style="margin-right:4px;"></i>Zoobe, Kasoo Horjeedka Hayat Market, Mogadishu, Somalia</span>
+        </div>
     </div>
 </div>
 
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
 <script>
-const Store = {
-    get: (k) => JSON.parse(localStorage.getItem(k) || '[]'),
-    set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
-    add: (k, item) => { const d = Store.get(k); item.id = Date.now(); d.push(item); Store.set(k, d); return item; },
-    update: (k, id, item) => { const d = Store.get(k).map(x => x.id == id ? {...x, ...item} : x); Store.set(k, d); },
-    del: (k, id) => { const d = Store.get(k).filter(x => x.id != id); Store.set(k, d); }
+
+/* ============================
+   DOCTOR ACCOUNTS
+============================ */
+const DOCTORS = {
+    harith: {
+        key:       'harith',
+        password:  '12',
+        fullName:  'Dr. Harith Abdulkadir Sheikh Mohamud',
+        shortName: 'Dr. Harith',
+        initials:  'HA'
+    },
+    yaxye: {
+        key:       'yaxye',
+        password:  '123',
+        fullName:  'Dr. Yaxye',
+        shortName: 'Dr. Yaxye',
+        initials:  'DY'
+    },
+    hersi: {
+        key:       'hersi',
+        password:  '1234',
+        fullName:  'Dr. Hersi',
+        shortName: 'Dr. Hersi',
+        initials:  'DH'
+    }
 };
 
+let CURRENT_DOCTOR = null;   // set on login
+
+/* ============================
+   LOGIN / LOGOUT
+============================ */
+function doLogin() {
+    const key  = document.getElementById('login-doctor').value;
+    const pass = document.getElementById('login-password').value;
+    const err  = document.getElementById('login-error');
+    err.style.display = 'none';
+
+    if (!key) { err.textContent = 'Please select a doctor account.'; err.style.display = 'block'; return; }
+    const doc = DOCTORS[key];
+    if (!doc || pass !== doc.password) { err.textContent = 'Incorrect password. Please try again.'; err.style.display = 'block'; return; }
+
+    CURRENT_DOCTOR = doc;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+    applyDoctorToUI();
+    initData();
+    populateLabTemplateSelect();
+    updateDashboard();
+    showSection('dashboard');
+}
+
+function doLogout() {
+    CURRENT_DOCTOR = null;
+    document.getElementById('main-app').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('login-doctor').value = '';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-error').style.display = 'none';
+    document.getElementById('user-dropdown').classList.remove('open');
+}
+
+function applyDoctorToUI() {
+    document.getElementById('doctor-avatar-initials').textContent = CURRENT_DOCTOR.initials;
+    document.getElementById('doctor-name-display').textContent = CURRENT_DOCTOR.shortName;
+    document.getElementById('dropdown-fullname').textContent = CURRENT_DOCTOR.fullName;
+}
+
+function toggleUserDropdown() {
+    document.getElementById('user-dropdown').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('user-menu-btn');
+    const dd   = document.getElementById('user-dropdown');
+    if (dd && !menu.contains(e.target)) dd.classList.remove('open');
+});
+
+function getDoctorName()  { return CURRENT_DOCTOR ? CURRENT_DOCTOR.fullName  : 'Dr. Unknown'; }
+function getDoctorShort() { return CURRENT_DOCTOR ? CURRENT_DOCTOR.shortName : 'Dr. Unknown'; }
+
+/* ============================
+   DATA STORE (localStorage)
+============================ */
+const Store = {
+    get:    (k)      => JSON.parse(localStorage.getItem(k) || '[]'),
+    set:    (k, v)   => localStorage.setItem(k, JSON.stringify(v)),
+    add:    (k, item)=> { const d = Store.get(k); item.id = Date.now(); d.push(item); Store.set(k, d); return item; },
+    update: (k, id, item) => { const d = Store.get(k).map(x => x.id == id ? {...x, ...item} : x); Store.set(k, d); },
+    del:    (k, id)  => { const d = Store.get(k).filter(x => x.id != id); Store.set(k, d); }
+};
+
+/* ============================
+   ALL LAB TESTS
+============================ */
 const ALL_LAB_TESTS = [
-    {name:'Celiac Ig G', unit:'U/mL', normalRange:'<20'},
-    {name:'CORTISOL', unit:'mcg/dL', normalRange:'6.2-19.4'},
-    {name:'LH', unit:'mIU/mL', normalRange:'1.7-8.6'},
-    {name:'FSH', unit:'mIU/mL', normalRange:'1.5-12.4'},
-    {name:'BRUCELLA MELITENSIS', unit:'', normalRange:'Negative'},
-    {name:'BRUCELLA ABORTUS', unit:'', normalRange:'Negative'},
-    {name:'HCV Viral Load', unit:'IU/mL', normalRange:'Undetectable'},
-    {name:'TROPONIN I', unit:'ng/mL', normalRange:'<0.04'},
-    {name:'HBV Viral Load', unit:'IU/mL', normalRange:'Undetectable'},
-    {name:'ANTI-HBs', unit:'mIU/mL', normalRange:'>10'},
-    {name:'HBeAg', unit:'', normalRange:'Negative'},
-    {name:'Anti-dsDNA', unit:'IU/mL', normalRange:'<10'},
-    {name:'BLOOD CLOTTING TIME', unit:'min', normalRange:'2-6'},
-    {name:'BLOOD BLEEDING TIME', unit:'min', normalRange:'1-3'},
-    {name:'HBSAG MAGLUMI', unit:'', normalRange:'Negative'},
-    {name:'HCG MAGLUMI', unit:'mIU/mL', normalRange:'<5'},
-    {name:'Lactose Tolerance', unit:'', normalRange:'Normal'},
-    {name:'ANTI TTG-IGA', unit:'U/mL', normalRange:'<4'},
-    {name:'UREA BREATH', unit:'', normalRange:'Negative'},
-    {name:'ROTA ADENO', unit:'', normalRange:'Negative'},
-    {name:'FOB', unit:'', normalRange:'Negative'},
-    {name:'LDL', unit:'mg/dL', normalRange:'<100'},
-    {name:'Antinuclear Antibody ANA', unit:'', normalRange:'Negative'},
-    {name:'PRL (Prolactin)', unit:'ng/mL', normalRange:'2-29'},
-    {name:'Vitamin B12', unit:'pg/mL', normalRange:'200-900'},
-    {name:'AFP', unit:'ng/mL', normalRange:'<10'},
-    {name:'APTT', unit:'sec', normalRange:'25-35'},
-    {name:'PT (Prothrombin Time)', unit:'sec', normalRange:'11-13.5'},
-    {name:'TOTAL PSA', unit:'ng/mL', normalRange:'<4'},
-    {name:'FT4', unit:'ng/dL', normalRange:'0.8-1.8'},
-    {name:'FT3', unit:'pg/mL', normalRange:'2.3-4.2'},
-    {name:'Celiac Ig A', unit:'U/mL', normalRange:'<20'},
-    {name:'Skin Test', unit:'', normalRange:'Negative'},
-    {name:'VITAMIN D', unit:'ng/mL', normalRange:'30-100'},
-    {name:'URINE EXAM', unit:'', normalRange:'Normal'},
-    {name:'URINE DOA', unit:'', normalRange:'Negative'},
-    {name:'URIC ACID', unit:'mg/dL', normalRange:'3.5-7.2'},
-    {name:'UREA', unit:'mg/dL', normalRange:'7-20'},
-    {name:'TYPHOID IGM', unit:'', normalRange:'Negative'},
-    {name:'TYPHOID IGG', unit:'', normalRange:'Negative'},
-    {name:'TSH', unit:'mIU/L', normalRange:'0.4-4.0'},
-    {name:'TRIGLYCERIDE', unit:'mg/dL', normalRange:'<150'},
-    {name:'TOXOPLASMA', unit:'', normalRange:'Negative'},
-    {name:'T4 (Thyroxine)', unit:'mcg/dL', normalRange:'4.5-12.5'},
-    {name:'T3 (Triiodothyronine)', unit:'ng/dL', normalRange:'80-200'},
-    {name:'TOTAL PROTEIN', unit:'g/dL', normalRange:'6.3-8.2'},
-    {name:'SYPHILIS', unit:'', normalRange:'Negative'},
-    {name:'STOOL EXAM', unit:'', normalRange:'Normal'},
-    {name:'SODIUM', unit:'mEq/L', normalRange:'136-145'},
-    {name:'RF (Rheumatoid Factor)', unit:'IU/mL', normalRange:'<14'},
-    {name:'MALARIA', unit:'', normalRange:'Negative'},
-    {name:'LIPASE', unit:'U/L', normalRange:'10-140'},
-    {name:'INHALATION ALLERGY', unit:'', normalRange:'Negative'},
-    {name:'Total IgE', unit:'IU/mL', normalRange:'<100'},
-    {name:'SIDA (HIV)', unit:'', normalRange:'Negative'},
-    {name:'HCV (Hepatitis C)', unit:'', normalRange:'Negative'},
-    {name:'HCG (Pregnancy)', unit:'mIU/mL', normalRange:'<5'},
-    {name:'HBSAG', unit:'', normalRange:'Negative'},
-    {name:'HBA1C', unit:'%', normalRange:'<5.7'},
-    {name:'HB (Hemoglobin)', unit:'g/dL', normalRange:'12-17.5'},
-    {name:'HAV (Hepatitis A)', unit:'', normalRange:'Negative'},
-    {name:'H. PYLORI STOOL', unit:'', normalRange:'Negative'},
-    {name:'GPT (ALT)', unit:'U/L', normalRange:'7-56'},
-    {name:'GOT (AST)', unit:'U/L', normalRange:'10-40'},
-    {name:'GGT', unit:'U/L', normalRange:'9-48'},
-    {name:'FERRITIN', unit:'ng/mL', normalRange:'12-300'},
-    {name:'FOOD ALLERGY', unit:'', normalRange:'Negative'},
-    {name:'ESR', unit:'mm/hr', normalRange:'0-20'},
-    {name:'ELECTROLYTES (BLOOD)', unit:'', normalRange:'Normal'},
-    {name:'CRP', unit:'mg/L', normalRange:'<10'},
-    {name:'CREATININE', unit:'mg/dL', normalRange:'0.6-1.3'},
-    {name:'CK-MB', unit:'U/L', normalRange:'0-25'},
-    {name:'CK CREATINE KINASE', unit:'U/L', normalRange:'30-200'},
-    {name:'CHOLESTEROL', unit:'mg/dL', normalRange:'<200'},
-    {name:'CBC', unit:'various', normalRange:'Normal'},
-    {name:'CALCIUM', unit:'mg/dL', normalRange:'8.5-10.5'},
-    {name:'BLOOD SUGAR (PP)', unit:'mg/dL', normalRange:'<140'},
-    {name:'BLOOD SUGAR (STRIP)', unit:'mg/dL', normalRange:'70-100'},
-    {name:'BLOOD SUGAR (FASTING)', unit:'mg/dL', normalRange:'70-100'},
-    {name:'BLOOD GROUP', unit:'', normalRange:'A/B/AB/O'},
-    {name:'BILIRUBIN TOTAL', unit:'mg/dL', normalRange:'0.2-1.2'},
-    {name:'BILIRUBIN DIRECT', unit:'mg/dL', normalRange:'0-0.3'},
-    {name:'ASO', unit:'IU/mL', normalRange:'<200'},
-    {name:'ANTI-CCP', unit:'U/mL', normalRange:'<17'},
-    {name:'AMYLASE', unit:'U/L', normalRange:'30-110'},
-    {name:'ALP', unit:'U/L', normalRange:'44-147'},
-    {name:'ALBUMIN', unit:'g/dL', normalRange:'3.5-5.0'}
+    {name:'Celiac Ig G',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'CORTISOL',unit:'',normalRange:'',dept:'HORMONES'},
+    {name:'LH',unit:'',normalRange:'',dept:'HORMONES'},
+    {name:'FSH',unit:'',normalRange:'',dept:'HORMONES'},
+    {name:'BRUCELLA MELITENSIS',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'BRUCELLA ABORTUS',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'HCV Viral Load',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'TROPONIN I',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'HBV Viral Load',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'ANTI-HBs',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'HBeAg',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'Anti-dsDNa',unit:'',normalRange:'',dept:'HORMONES'},
+    {name:'BLOOD CLOTTING TIME',unit:'',normalRange:'',dept:'HAEMATOLOGY'},
+    {name:'BLOOD BLEEDING TIME',unit:'',normalRange:'',dept:'HAEMATOLOGY'},
+    {name:'HBSAG MAGLUMI',unit:'',normalRange:'',dept:'HORMONES'},
+    {name:'HCG MAGLUMI',unit:'',normalRange:'',dept:'HORMONES'},
+    {name:'Lactose Tolerance',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'ANTI TTG- IGA',unit:'',normalRange:'',dept:'QUANT TEST'},
+    {name:'UREA BREATH',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'ROTA ADENO',unit:'',normalRange:'',dept:'STOOL'},
+    {name:'FOB',unit:'',normalRange:'',dept:'STOOL'},
+    {name:'LDL',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'Antinuclear Antibody ANA',unit:'',normalRange:'',dept:'QUANT TEST'},
+    {name:'PRL',unit:'',normalRange:'',dept:'HORMONES'},
+    {name:'V,B12',unit:'',normalRange:'',dept:'QUANT TEST'},
+    {name:'AFP',unit:'',normalRange:'',dept:'QUANT TEST'},
+    {name:'Appt',unit:'',normalRange:'',dept:'COAGULATION PROFILE'},
+    {name:'Pt',unit:'',normalRange:'',dept:'COAGULATION PROFILE'},
+    {name:'TOTAL PSA',unit:'',normalRange:'',dept:'HORMONES'},
+    {name:'FT4',unit:'',normalRange:'',dept:'HORMONES'},
+    {name:'FT3',unit:'',normalRange:'',dept:'HORMONES'},
+    {name:'celiac Ig A',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'Skin Test',unit:'',normalRange:'',dept:'QUANT TEST'},
+    {name:'VITAMIN D',unit:'',normalRange:'',dept:'QUANT TEST'},
+    {name:'URINE EXAM',unit:'',normalRange:'',dept:'URINE'},
+    {name:'URINE D O A',unit:'',normalRange:'',dept:'URINE'},
+    {name:'URIC ACID',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'UREA',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'TYPHOID IGM',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'TYPHOID IGG',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'TSH',unit:'',normalRange:'',dept:'HORMONES'},
+    {name:'TRIGLYCERIDE',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'TOXOPLASMA',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'T4',unit:'',normalRange:'',dept:'HORMONES'},
+    {name:'T3',unit:'',normalRange:'',dept:'HORMONES'},
+    {name:'T - PROTEIN',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'SYPHILIS',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'STOOL EXAM',unit:'',normalRange:'',dept:'STOOL'},
+    {name:'SODIUM',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'RF',unit:'',normalRange:'',dept:'QUANT TEST'},
+    {name:'MALARIA',unit:'',normalRange:'',dept:'HAEMATOLOGY'},
+    {name:'LIPASE',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'INHALATION ALLERGY',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'Total IGE',unit:'',normalRange:'',dept:'QUANT TEST'},
+    {name:'SIDA',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'HCV',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'HCG',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'HBSAG',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'HBA1C',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'HB',unit:'',normalRange:'',dept:'HAEMATOLOGY'},
+    {name:'HAV',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'H.PYLORIA STOOL',unit:'',normalRange:'',dept:'STOOL'},
+    {name:'GPT',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'GOT',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'GGT',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'FRRITININ',unit:'',normalRange:'',dept:'QUANT TEST'},
+    {name:'FOOD ALLERGY',unit:'',normalRange:'',dept:'SEROLOGY'},
+    {name:'ESR',unit:'',normalRange:'',dept:'HAEMATOLOGY'},
+    {name:'ELECTROLYTES(BLOOD)',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'CRP',unit:'',normalRange:'',dept:'QUANT TEST'},
+    {name:'CREATININE',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'CK-MB',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'CK CREATINE KINASE',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'CHOLESTROL',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'CBC',unit:'',normalRange:'',dept:'HAEMATOLOGY'},
+    {name:'CALCIUM',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'BLOOD SUGAR (p.p)',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'BLOOD SUGAR(STRIP)',unit:'',normalRange:'',dept:'BIOCHEMISTRY'},
+    {name:'BLOOD SUGAR',unit:'',normalRange:'',dept:'BIOCHEMISTRY'}
 ];
 
 const TEST_TEMPLATES = {
-    CBC: [{name:'White Blood Cells (WBC)',unit:'x10^9/L',range:'4.0-11.0'},{name:'Red Blood Cells (RBC)',unit:'x10^12/L',range:'4.5-5.9'},{name:'Hemoglobin',unit:'g/dL',range:'13.5-17.5'},{name:'Hematocrit',unit:'%',range:'41-53'},{name:'Platelets',unit:'x10^9/L',range:'150-450'},{name:'MCV',unit:'fL',range:'80-100'},{name:'MCH',unit:'pg',range:'27-31'},{name:'MCHC',unit:'g/dL',range:'33-36'}],
-    Urine: [{name:'Color',unit:'',range:'Yellow'},{name:'Appearance',unit:'',range:'Clear'},{name:'pH',unit:'',range:'4.5-8.0'},{name:'Specific Gravity',unit:'',range:'1.005-1.030'},{name:'Protein',unit:'mg/dL',range:'Negative'},{name:'Glucose',unit:'mg/dL',range:'Negative'},{name:'Ketones',unit:'mg/dL',range:'Negative'},{name:'Nitrites',unit:'',range:'Negative'},{name:'Leukocyte Esterase',unit:'',range:'Negative'}],
-    LipidProfile: [{name:'Total Cholesterol',unit:'mg/dL',range:'<200'},{name:'HDL Cholesterol',unit:'mg/dL',range:'>=40'},{name:'LDL Cholesterol',unit:'mg/dL',range:'<100'},{name:'Triglycerides',unit:'mg/dL',range:'<150'}],
-    BloodChemistry: [{name:'Glucose (Fasting)',unit:'mg/dL',range:'70-100'},{name:'Urea',unit:'mg/dL',range:'7-20'},{name:'Creatinine',unit:'mg/dL',range:'0.6-1.3'},{name:'Uric Acid',unit:'mg/dL',range:'3.5-7.2'},{name:'ALT',unit:'U/L',range:'7-56'},{name:'AST',unit:'U/L',range:'10-40'}]
+    CBC: [
+        {name:'White Blood Cells (WBC)',unit:'x10^9/L',range:'4.0-11.0'},{name:'Red Blood Cells (RBC)',unit:'x10^12/L',range:'4.5-5.9'},
+        {name:'Hemoglobin',unit:'g/dL',range:'13.5-17.5'},{name:'Hematocrit',unit:'%',range:'41-53'},
+        {name:'Platelets',unit:'x10^9/L',range:'150-450'},{name:'MCV',unit:'fL',range:'80-100'},
+        {name:'MCH',unit:'pg',range:'27-31'},{name:'MCHC',unit:'g/dL',range:'33-36'}
+    ],
+    Urine: [
+        {name:'Color',unit:'',range:'Yellow'},{name:'Appearance',unit:'',range:'Clear'},
+        {name:'pH',unit:'',range:'4.5-8.0'},{name:'Specific Gravity',unit:'',range:'1.005-1.030'},
+        {name:'Protein',unit:'mg/dL',range:'Negative'},{name:'Glucose',unit:'mg/dL',range:'Negative'},
+        {name:'Ketones',unit:'mg/dL',range:'Negative'},{name:'Nitrites',unit:'',range:'Negative'},
+        {name:'Leukocyte Esterase',unit:'',range:'Negative'}
+    ],
+    LipidProfile: [
+        {name:'Total Cholesterol',unit:'mg/dL',range:'<200'},{name:'HDL Cholesterol',unit:'mg/dL',range:'>=40'},
+        {name:'LDL Cholesterol',unit:'mg/dL',range:'<100'},{name:'Triglycerides',unit:'mg/dL',range:'<150'}
+    ],
+    BloodChemistry: [
+        {name:'Glucose (Fasting)',unit:'mg/dL',range:'70-100'},{name:'Urea',unit:'mg/dL',range:'7-20'},
+        {name:'Creatinine',unit:'mg/dL',range:'0.6-1.3'},{name:'Uric Acid',unit:'mg/dL',range:'3.5-7.2'},
+        {name:'ALT',unit:'U/L',range:'7-56'},{name:'AST',unit:'U/L',range:'10-40'}
+    ]
 };
 
-const DOCTOR_NAME = 'Dr Yaxye';
 let currentPatient = null;
-let currentVisit = null;
+let currentVisit   = null;
 
 function initData() {
-    if (localStorage.getItem('dms_init_v2')) return;
+    if (localStorage.getItem('dms_init_v3')) return;
     Store.set('medicines', [
         {id:1,name:'Paracetamol',dosage:'500mg',type:'Tablet'},
         {id:2,name:'Amoxicillin',dosage:'250mg',type:'Capsule'},
@@ -790,429 +997,723 @@ function initData() {
         {id:4,name:'Artemether-Lumefantrine',dosage:'20/120mg',type:'Tablet'},
         {id:5,name:'Ibuprofen',dosage:'400mg',type:'Tablet'}
     ]);
-    // Add all lab tests from PDF
     const labTests = ALL_LAB_TESTS.map((t, i) => ({id: i+1, name: t.name, unit: t.unit, normalRange: t.normalRange}));
     Store.set('labTests', labTests);
-    const demoPatient = {id:1001,name:'Axmed Cali Xasan',age:28,phone:'+25261xxxxxx1',address:'Mogadishu, Hodan District',visits:[{visitId:5001,date:'2026-05-28',history:'Fever, chills, and headache for 3 days.',diagnosis:'Uncomplicated Malaria',medicines:[{name:'Artemether-Lumefantrine',dosage:'20/120mg',frequency:'Twice daily',duration:'3 days',qty:6},{name:'Paracetamol',dosage:'500mg',frequency:'Every 6 hours',duration:'3 days',qty:12}],labTests:[{testName:'Malaria Test',status:'completed',result:'Positive',resultDate:'2026-05-28 10:30',technician:'Lab Tech Faadumo',notes:'P. falciparum detected'}],prescriptionPrinted:false,labRequestPrinted:false,pharmacyPrinted:false}]};
+    const demoPatient = {
+        id:1001, name:'Axmed Cali Xasan', age:28, phone:'+25261xxxxxx1', sex:'Male',
+        address:'Mogadishu, Hodan District',
+        visits:[{
+            visitId:5001, date:'2026-05-28',
+            history:'Fever, chills, and headache for 3 days.',
+            diagnosis:'Uncomplicated Malaria',
+            doctorName: 'Dr. Harith Abdulkadir Sheikh Mohamud',
+            medicines:[
+                {name:'Artemether-Lumefantrine',dosage:'20/120mg',frequency:'Twice daily',duration:'3 days',qty:6},
+                {name:'Paracetamol',dosage:'500mg',frequency:'Every 6 hours',duration:'3 days',qty:12}
+            ],
+            labTests:[{testName:'MALARIA',status:'completed',result:'Positive',resultDate:'2026-05-28 10:30',technician:'Lab Tech Faadumo',notes:'P. falciparum detected'}],
+            prescriptionPrinted:false, labRequestPrinted:false, pharmacyPrinted:false
+        }]
+    };
     Store.set('patients', [demoPatient]);
-    localStorage.setItem('dms_init_v2', 'true');
+    localStorage.setItem('dms_init_v3', 'true');
 }
 
+/* ============================
+   NAVIGATION
+============================ */
 function showHomeGrid() { document.getElementById('home-grid-overlay').style.display = 'block'; }
 function hideHomeGrid() { document.getElementById('home-grid-overlay').style.display = 'none'; }
-function setActiveTab(el) { document.querySelectorAll('.odoo-topnav-tabs .nav-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
-function setActiveTabById(id) { document.querySelectorAll('.odoo-topnav-tabs .nav-tab').forEach(t=>t.classList.remove('active')); const el=document.getElementById(id); if(el) el.classList.add('active'); }
 
-function showSection(id) {
-    document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden-section'));
-    document.getElementById(id).classList.remove('hidden-section');
-    document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
-    document.getElementById('nav-'+id).classList.add('active');
-    setActiveTabById('tab-'+id);
-    hideHomeGrid();
-    const titles = {dashboard:'Dashboard',patients:'Patient Search & History','doctor-work':'Doctor Workstation',lab:'Laboratory',settings:'Settings'};
-    document.getElementById('page-title').textContent = titles[id];
-    if(id==='dashboard') updateDashboard();
-    if(id==='patients') { document.getElementById('patient-history-view').style.display='none'; searchPatients(); }
-    if(id==='lab') renderLab();
-    if(id==='settings') renderSettings();
-    if(id==='doctor-work' && !currentPatient) { document.getElementById('doc-step-1').style.display=''; document.getElementById('doc-step-2').style.display='none'; }
+function setActiveTab(el) {
+    document.querySelectorAll('.odoo-topnav-tabs .nav-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+}
+function setActiveTabById(id) {
+    document.querySelectorAll('.odoo-topnav-tabs .nav-tab').forEach(t => t.classList.remove('active'));
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
 }
 
+function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('hidden-section'));
+    const sec = document.getElementById(id);
+    if (sec) sec.classList.remove('hidden-section');
+    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+    const nav = document.getElementById('nav-' + id);
+    if (nav) nav.classList.add('active');
+    setActiveTabById('tab-' + id);
+    hideHomeGrid();
+    const titles = {
+        dashboard: 'Dashboard', patients: 'Patient Search & History',
+        'doctor-work': 'Doctor Workstation', lab: 'Laboratory', settings: 'Settings'
+    };
+    document.getElementById('page-title').textContent = titles[id] || id;
+    if (id === 'dashboard')    updateDashboard();
+    if (id === 'patients')     { document.getElementById('patient-history-view').style.display='none'; searchPatients(); }
+    if (id === 'lab')          renderLab();
+    if (id === 'settings')     renderSettings();
+    if (id === 'doctor-work' && !currentPatient) {
+        document.getElementById('doc-step-1').style.display = '';
+        document.getElementById('doc-step-2').style.display = 'none';
+    }
+}
+
+/* ============================
+   PATIENTS
+============================ */
 function openNewPatientModal() {
-    document.getElementById('np-name').value='';
-    document.getElementById('np-age').value='';
-    document.getElementById('np-phone').value='';
-    document.getElementById('np-address').value='';
+    ['np-name','np-age','np-phone','np-address'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('np-sex').value = 'Male';
     openModal('modal-new-patient');
 }
 
 function saveNewPatient(e) {
     e.preventDefault();
-    const patient = {id:Date.now(),name:document.getElementById('np-name').value,age:document.getElementById('np-age').value,phone:document.getElementById('np-phone').value,address:document.getElementById('np-address').value,visits:[]};
+    const patient = {
+        id: Date.now(),
+        name:    document.getElementById('np-name').value,
+        age:     document.getElementById('np-age').value,
+        phone:   document.getElementById('np-phone').value,
+        sex:     document.getElementById('np-sex').value,
+        address: document.getElementById('np-address').value,
+        visits:  []
+    };
     Store.add('patients', patient);
     closeModal('modal-new-patient');
-    if(!document.getElementById('doctor-work').classList.contains('hidden-section')) selectPatientForDoctor(patient.id);
+    if (!document.getElementById('doctor-work').classList.contains('hidden-section'))
+        selectPatientForDoctor(patient.id);
     else { searchPatients(); showSection('patients'); }
 }
 
 function searchPatients() {
-    const nameQ=document.getElementById('search-name').value.toLowerCase();
-    const phoneQ=document.getElementById('search-phone').value.toLowerCase();
-    const patients=Store.get('patients').filter(p=>(nameQ===''||p.name.toLowerCase().includes(nameQ))&&(phoneQ===''||p.phone.toLowerCase().includes(phoneQ)));
-    const container=document.getElementById('patient-search-results');
-    if(patients.length===0){container.innerHTML='<div style="grid-column:1/-1; text-align:center; padding:40px 0; color:var(--odoo-text-muted);">No patients found</div>';return;}
-    container.innerHTML=patients.map(p=>`<div class="patient-card" onclick="viewPatientHistory(${p.id})"><div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;"><div class="patient-avatar">${p.name.charAt(0)}</div><div><div style="font-weight:700; font-size:13px;">${p.name}</div><div style="font-size:11px; color:var(--odoo-text-muted);">${p.phone}</div></div></div><div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;"><span style="color:var(--odoo-text-muted);">Age: ${p.age}</span><span class="badge badge-purple">${p.visits.length} visits</span></div></div>`).join('');
+    const nameQ  = document.getElementById('search-name').value.toLowerCase();
+    const phoneQ = document.getElementById('search-phone').value.toLowerCase();
+    const patients = Store.get('patients').filter(p =>
+        (nameQ  === '' || p.name.toLowerCase().includes(nameQ)) &&
+        (phoneQ === '' || p.phone.toLowerCase().includes(phoneQ))
+    );
+    const container = document.getElementById('patient-search-results');
+    if (!patients.length) { container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:var(--odoo-text-muted);">No patients found</div>'; return; }
+    container.innerHTML = patients.map(p => `
+        <div class="patient-card" onclick="viewPatientHistory(${p.id})">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                <div class="patient-avatar">${p.name.charAt(0)}</div>
+                <div><div style="font-weight:700;font-size:13px;">${p.name}</div><div style="font-size:11px;color:var(--odoo-text-muted);">${p.phone}</div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;">
+                <span style="color:var(--odoo-text-muted);">Age: ${p.age} | ${p.sex||'--'}</span>
+                <span class="badge badge-purple">${p.visits.length} visits</span>
+            </div>
+        </div>`).join('');
 }
 
 function viewPatientHistory(patientId) {
-    const patient=Store.get('patients').find(p=>p.id==patientId);
-    if(!patient) return;
-    document.getElementById('hist-name').textContent=patient.name;
-    document.getElementById('hist-info').textContent=`Age: ${patient.age} | Phone: ${patient.phone} | ${patient.address||''}`;
-    const vc=document.getElementById('hist-visits');
-    if(patient.visits.length===0){vc.innerHTML='<p style="color:var(--odoo-text-muted); font-style:italic; font-size:12px;">No visit history</p>';}
-    else{vc.innerHTML=patient.visits.slice().reverse().map((v,idx)=>{const meds=v.medicines.map(m=>`<span class="badge badge-purple" style="margin-right:4px; margin-bottom:4px;">${m.name}</span>`).join('');const labs=v.labTests.map(l=>`<div style="display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px solid #f0edf0; font-size:12px;"><span>${l.testName}</span><span style="font-weight:700; color:${l.status=='completed'?'#065f46':'#c2410c'};">${l.result||'Pending'}</span></div>`).join('');return `<div class="visit-card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><div class="visit-date"><i class="fas fa-calendar-day"></i> ${v.date}</div></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:12px;"><div><p style="color:var(--odoo-text-muted); font-weight:700; margin-bottom:3px;">History:</p><p style="margin-bottom:8px;">${v.history||'N/A'}</p><p style="color:var(--odoo-text-muted); font-weight:700; margin-bottom:3px;">Diagnosis:</p><p class="visit-dx">${v.diagnosis||'N/A'}</p></div><div><p style="color:var(--odoo-text-muted); font-weight:700; margin-bottom:4px;">Medicines:</p><div style="margin-bottom:8px;">${meds||'None'}</div><p style="color:var(--odoo-text-muted); font-weight:700; margin-bottom:4px;">Lab:</p><div>${labs||'No tests'}</div></div></div></div>`;}).join('');}
-    document.getElementById('patient-history-view').style.display='block';
-    document.getElementById('patient-history-view').dataset.patientId=patientId;
+    const patient = Store.get('patients').find(p => p.id == patientId);
+    if (!patient) return;
+    document.getElementById('hist-name').textContent = patient.name;
+    document.getElementById('hist-info').textContent = `Age: ${patient.age} | Sex: ${patient.sex||'--'} | Phone: ${patient.phone} | ${patient.address||''}`;
+    const vc = document.getElementById('hist-visits');
+    if (!patient.visits.length) {
+        vc.innerHTML = '<p style="color:var(--odoo-text-muted);font-style:italic;font-size:12px;">No visit history</p>';
+    } else {
+        vc.innerHTML = patient.visits.slice().reverse().map(v => {
+            const meds = v.medicines.map(m => `<span class="badge badge-purple" style="margin-right:4px;margin-bottom:4px;">${m.name}</span>`).join('');
+            const labs = v.labTests.map(l => `
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f0edf0;font-size:12px;">
+                    <span>${l.testName}</span>
+                    <span style="font-weight:700;color:${l.status==='completed'?'#065f46':'#c2410c'};">${l.result||'Pending'}</span>
+                </div>`).join('');
+            return `<div class="visit-card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <div class="visit-date"><i class="fas fa-calendar-day"></i> ${v.date}</div>
+                    <span style="font-size:11px;color:var(--odoo-text-muted);">Dr: ${v.doctorName||'--'}</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px;">
+                    <div>
+                        <p style="color:var(--odoo-text-muted);font-weight:700;margin-bottom:3px;">History:</p>
+                        <p style="margin-bottom:8px;">${v.history||'N/A'}</p>
+                        <p style="color:var(--odoo-text-muted);font-weight:700;margin-bottom:3px;">Diagnosis:</p>
+                        <p class="visit-dx">${v.diagnosis||'N/A'}</p>
+                    </div>
+                    <div>
+                        <p style="color:var(--odoo-text-muted);font-weight:700;margin-bottom:4px;">Medicines:</p>
+                        <div style="margin-bottom:8px;">${meds||'None'}</div>
+                        <p style="color:var(--odoo-text-muted);font-weight:700;margin-bottom:4px;">Lab Tests:</p>
+                        <div>${labs||'No tests'}</div>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+    document.getElementById('patient-history-view').style.display = 'block';
+    document.getElementById('patient-history-view').dataset.patientId = patientId;
 }
 
 function startNewVisitFromHistory() {
-    const patientId=document.getElementById('patient-history-view').dataset.patientId;
-    showSection('doctor-work'); selectPatientForDoctor(patientId);
+    const patientId = document.getElementById('patient-history-view').dataset.patientId;
+    showSection('doctor-work');
+    selectPatientForDoctor(patientId);
 }
 
+/* ============================
+   DOCTOR WORK
+============================ */
 function docSearchPatient() {
-    const q=document.getElementById('doc-search-patient').value.toLowerCase();
-    if(q.length<2){document.getElementById('doc-patient-results').innerHTML='';return;}
-    const patients=Store.get('patients').filter(p=>p.name.toLowerCase().includes(q)||p.phone.toLowerCase().includes(q));
-    document.getElementById('doc-patient-results').innerHTML=patients.map(p=>`<div class="patient-card" onclick="selectPatientForDoctor(${p.id})" style="padding:10px;"><div style="font-weight:700; font-size:13px;">${p.name}</div><div style="font-size:11px; color:var(--odoo-text-muted);">${p.phone} | Age: ${p.age}</div></div>`).join('')||'<p style="color:var(--odoo-text-muted); font-size:12px;">No patients found</p>';
+    const q = document.getElementById('doc-search-patient').value.toLowerCase();
+    if (q.length < 2) { document.getElementById('doc-patient-results').innerHTML = ''; return; }
+    const patients = Store.get('patients').filter(p => p.name.toLowerCase().includes(q) || p.phone.toLowerCase().includes(q));
+    document.getElementById('doc-patient-results').innerHTML = patients.map(p =>
+        `<div class="patient-card" onclick="selectPatientForDoctor(${p.id})" style="padding:10px;">
+            <div style="font-weight:700;font-size:13px;">${p.name}</div>
+            <div style="font-size:11px;color:var(--odoo-text-muted);">${p.phone} | Age: ${p.age} | ${p.sex||'--'}</div>
+        </div>`).join('') || '<p style="color:var(--odoo-text-muted);font-size:12px;">No patients found</p>';
 }
 
 function selectPatientForDoctor(patientId) {
-    const patient=Store.get('patients').find(p=>p.id==patientId);
-    if(!patient) return;
-    currentPatient=patient;
-    currentVisit={visitId:Date.now(),date:new Date().toISOString().split('T')[0],history:'',diagnosis:'',medicines:[],labTests:[],prescriptionPrinted:false,labRequestPrinted:false,pharmacyPrinted:false};
-    document.getElementById('current-patient-name').textContent=patient.name;
-    document.getElementById('current-patient-info').textContent=`Age: ${patient.age} | Phone: ${patient.phone}`;
-    document.getElementById('doc-step-1').style.display='none';
-    document.getElementById('doc-step-2').style.display='block';
-    const pv=patient.visits.slice().reverse();
-    document.getElementById('current-patient-prev-visits').innerHTML=pv.map(v=>`<div style="padding:8px; background:#fafafa; border:1px solid var(--odoo-border); border-radius:4px; margin-bottom:6px;"><p style="font-weight:700; font-size:11px; color:var(--odoo-purple-dark);">${v.date}</p><p style="font-size:12px; font-weight:700;">${v.diagnosis||'No diagnosis'}</p><p style="font-size:11px; color:var(--odoo-text-muted);">${v.medicines.length} meds, ${v.labTests.length} tests</p></div>`).join('')||'<p style="color:var(--odoo-text-muted); font-size:12px; font-style:italic;">No previous visits</p>';
-    document.getElementById('visit-history').value='';
-    document.getElementById('visit-diagnosis').value='';
-    document.getElementById('medicine-rows').innerHTML='';
-    document.getElementById('labtest-rows').innerHTML='';
-    document.getElementById('current-lab-results').innerHTML='<p style="color:var(--odoo-text-muted); font-style:italic; font-size:12px;">No lab results yet.</p>';
-    addMedicineRow(); addLabTestRow();
+    const patient = Store.get('patients').find(p => p.id == patientId);
+    if (!patient) return;
+    currentPatient = patient;
+    currentVisit = {
+        visitId: Date.now(), date: new Date().toISOString().split('T')[0],
+        history: '', diagnosis: '', doctorName: getDoctorName(),
+        medicines: [], labTests: [],
+        prescriptionPrinted: false, labRequestPrinted: false, pharmacyPrinted: false
+    };
+    document.getElementById('current-patient-name').textContent = patient.name;
+    document.getElementById('current-patient-info').textContent = `Age: ${patient.age} | Sex: ${patient.sex||'--'} | Phone: ${patient.phone}`;
+    document.getElementById('doc-step-1').style.display = 'none';
+    document.getElementById('doc-step-2').style.display = 'block';
+    const pv = patient.visits.slice().reverse();
+    document.getElementById('current-patient-prev-visits').innerHTML = pv.map(v =>
+        `<div style="padding:8px;background:#fafafa;border:1px solid var(--odoo-border);border-radius:4px;margin-bottom:6px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <p style="font-weight:700;font-size:11px;color:var(--odoo-purple-dark);">${v.date}</p>
+                <span style="font-size:10px;color:var(--odoo-text-muted);">${v.doctorName||'--'}</span>
+            </div>
+            <p style="font-size:12px;font-weight:700;">${v.diagnosis||'No diagnosis'}</p>
+            <p style="font-size:11px;color:var(--odoo-text-muted);">${v.medicines.length} meds, ${v.labTests.length} tests</p>
+        </div>`).join('') || '<p style="color:var(--odoo-text-muted);font-size:12px;font-style:italic;">No previous visits</p>';
+    document.getElementById('visit-history').value = '';
+    document.getElementById('visit-diagnosis').value = '';
+    document.getElementById('medicine-rows').innerHTML = '';
+    document.getElementById('labtest-rows').innerHTML = '';
+    document.getElementById('current-lab-results').innerHTML = '<p style="color:var(--odoo-text-muted);font-style:italic;font-size:12px;">No lab results yet.</p>';
+    addMedicineRow();
+    addLabTestRow();
 }
 
 function clearCurrentPatient() {
-    currentPatient=null; currentVisit=null;
-    document.getElementById('doc-step-1').style.display='';
-    document.getElementById('doc-step-2').style.display='none';
-    document.getElementById('doc-search-patient').value='';
-    document.getElementById('doc-patient-results').innerHTML='';
+    currentPatient = null; currentVisit = null;
+    document.getElementById('doc-step-1').style.display = '';
+    document.getElementById('doc-step-2').style.display = 'none';
+    document.getElementById('doc-search-patient').value = '';
+    document.getElementById('doc-patient-results').innerHTML = '';
 }
 
 function addMedicineRow() {
-    const medicines=Store.get('medicines');
-    if(medicines.length===0){alert('Please add medicines in Settings first!');return;}
-    const options=medicines.map(m=>`<option value="${m.name}" data-dose="${m.dosage}">${m.name} (${m.dosage})</option>`).join('');
-    const div=document.createElement('div');
-    div.className='medicine-row row-item';
-    div.style.gridTemplateColumns='3fr 2fr 3fr 2fr 1fr auto';
-    div.innerHTML=`<div><label>Medicine</label><select class="med-name form-select" onchange="updateMedDose(this)">${options}</select></div><div><label>Dose</label><input type="text" class="med-dose form-control" value="${medicines[0].dosage}"></div><div><label>Frequency</label><input type="text" class="med-freq form-control" placeholder="e.g. 3x daily"></div><div><label>Duration</label><input type="text" class="med-dur form-control" placeholder="e.g. 5 days"></div><div><label>Qty</label><input type="number" class="med-qty form-control" value="1"></div><div style="align-self:end; padding-bottom:2px;"><button type="button" onclick="this.closest('.medicine-row').remove()" style="background:none;border:none;cursor:pointer;color:var(--odoo-red);font-size:14px;padding:4px;"><i class="fas fa-trash"></i></button></div>`;
+    const medicines = Store.get('medicines');
+    if (!medicines.length) { alert('Please add medicines in Settings first!'); return; }
+    const options = medicines.map(m => `<option value="${m.name}" data-dose="${m.dosage}">${m.name} (${m.dosage})</option>`).join('');
+    const div = document.createElement('div');
+    div.className = 'medicine-row row-item';
+    div.style.gridTemplateColumns = '3fr 2fr 2fr 2fr 2fr 1fr auto';
+    div.innerHTML = `
+        <div><label>Medicine</label><select class="med-name form-select" onchange="updateMedDose(this)">${options}</select></div>
+        <div><label>Dose</label><input type="text" class="med-dose form-control" value="${medicines[0].dosage}"></div>
+        <div><label>Frequency</label><input type="text" class="med-freq form-control" placeholder="e.g. 3x daily"></div>
+        <div><label>Duration</label><input type="text" class="med-dur form-control" placeholder="e.g. 5 days"></div>
+        <div><label>Form / Route</label>
+            <select class="med-route form-select">
+                <option value="subaxdi_cuntada_kadib">subaxdi cuntada kadib</option>
+                <option value="subaxdi_cuntada_kahor">subaxdi cuntada kahor</option>
+                <option value="ORAL">ORAL</option>
+                <option value="NASAL">NASAL</option>
+                <option value="HABEEN">HABEEN</option>
+                <option value="subabax_iv">SUBABAX IV</option>
+                <option value="habeen_iv">HABEEN IV</option>
+                <option value="subabax_im">SUBABAX IM</option>
+                <option value="habeen_im">HABEEN IM</option>
+            </select>
+        </div>
+        <div><label>Qty</label><input type="number" class="med-qty form-control" value="1"></div>
+        <div style="align-self:end;padding-bottom:2px;"><button type="button" onclick="this.closest('.medicine-row').remove()" style="background:none;border:none;cursor:pointer;color:var(--odoo-red);font-size:14px;padding:4px;"><i class="fas fa-trash"></i></button></div>`;
     document.getElementById('medicine-rows').appendChild(div);
 }
 
 function updateMedDose(select) {
-    const dose=select.options[select.selectedIndex].dataset.dose;
-    select.closest('.medicine-row').querySelector('.med-dose').value=dose;
+    const dose = select.options[select.selectedIndex].dataset.dose;
+    select.closest('.medicine-row').querySelector('.med-dose').value = dose;
 }
 
-function addLabTestRow(testName='') {
-    const tests=Store.get('labTests');
-    const div=document.createElement('div');
-    div.className='labtest-row';
-    div.style.cssText='display:flex; gap:8px; align-items:center; background:#fafafa; padding:8px; border-radius:4px; border:1px solid var(--odoo-border); margin-bottom:6px;';
-    if(tests.length>0){
-        const options=tests.map(t=>`<option value="${t.name}" ${t.name===testName?'selected':''}>${t.name}</option>`).join('');
-        div.innerHTML=`<select class="lab-test-name form-select" style="flex:1;">${options}</select><button type="button" onclick="this.closest('.labtest-row').remove()" style="background:none;border:none;cursor:pointer;color:var(--odoo-red);font-size:14px;padding:4px;"><i class="fas fa-trash"></i></button>`;
+function addLabTestRow(testName = '') {
+    const tests = Store.get('labTests');
+    const div = document.createElement('div');
+    div.className = 'labtest-row';
+    div.style.cssText = 'display:flex;gap:8px;align-items:center;background:#fafafa;padding:8px;border-radius:4px;border:1px solid var(--odoo-border);margin-bottom:6px;';
+    if (tests.length > 0) {
+        const options = tests.map(t => `<option value="${t.name}" ${t.name===testName?'selected':''}>${t.name}</option>`).join('');
+        div.innerHTML = `<select class="lab-test-name form-select" style="flex:1;">${options}</select>
+            <button type="button" onclick="this.closest('.labtest-row').remove()" style="background:none;border:none;cursor:pointer;color:var(--odoo-red);font-size:14px;padding:4px;"><i class="fas fa-trash"></i></button>`;
     } else {
-        div.innerHTML=`<input type="text" class="lab-test-name form-control" placeholder="Enter test name" style="flex:1;"><button type="button" onclick="this.closest('.labtest-row').remove()" style="background:none;border:none;cursor:pointer;color:var(--odoo-red);font-size:14px;padding:4px;"><i class="fas fa-trash"></i></button>`;
+        div.innerHTML = `<input type="text" class="lab-test-name form-control" placeholder="Enter test name" style="flex:1;">
+            <button type="button" onclick="this.closest('.labtest-row').remove()" style="background:none;border:none;cursor:pointer;color:var(--odoo-red);font-size:14px;padding:4px;"><i class="fas fa-trash"></i></button>`;
     }
     document.getElementById('labtest-rows').appendChild(div);
 }
 
 function getMedicinesFromForm() {
-    return Array.from(document.querySelectorAll('.medicine-row')).map(row=>({name:row.querySelector('.med-name').value,dosage:row.querySelector('.med-dose').value,frequency:row.querySelector('.med-freq').value,duration:row.querySelector('.med-dur').value,qty:row.querySelector('.med-qty').value}));
+    return Array.from(document.querySelectorAll('.medicine-row')).map(row => ({
+        name:      row.querySelector('.med-name').value,
+        dosage:    row.querySelector('.med-dose').value,
+        frequency: row.querySelector('.med-freq').value,
+        duration:  row.querySelector('.med-dur').value,
+        route:     (row.querySelector('.med-route') ? row.querySelector('.med-route').selectedOptions[0].textContent : ''),
+        qty:       row.querySelector('.med-qty').value
+    }));
 }
 
 function getLabTestsFromForm() {
-    return Array.from(document.querySelectorAll('.labtest-row')).map(row=>({testName:row.querySelector('.lab-test-name').value,status:'pending',result:'',resultDate:'',technician:'',notes:''}));
+    return Array.from(document.querySelectorAll('.labtest-row')).map(row => ({
+        testName: row.querySelector('.lab-test-name').value,
+        status: 'pending', result: '', resultDate: '', technician: '', notes: ''
+    }));
 }
 
 function populateLabTemplateSelect() {
-    const select=document.getElementById('lab-template-select');
-    if(!select) return;
-    select.innerHTML='<option value="">Select Template</option>'+Object.keys(TEST_TEMPLATES).map(n=>`<option value="${n}">${n}</option>`).join('');
+    const select = document.getElementById('lab-template-select');
+    if (!select) return;
+    select.innerHTML = '<option value="">Select Template</option>' +
+        Object.keys(TEST_TEMPLATES).map(n => `<option value="${n}">${n}</option>`).join('');
 }
 
 function loadLabTemplate() {
-    const select=document.getElementById('lab-template-select');
-    if(!select) return;
-    const tn=select.value;
-    if(!tn||!TEST_TEMPLATES[tn]){alert('Select a template');return;}
-    document.getElementById('labtest-rows').innerHTML='';
-    TEST_TEMPLATES[tn].forEach(t=>addLabTestRow(t.name));
+    const select = document.getElementById('lab-template-select');
+    if (!select) return;
+    const tn = select.value;
+    if (!tn || !TEST_TEMPLATES[tn]) { alert('Please select a template'); return; }
+    document.getElementById('labtest-rows').innerHTML = '';
+    TEST_TEMPLATES[tn].forEach(t => addLabTestRow(t.name));
 }
 
 function sendToLab() {
-    if(!currentPatient||!currentVisit) return;
-    currentVisit.labTests=getLabTestsFromForm();
-    const patients=Store.get('patients');
-    const pIndex=patients.findIndex(p=>p.id==currentPatient.id);
-    if(pIndex>-1){
-        const vi=patients[pIndex].visits.findIndex(v=>v.visitId==currentVisit.visitId);
-        if(vi>-1) patients[pIndex].visits[vi].labTests=currentVisit.labTests;
-        else { currentVisit.history=document.getElementById('visit-history').value; currentVisit.diagnosis=document.getElementById('visit-diagnosis').value; currentVisit.medicines=getMedicinesFromForm(); patients[pIndex].visits.push(currentVisit); }
-        Store.set('patients',patients); currentPatient=patients[pIndex];
+    if (!currentPatient || !currentVisit) return;
+    currentVisit.labTests = getLabTestsFromForm();
+    const patients = Store.get('patients');
+    const pIndex = patients.findIndex(p => p.id == currentPatient.id);
+    if (pIndex > -1) {
+        const vi = patients[pIndex].visits.findIndex(v => v.visitId == currentVisit.visitId);
+        if (vi > -1) {
+            patients[pIndex].visits[vi].labTests = currentVisit.labTests;
+        } else {
+            currentVisit.history   = document.getElementById('visit-history').value;
+            currentVisit.diagnosis = document.getElementById('visit-diagnosis').value;
+            currentVisit.medicines = getMedicinesFromForm();
+            patients[pIndex].visits.push(currentVisit);
+        }
+        Store.set('patients', patients);
+        currentPatient = patients[pIndex];
     }
-    alert('Lab tests sent!'); updateDashboard();
+    alert('Lab tests sent to the lab successfully!');
+    updateDashboard();
 }
 
 function saveVisit() {
-    if(!currentPatient||!currentVisit) return;
-    currentVisit.history=document.getElementById('visit-history').value;
-    currentVisit.diagnosis=document.getElementById('visit-diagnosis').value;
-    currentVisit.medicines=getMedicinesFromForm();
-    currentVisit.labTests=getLabTestsFromForm();
-    const patients=Store.get('patients');
-    const pIndex=patients.findIndex(p=>p.id==currentPatient.id);
-    if(pIndex>-1){
-        const vi=patients[pIndex].visits.findIndex(v=>v.visitId==currentVisit.visitId);
-        if(vi>-1) patients[pIndex].visits[vi]=currentVisit; else patients[pIndex].visits.push(currentVisit);
-        Store.set('patients',patients); currentPatient=patients[pIndex];
+    if (!currentPatient || !currentVisit) return;
+    currentVisit.history   = document.getElementById('visit-history').value;
+    currentVisit.diagnosis = document.getElementById('visit-diagnosis').value;
+    currentVisit.medicines = getMedicinesFromForm();
+    currentVisit.labTests  = getLabTestsFromForm();
+    const patients = Store.get('patients');
+    const pIndex = patients.findIndex(p => p.id == currentPatient.id);
+    if (pIndex > -1) {
+        const vi = patients[pIndex].visits.findIndex(v => v.visitId == currentVisit.visitId);
+        if (vi > -1) patients[pIndex].visits[vi] = currentVisit;
+        else         patients[pIndex].visits.push(currentVisit);
+        Store.set('patients', patients);
+        currentPatient = patients[pIndex];
     }
-    alert('Visit saved!'); clearCurrentPatient(); updateDashboard();
+    alert('Visit saved successfully!');
+    clearCurrentPatient();
+    updateDashboard();
 }
 
-// ===== PRINTING =====
-function genApptNum() { return 'S' + Math.floor(100000+Math.random()*900000); }
-function genReqNum() { return 'REQUEST' + Math.floor(100000+Math.random()*900000); }
-function genPatientId() { return String(Math.floor(1000000+Math.random()*9000000)).substring(0,7); }
+/* ============================
+   PRINTING
+============================ */
+function genApptNum() { return 'S' + Math.floor(100000 + Math.random() * 900000); }
+function genReqNum()  { return 'REQ-' + Math.floor(100000 + Math.random() * 900000); }
+function fmtDate() { return new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString(); }
 
 function printPrescription() {
-    if(!currentPatient) return;
-    const meds=getMedicinesFromForm();
-    if(meds.length===0){alert('Add medicines first');return;}
-    // Fill meta
-    document.getElementById('rx-p-name').textContent=currentPatient.name;
-    document.getElementById('rx-p-age').textContent=currentPatient.age+'Y';
-    document.getElementById('rx-p-phone').textContent=currentPatient.phone;
-    document.getElementById('rx-p-id').textContent=currentPatient.id || genPatientId();
-    document.getElementById('rx-p-sex').textContent=currentPatient.sex||'--';
-    document.getElementById('rx-p-date').textContent=new Date().toLocaleDateString('en-GB')+' '+new Date().toLocaleTimeString();
-    document.getElementById('rx-p-appt').textContent=genApptNum();
-    document.getElementById('rx-p-doctor').textContent='Dr. '+DOCTOR_NAME.replace('Dr ','').replace('Dr. ','');
-    document.getElementById('rx-sig-name').textContent=DOCTOR_NAME;
-    // Fill medicines table - matching prescription format
-    document.getElementById('rx-med-rows').innerHTML=meds.map(m=>`
+    if (!currentPatient) return;
+    const meds = getMedicinesFromForm();
+    if (!meds.length) { alert('Please add at least one medicine first.'); return; }
+
+    document.getElementById('rx-p-name').textContent   = currentPatient.name;
+    document.getElementById('rx-p-age').textContent    = currentPatient.age + ' Y';
+    document.getElementById('rx-p-phone').textContent  = currentPatient.phone;
+    document.getElementById('rx-p-id').textContent     = currentPatient.id;
+    document.getElementById('rx-p-sex').textContent    = currentPatient.sex || '--';
+    document.getElementById('rx-p-date').textContent   = fmtDate();
+    document.getElementById('rx-p-appt').textContent   = genApptNum();
+    document.getElementById('rx-p-doctor').textContent = getDoctorName();
+    document.getElementById('rx-sig-name').textContent = getDoctorName();
+
+    document.getElementById('rx-med-rows').innerHTML = meds.map(m => `
         <tr>
             <td>${m.name}</td>
-            <td>/IV</td>
-            <td>${m.frequency||'1X1'}</td>
+            <td>${m.route || 'ORAL'}</td>
+            <td>${m.frequency || '1 × 1'}</td>
             <td></td>
             <td>${m.dosage}</td>
             <td>${m.duration}</td>
-            <td>${m.qty}.000</td>
-        </tr>
-    `).join('');
+            <td>${m.qty}</td>
+        </tr>`).join('');
     doPrint('print-prescription');
 }
 
 function printLabRequest() {
-    if(!currentPatient) return;
-    const tests=getLabTestsFromForm();
-    if(tests.length===0){alert('Add lab tests first');return;}
-    // Fill meta
-    document.getElementById('lr-p-name').textContent=currentPatient.name;
-    document.getElementById('lr-p-age').textContent=currentPatient.age+'Y';
-    document.getElementById('lr-p-id').textContent=currentPatient.id || genPatientId();
-    document.getElementById('lr-p-sex').textContent=currentPatient.sex||'--';
-    document.getElementById('lr-p-date').textContent=new Date().toLocaleDateString('en-GB')+' '+new Date().toLocaleTimeString();
-    document.getElementById('lr-p-req').textContent=genReqNum();
-    document.getElementById('lr-p-doctor').textContent='Dr. HARITH ABDULKADIR SHEIKH MOHAMUD';
-    document.getElementById('lr-sig-name').textContent=DOCTOR_NAME;
-    // Fill tests table - matching lab request format
-    const labTestsSettings=Store.get('labTests');
-    document.getElementById('lr-test-rows').innerHTML=tests.map(t=>{
-        const ts=labTestsSettings.find(x=>x.name===t.testName)||{};
-        const dept=getDepartment(t.testName);
-        return `<tr><td>Lab</td><td></td><td>${dept}</td><td>${t.testName}</td></tr>`;
-    }).join('');
+    if (!currentPatient) return;
+    const tests = getLabTestsFromForm();
+    if (!tests.length) { alert('Please add at least one lab test first.'); return; }
+
+    document.getElementById('lr-p-name').textContent   = currentPatient.name;
+    document.getElementById('lr-p-age').textContent    = currentPatient.age + ' Y';
+    document.getElementById('lr-p-id').textContent     = currentPatient.id;
+    document.getElementById('lr-p-sex').textContent    = currentPatient.sex || '--';
+    document.getElementById('lr-p-date').textContent   = fmtDate();
+    document.getElementById('lr-p-req').textContent    = genReqNum();
+    document.getElementById('lr-p-doctor').textContent = getDoctorName();
+    document.getElementById('lr-sig-name').textContent = getDoctorName();
+
+    document.getElementById('lr-test-rows').innerHTML = tests.map((t, i) =>
+        `<tr>
+            <td>Lab</td>
+            <td>${t.testName}</td>
+            <td>${getDepartment(t.testName)}</td>
+            <td>${i + 1}</td>
+        </tr>`).join('');
     doPrint('print-lab-request');
 }
 
-function getDepartment(testName) {
-    const name=testName.toUpperCase();
-    if(['CBC','HB','ESR','BLOOD GROUP','BLOOD CLOTTING TIME','BLOOD BLEEDING TIME'].some(x=>name.includes(x))) return 'HAEMATOLOGY';
-    if(['HCV','HBSAG','HIV','SIDA','TYPHOID','BRUCELLA','ASO','ANTI','RF','CRP','MALARIA','TOXOPLASMA','CELIAC','ANA','TROPONIN','HCG','HAV','H.PYLORI'].some(x=>name.includes(x))) return 'SEROLOGY';
-    if(['TSH','FT3','FT4','T3','T4','CORTISOL','PRL','FSH','LH','VITAMIN D','B12','FERRITIN','AFP','PSA','HBA1C'].some(x=>name.includes(x))) return 'HORMONES';
-    if(['GLUCOSE','SUGAR','UREA','CREATININE','URIC ACID','CHOLESTEROL','LDL','HDL','TRIGLYCERIDE','BILIRUBIN','ALT','GPT','AST','GOT','GGT','ALP','ALBUMIN','PROTEIN','CALCIUM','SODIUM','POTASSIUM','ELECTROLYTE','AMYLASE','LIPASE','CK'].some(x=>name.includes(x))) return 'BIOCHEMISTRY';
-    if(['URINE','FOB','STOOL'].some(x=>name.includes(x))) return 'MICROBIOLOGY';
-    if(['EEG','ECG'].some(x=>name.includes(x))) return 'EEG';
-    if(['QUANT','QUANTIFERON'].some(x=>name.includes(x))) return 'QUANT TEST';
-    return 'LABORATORY';
-}
-
 function printPharmacy() {
-    if(!currentPatient) return;
-    const meds=getMedicinesFromForm();
-    if(meds.length===0){alert('Add medicines first');return;}
-    document.getElementById('ph-p-name').textContent=currentPatient.name;
-    document.getElementById('ph-p-age').textContent=currentPatient.age+'Y';
-    document.getElementById('ph-p-date').textContent=new Date().toLocaleDateString('en-GB');
-    document.getElementById('ph-p-doctor').textContent=DOCTOR_NAME;
-    document.getElementById('ph-sig-name').textContent=DOCTOR_NAME;
-    document.getElementById('ph-med-rows').innerHTML=meds.map((m,i)=>`<tr><td>${i+1}</td><td>${m.name} ${m.dosage}</td><td>${m.qty}</td><td>${m.frequency} for ${m.duration}</td></tr>`).join('');
+    if (!currentPatient) return;
+    const meds = getMedicinesFromForm();
+    if (!meds.length) { alert('Please add at least one medicine first.'); return; }
+
+    document.getElementById('ph-p-name').textContent   = currentPatient.name;
+    document.getElementById('ph-p-age').textContent    = currentPatient.age + ' Y';
+    document.getElementById('ph-p-date').textContent   = new Date().toLocaleDateString('en-GB');
+    document.getElementById('ph-p-doctor').textContent = getDoctorName();
+    document.getElementById('ph-sig-name').textContent = getDoctorName();
+
+    document.getElementById('ph-med-rows').innerHTML = meds.map((m, i) =>
+        `<tr>
+            <td>${i + 1}</td>
+            <td>${m.name} ${m.dosage}</td>
+            <td>${m.qty}</td>
+            <td>${m.frequency} for ${m.duration} ${m.route?`(${m.route})`:''}</td>
+        </tr>`).join('');
     doPrint('print-pharmacy');
 }
 
-function printLabResult(patientId,visitId,testIndex) {
-    const patient=Store.get('patients').find(p=>p.id==patientId);
-    if(!patient) return;
-    const visit=patient.visits.find(v=>v.visitId==visitId);
-    if(!visit) return;
-    const test=visit.labTests[testIndex];
-    if(!test||test.status!=='completed'){alert('Result not ready');return;}
-    document.getElementById('lres-p-name').textContent=patient.name;
-    document.getElementById('lres-p-age').textContent=patient.age+'Y';
-    document.getElementById('lres-p-date').textContent=test.resultDate;
-    document.getElementById('lres-p-doctor').textContent=DOCTOR_NAME;
-    document.getElementById('lres-tech').textContent=test.technician;
-    document.getElementById('lres-sig-name').textContent=DOCTOR_NAME;
-    const ts=Store.get('labTests').find(t=>t.name===test.testName)||{};
-    document.getElementById('lres-rows').innerHTML=`<tr><td>${test.testName}</td><td style="font-weight:bold;">${test.result}</td><td>${ts.normalRange||'N/A'}</td><td>${test.result.toLowerCase()==='normal'||test.result.toLowerCase()==='negative'?'Normal':'Review'}</td></tr>`;
+function printLabResult(patientId, visitId, testIndex) {
+    const patient = Store.get('patients').find(p => p.id == patientId);
+    if (!patient) return;
+    const visit = patient.visits.find(v => v.visitId == visitId);
+    if (!visit) return;
+    const test = visit.labTests[testIndex];
+    if (!test || test.status !== 'completed') { alert('Result not yet available.'); return; }
+
+    document.getElementById('lres-p-name').textContent   = patient.name;
+    document.getElementById('lres-p-age').textContent    = patient.age + ' Y';
+    document.getElementById('lres-p-date').textContent   = test.resultDate;
+    document.getElementById('lres-p-doctor').textContent = visit.doctorName || getDoctorName();
+    document.getElementById('lres-tech').textContent     = test.technician;
+    document.getElementById('lres-sig-name').textContent = visit.doctorName || getDoctorName();
+
+    const ts = Store.get('labTests').find(t => t.name === test.testName) || {};
+    const status = ['normal','negative'].includes(test.result.toLowerCase()) ? 'Normal' : 'See Doctor';
+    document.getElementById('lres-rows').innerHTML =
+        `<tr>
+            <td>${test.testName}</td>
+            <td style="font-weight:bold;">${test.result}</td>
+            <td>${ts.normalRange || 'N/A'}</td>
+            <td>${status}</td>
+        </tr>`;
+    if (test.notes) {
+        document.getElementById('lres-rows').innerHTML +=
+            `<tr><td colspan="4" style="font-style:italic;color:#666;">Note: ${test.notes}</td></tr>`;
+    }
     doPrint('print-lab-result');
 }
 
+function getDepartment(testName) {
+    const n = testName.toUpperCase();
+    // prefer explicit mapping from ALL_LAB_TESTS
+    const mapped = ALL_LAB_TESTS.find(x => x.name.toUpperCase() === n || n.includes(x.name.toUpperCase()));
+    if (mapped && mapped.dept) return mapped.dept;
+    if (['CBC','HB','ESR','BLOOD GROUP','BLOOD CLOTTING','BLOOD BLEEDING'].some(x => n.includes(x))) return 'HAEMATOLOGY';
+    if (['HCV','HBSAG','HIV','SIDA','TYPHOID','BRUCELLA','ASO','ANTI','RF','CRP','MALARIA','TOXOPLASMA','CELIAC','ANA','TROPONIN','HCG','HAV','H. PYLORI','SYPHILIS'].some(x => n.includes(x))) return 'SEROLOGY';
+    if (['TSH','FT3','FT4','T3','T4','CORTISOL','PRL','FSH','LH','VITAMIN D','B12','FERRITIN','AFP','PSA','HBA1C','INSULIN'].some(x => n.includes(x))) return 'HORMONES';
+    if (['GLUCOSE','SUGAR','UREA','CREATININE','URIC ACID','CHOLESTEROL','LDL','HDL','TRIGLYCERIDE','BILIRUBIN','ALT','GPT','AST','GOT','GGT','ALP','ALBUMIN','PROTEIN','CALCIUM','SODIUM','POTASSIUM','ELECTROLYTE','AMYLASE','LIPASE','CK'].some(x => n.includes(x))) return 'BIOCHEMISTRY';
+    if (['URINE','FOB','STOOL'].some(x => n.includes(x))) return 'MICROBIOLOGY';
+    if (['ALLERGY'].some(x => n.includes(x))) return 'ALLERGY';
+    return 'LABORATORY';
+}
+
 function doPrint(id) {
-    const el=document.getElementById(id);
+    const el = document.getElementById(id);
     el.classList.add('active');
     window.print();
     el.classList.remove('active');
 }
 
-// LAB
+/* ============================
+   LAB SECTION
+============================ */
 function renderLab() {
-    const patients=Store.get('patients');
-    let pending=[],completed=[];
-    patients.forEach(p=>{ p.visits.forEach(v=>{ v.labTests.forEach((t,idx)=>{ const item={patient:p,visit:v,test:t,testIndex:idx,patientId:p.id,visitId:v.visitId}; if(t.status==='pending') pending.push(item); else completed.push(item); }); }); });
-    const pc=document.getElementById('lab-pending-list');
-    if(pending.length===0) pc.innerHTML='<div class="empty-state" style="padding:40px 20px;"><div class="empty-icon"><i class="fas fa-inbox"></i></div><p>No pending lab requests</p></div>';
-    else pc.innerHTML=pending.map(item=>`<div class="lab-pending-card"><div style="display:flex; justify-content:space-between; align-items:flex-start;"><div><p style="font-weight:700; font-size:13px;">${item.patient.name}</p><p style="font-size:11px; color:var(--odoo-text-muted);">Age: ${item.patient.age} | ${item.patient.phone}</p><p style="font-size:12px; color:#c2410c; font-weight:600; margin-top:4px;"><i class="fas fa-vial" style="margin-right:4px;"></i>${item.test.testName}</p><p style="font-size:11px; color:var(--odoo-text-muted);">Requested: ${item.visit.date}</p></div><button onclick="openLabResultModal(${item.patientId},${item.visitId},${item.testIndex})" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Enter Result</button></div></div>`).join('');
-    const cc=document.getElementById('lab-completed-list');
-    if(completed.length===0) cc.innerHTML='<div class="empty-state" style="padding:40px 20px;"><div class="empty-icon" style="background:#d4edda; color:#155724;"><i class="fas fa-check-circle"></i></div><p>No completed results</p></div>';
-    else cc.innerHTML=completed.slice().reverse().map(item=>`<div class="lab-completed-card"><div style="display:flex; justify-content:space-between; align-items:flex-start;"><div><p style="font-weight:700; font-size:13px;">${item.patient.name}</p><p style="font-size:12px; color:#155724; font-weight:600; margin-top:4px;">${item.test.testName}: <strong>${item.test.result}</strong></p><p style="font-size:11px; color:var(--odoo-text-muted);">By: ${item.test.technician} | ${item.test.resultDate}</p></div><button onclick="printLabResult(${item.patientId},${item.visitId},${item.testIndex})" class="btn btn-secondary btn-sm"><i class="fas fa-print"></i> Print</button></div></div>`).join('');
-    document.getElementById('dash-pending-lab').textContent=pending.length;
-    document.getElementById('dash-completed-lab').textContent=completed.length;
+    const patients = Store.get('patients');
+    let pending = [], completed = [];
+    patients.forEach(p => {
+        p.visits.forEach(v => {
+            v.labTests.forEach((t, idx) => {
+                const item = {patient:p, visit:v, test:t, testIndex:idx, patientId:p.id, visitId:v.visitId};
+                if (t.status === 'pending') pending.push(item);
+                else completed.push(item);
+            });
+        });
+    });
+
+    const pc = document.getElementById('lab-pending-list');
+    if (!pending.length) {
+        pc.innerHTML = '<div class="empty-state" style="padding:40px 20px;"><div class="empty-icon"><i class="fas fa-inbox"></i></div><p>No pending lab requests</p></div>';
+    } else {
+        pc.innerHTML = pending.map(item => `
+            <div class="lab-pending-card">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <div>
+                        <p style="font-weight:700;font-size:13px;">${item.patient.name}</p>
+                        <p style="font-size:11px;color:var(--odoo-text-muted);">Age: ${item.patient.age} | ${item.patient.phone}</p>
+                        <p style="font-size:12px;color:#c2410c;font-weight:600;margin-top:4px;"><i class="fas fa-vial" style="margin-right:4px;"></i>${item.test.testName}</p>
+                        <p style="font-size:11px;color:var(--odoo-text-muted);">Requested: ${item.visit.date} | Dr: ${item.visit.doctorName||'--'}</p>
+                    </div>
+                    <button onclick="openLabResultModal(${item.patientId},${item.visitId},${item.testIndex})" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Enter Result</button>
+                </div>
+            </div>`).join('');
+    }
+
+    const cc = document.getElementById('lab-completed-list');
+    if (!completed.length) {
+        cc.innerHTML = '<div class="empty-state" style="padding:40px 20px;"><div class="empty-icon" style="background:#d4edda;color:#155724;"><i class="fas fa-check-circle"></i></div><p>No completed results</p></div>';
+    } else {
+        cc.innerHTML = completed.slice().reverse().map(item => `
+            <div class="lab-completed-card">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <div>
+                        <p style="font-weight:700;font-size:13px;">${item.patient.name}</p>
+                        <p style="font-size:12px;color:#155724;font-weight:600;margin-top:4px;">${item.test.testName}: <strong>${item.test.result}</strong></p>
+                        <p style="font-size:11px;color:var(--odoo-text-muted);">By: ${item.test.technician} | ${item.test.resultDate}</p>
+                        <p style="font-size:11px;color:var(--odoo-text-muted);">Dr: ${item.visit.doctorName||'--'}</p>
+                    </div>
+                    <button onclick="printLabResult(${item.patientId},${item.visitId},${item.testIndex})" class="btn btn-secondary btn-sm"><i class="fas fa-print"></i> Print</button>
+                </div>
+            </div>`).join('');
+    }
 }
 
-function openLabResultModal(patientId,visitId,testIndex) {
-    const patient=Store.get('patients').find(p=>p.id==patientId);
-    const visit=patient.visits.find(v=>v.visitId==visitId);
-    const test=visit.labTests[testIndex];
-    document.getElementById('labres-patient').textContent=patient.name;
-    document.getElementById('labres-test').textContent=test.testName;
-    document.getElementById('labres-patient-id').value=patientId;
-    document.getElementById('labres-visit-id').value=visitId;
-    document.getElementById('labres-test-index').value=testIndex;
-    document.getElementById('labres-result').value='';
-    document.getElementById('labres-notes').value='';
-    document.getElementById('labres-tech').value='';
+function openLabResultModal(patientId, visitId, testIndex) {
+    const patient = Store.get('patients').find(p => p.id == patientId);
+    const visit   = patient.visits.find(v => v.visitId == visitId);
+    const test    = visit.labTests[testIndex];
+    document.getElementById('labres-patient').textContent   = patient.name;
+    document.getElementById('labres-test').textContent      = test.testName;
+    document.getElementById('labres-patient-id').value      = patientId;
+    document.getElementById('labres-visit-id').value        = visitId;
+    document.getElementById('labres-test-index').value      = testIndex;
+    document.getElementById('labres-result').value          = '';
+    document.getElementById('labres-notes').value           = '';
+    document.getElementById('labres-tech').value            = '';
     openModal('modal-lab-result');
 }
 
 function saveLabResult(e) {
     e.preventDefault();
-    const patientId=document.getElementById('labres-patient-id').value;
-    const visitId=document.getElementById('labres-visit-id').value;
-    const testIndex=document.getElementById('labres-test-index').value;
-    const patients=Store.get('patients');
-    const pIndex=patients.findIndex(p=>p.id==patientId);
-    const vIndex=patients[pIndex].visits.findIndex(v=>v.visitId==visitId);
-    patients[pIndex].visits[vIndex].labTests[testIndex]={...patients[pIndex].visits[vIndex].labTests[testIndex],status:'completed',result:document.getElementById('labres-result').value,notes:document.getElementById('labres-notes').value,resultDate:new Date().toLocaleString(),technician:document.getElementById('labres-tech').value};
-    Store.set('patients',patients);
-    closeModal('modal-lab-result'); renderLab();
-    if(currentPatient&&currentPatient.id==patientId) updateCurrentLabResults(patients[pIndex].visits[vIndex]);
+    const patientId  = document.getElementById('labres-patient-id').value;
+    const visitId    = document.getElementById('labres-visit-id').value;
+    const testIndex  = +document.getElementById('labres-test-index').value;
+    const patients   = Store.get('patients');
+    const pIndex     = patients.findIndex(p => p.id == patientId);
+    const vIndex     = patients[pIndex].visits.findIndex(v => v.visitId == visitId);
+    patients[pIndex].visits[vIndex].labTests[testIndex] = {
+        ...patients[pIndex].visits[vIndex].labTests[testIndex],
+        status:     'completed',
+        result:     document.getElementById('labres-result').value,
+        notes:      document.getElementById('labres-notes').value,
+        resultDate: new Date().toLocaleString(),
+        technician: document.getElementById('labres-tech').value
+    };
+    Store.set('patients', patients);
+    closeModal('modal-lab-result');
+    renderLab();
+    if (currentPatient && currentPatient.id == patientId)
+        updateCurrentLabResults(patients[pIndex].visits[vIndex]);
     updateDashboard();
 }
 
 function updateCurrentLabResults(visit) {
-    const container=document.getElementById('current-lab-results');
-    const completed=visit.labTests.filter(t=>t.status==='completed');
-    if(completed.length===0){container.innerHTML='<p style="color:var(--odoo-text-muted); font-style:italic; font-size:12px;">No lab results yet.</p>';return;}
-    container.innerHTML=completed.map(t=>`<div class="lab-result-card"><div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:700; font-size:12px;">${t.testName}</span><span class="badge badge-completed">Done</span></div><p style="font-size:16px; font-weight:900; color:#065f46; margin:3px 0;">${t.result}</p><p style="font-size:11px; color:var(--odoo-text-muted);">By ${t.technician} on ${t.resultDate}</p>${t.notes?`<p style="font-size:11px; color:var(--odoo-text-muted); font-style:italic; margin-top:2px;">Note: ${t.notes}</p>`:''}</div>`).join('');
+    const container  = document.getElementById('current-lab-results');
+    const completed  = visit.labTests.filter(t => t.status === 'completed');
+    if (!completed.length) { container.innerHTML = '<p style="color:var(--odoo-text-muted);font-style:italic;font-size:12px;">No lab results yet.</p>'; return; }
+    container.innerHTML = completed.map(t => `
+        <div class="lab-result-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-weight:700;font-size:12px;">${t.testName}</span>
+                <span class="badge badge-completed">Done</span>
+            </div>
+            <p style="font-size:16px;font-weight:900;color:#065f46;margin:3px 0;">${t.result}</p>
+            <p style="font-size:11px;color:var(--odoo-text-muted);">By ${t.technician} on ${t.resultDate}</p>
+            ${t.notes ? `<p style="font-size:11px;color:var(--odoo-text-muted);font-style:italic;margin-top:2px;">Note: ${t.notes}</p>` : ''}
+        </div>`).join('');
 }
 
-// SETTINGS
+/* ============================
+   SETTINGS
+============================ */
 function renderSettings() {
-    const medicines=Store.get('medicines');
-    document.getElementById('settings-medicines-table').innerHTML=medicines.map(m=>`<tr><td style="font-weight:600;">${m.name}</td><td>${m.dosage}</td><td><span class="badge badge-purple">${m.type}</span></td><td><button onclick="editSettingsItem('medicine',${m.id})" style="background:none;border:none;cursor:pointer;color:var(--odoo-blue);margin-right:6px;font-size:13px;"><i class="fas fa-edit"></i></button><button onclick="deleteSettingsItem('medicines',${m.id})" style="background:none;border:none;cursor:pointer;color:var(--odoo-red);font-size:13px;"><i class="fas fa-trash"></i></button></td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--odoo-text-muted);">No medicines added</td></tr>';
-    const tests=Store.get('labTests');
-    document.getElementById('settings-labtests-table').innerHTML=tests.map(t=>`<tr><td style="font-weight:600;">${t.name}</td><td>${t.unit}</td><td style="font-size:12px; color:var(--odoo-text-muted);">${t.normalRange}</td><td><button onclick="editSettingsItem('labTest',${t.id})" style="background:none;border:none;cursor:pointer;color:var(--odoo-blue);margin-right:6px;font-size:13px;"><i class="fas fa-edit"></i></button><button onclick="deleteSettingsItem('labTests',${t.id})" style="background:none;border:none;cursor:pointer;color:var(--odoo-red);font-size:13px;"><i class="fas fa-trash"></i></button></td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--odoo-text-muted);">No lab tests added</td></tr>';
+    const medicines = Store.get('medicines');
+    document.getElementById('settings-medicines-table').innerHTML = medicines.map(m =>
+        `<tr>
+            <td style="font-weight:600;">${m.name}</td>
+            <td>${m.dosage}</td>
+            <td><span class="badge badge-purple">${m.type}</span></td>
+            <td>
+                <button onclick="editSettingsItem('medicine',${m.id})" style="background:none;border:none;cursor:pointer;color:var(--odoo-blue);margin-right:6px;font-size:13px;"><i class="fas fa-edit"></i></button>
+                <button onclick="deleteSettingsItem('medicines',${m.id})" style="background:none;border:none;cursor:pointer;color:var(--odoo-red);font-size:13px;"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--odoo-text-muted);">No medicines added</td></tr>';
+
+    const tests = Store.get('labTests');
+    document.getElementById('settings-labtests-table').innerHTML = tests.map(t =>
+        `<tr>
+            <td style="font-weight:600;">${t.name}</td>
+            <td>${t.unit}</td>
+            <td style="font-size:12px;color:var(--odoo-text-muted);">${t.normalRange}</td>
+            <td>
+                <button onclick="editSettingsItem('labTest',${t.id})" style="background:none;border:none;cursor:pointer;color:var(--odoo-blue);margin-right:6px;font-size:13px;"><i class="fas fa-edit"></i></button>
+                <button onclick="deleteSettingsItem('labTests',${t.id})" style="background:none;border:none;cursor:pointer;color:var(--odoo-red);font-size:13px;"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--odoo-text-muted);">No lab tests added</td></tr>';
 }
 
-function openSettingsModal(type,editId=null) {
-    document.getElementById('settings-type').value=type;
-    document.getElementById('settings-edit-id').value=editId||'';
-    const fieldsDiv=document.getElementById('settings-fields');
-    if(type==='medicine'){
-        document.getElementById('settings-modal-title').innerHTML=`<i class="fas fa-pills" style="margin-right:8px;"></i>${editId?'Edit':'Add'} Medicine`;
-        const data=editId?Store.get('medicines').find(m=>m.id==editId):{};
-        fieldsDiv.innerHTML=`<div class="form-group"><label class="form-label">Medicine Name</label><input type="text" id="set-med-name" value="${data.name||''}" required class="form-control"></div><div class="form-group"><label class="form-label">Default Dosage</label><input type="text" id="set-med-dose" value="${data.dosage||''}" required class="form-control"></div><div class="form-group"><label class="form-label">Type</label><input type="text" id="set-med-type" value="${data.type||''}" placeholder="Tablet, Syrup, Injection..." class="form-control"></div>`;
+function openSettingsModal(type, editId = null) {
+    document.getElementById('settings-type').value    = type;
+    document.getElementById('settings-edit-id').value = editId || '';
+    const fieldsDiv = document.getElementById('settings-fields');
+    if (type === 'medicine') {
+        document.getElementById('settings-modal-title').innerHTML = `<i class="fas fa-pills" style="margin-right:8px;"></i>${editId ? 'Edit' : 'Add'} Medicine`;
+        const data = editId ? Store.get('medicines').find(m => m.id == editId) : {};
+        fieldsDiv.innerHTML = `
+            <div class="form-group"><label class="form-label">Medicine Name</label><input type="text" id="set-med-name" value="${data.name||''}" required class="form-control"></div>
+            <div class="form-group"><label class="form-label">Default Dosage</label><input type="text" id="set-med-dose" value="${data.dosage||''}" required class="form-control"></div>
+            <div class="form-group"><label class="form-label">Type</label><input type="text" id="set-med-type" value="${data.type||''}" placeholder="Tablet, Syrup, Injection..." class="form-control"></div>`;
     } else {
-        document.getElementById('settings-modal-title').innerHTML=`<i class="fas fa-flask" style="margin-right:8px;"></i>${editId?'Edit':'Add'} Lab Test`;
-        const data=editId?Store.get('labTests').find(t=>t.id==editId):{};
-        fieldsDiv.innerHTML=`<div class="form-group"><label class="form-label">Test Name</label><input type="text" id="set-lab-name" value="${data.name||''}" required class="form-control"></div><div class="form-group"><label class="form-label">Unit</label><input type="text" id="set-lab-unit" value="${data.unit||''}" placeholder="mg/dL, etc" class="form-control"></div><div class="form-group"><label class="form-label">Normal Range</label><input type="text" id="set-lab-range" value="${data.normalRange||''}" placeholder="e.g. 70-100" class="form-control"></div>`;
+        document.getElementById('settings-modal-title').innerHTML = `<i class="fas fa-flask" style="margin-right:8px;"></i>${editId ? 'Edit' : 'Add'} Lab Test`;
+        const data = editId ? Store.get('labTests').find(t => t.id == editId) : {};
+        fieldsDiv.innerHTML = `
+            <div class="form-group"><label class="form-label">Test Name</label><input type="text" id="set-lab-name" value="${data.name||''}" required class="form-control"></div>
+            <div class="form-group"><label class="form-label">Unit</label><input type="text" id="set-lab-unit" value="${data.unit||''}" placeholder="mg/dL, etc." class="form-control"></div>
+            <div class="form-group"><label class="form-label">Normal Range</label><input type="text" id="set-lab-range" value="${data.normalRange||''}" placeholder="e.g. 70-100" class="form-control"></div>`;
     }
     openModal('modal-settings');
 }
 
 function saveSettingsItem(e) {
     e.preventDefault();
-    const type=document.getElementById('settings-type').value;
-    const editId=document.getElementById('settings-edit-id').value;
-    if(type==='medicine'){const item={name:document.getElementById('set-med-name').value,dosage:document.getElementById('set-med-dose').value,type:document.getElementById('set-med-type').value||'Tablet'};if(editId) Store.update('medicines',editId,item); else Store.add('medicines',item);}
-    else{const item={name:document.getElementById('set-lab-name').value,unit:document.getElementById('set-lab-unit').value,normalRange:document.getElementById('set-lab-range').value};if(editId) Store.update('labTests',editId,item); else Store.add('labTests',item);}
-    closeModal('modal-settings'); renderSettings();
+    const type   = document.getElementById('settings-type').value;
+    const editId = document.getElementById('settings-edit-id').value;
+    if (type === 'medicine') {
+        const item = { name:document.getElementById('set-med-name').value, dosage:document.getElementById('set-med-dose').value, type:document.getElementById('set-med-type').value||'Tablet' };
+        if (editId) Store.update('medicines', editId, item); else Store.add('medicines', item);
+    } else {
+        const item = { name:document.getElementById('set-lab-name').value, unit:document.getElementById('set-lab-unit').value, normalRange:document.getElementById('set-lab-range').value };
+        if (editId) Store.update('labTests', editId, item); else Store.add('labTests', item);
+    }
+    closeModal('modal-settings');
+    renderSettings();
 }
 
-function editSettingsItem(type,id){openSettingsModal(type,id);}
-function deleteSettingsItem(key,id){if(confirm('Delete this item?')){Store.del(key,id);renderSettings();}}
+function editSettingsItem(type, id)  { openSettingsModal(type, id); }
+function deleteSettingsItem(key, id) { if (confirm('Delete this item?')) { Store.del(key, id); renderSettings(); } }
 
+/* ============================
+   DASHBOARD
+============================ */
 function updateDashboard() {
-    const patients=Store.get('patients');
-    const today=new Date().toISOString().split('T')[0];
-    let totalVisits=0,pendingLab=0,completedLab=0,todayVisits=0;
-    const todayPats=new Set();
-    patients.forEach(p=>{p.visits.forEach(v=>{totalVisits++;if(v.date===today){todayVisits++;todayPats.add(p.id);}v.labTests.forEach(t=>{if(t.status==='pending') pendingLab++; else if(t.status==='completed') completedLab++;});});});
-    document.getElementById('dash-patients').textContent=patients.length;
-    document.getElementById('dash-visits').textContent=todayVisits;
-    document.getElementById('dash-today-patients').textContent=todayPats.size;
-    document.getElementById('dash-pending-lab').textContent=pendingLab;
-    document.getElementById('dash-completed-lab').textContent=completedLab;
-    document.getElementById('dash-recent-patients').innerHTML=patients.slice().reverse().slice(0,5).map(p=>`<div style="display:flex; align-items:center; justify-content:space-between; padding:9px 10px; background:#fafafa; border:1px solid var(--odoo-border); border-radius:4px; margin-bottom:6px; cursor:pointer;" onclick="showSection('patients'); viewPatientHistory(${p.id})"><div style="display:flex; align-items:center; gap:10px;"><div class="patient-avatar" style="width:30px;height:30px;font-size:12px;">${p.name.charAt(0)}</div><div><p style="font-weight:700; font-size:12px;">${p.name}</p><p style="font-size:11px; color:var(--odoo-text-muted);">${p.phone}</p></div></div><span class="badge badge-purple">${p.visits.length} visits</span></div>`).join('')||'<p style="color:var(--odoo-text-muted); font-style:italic; font-size:12px;">No patients yet</p>';
-    let pendingItems=[];
-    patients.forEach(p=>{p.visits.forEach(v=>{v.labTests.forEach(t=>{if(t.status==='pending') pendingItems.push({patient:p,test:t});});});});
-    document.getElementById('dash-pending-lab-list').innerHTML=pendingItems.slice(0,5).map(item=>`<div style="display:flex; align-items:center; justify-content:space-between; padding:9px 10px; background:#fff8e1; border:1px solid #ffc107; border-left:3px solid #ffc107; border-radius:4px; margin-bottom:6px;"><div><p style="font-weight:700; font-size:12px;">${item.patient.name}</p><p style="font-size:11px; color:#c2410c;">${item.test.testName}</p></div><span class="badge badge-pending">Pending</span></div>`).join('')||'<p style="color:var(--odoo-text-muted); font-style:italic; font-size:12px; text-align:center; padding:20px 0;">No pending lab requests</p>';
+    const patients = Store.get('patients');
+    const today    = new Date().toISOString().split('T')[0];
+    let totalVisits = 0, pendingLab = 0, completedLab = 0, todayVisits = 0;
+    const todayPats = new Set();
+    patients.forEach(p => {
+        p.visits.forEach(v => {
+            totalVisits++;
+            if (v.date === today) { todayVisits++; todayPats.add(p.id); }
+            v.labTests.forEach(t => { if (t.status === 'pending') pendingLab++; else if (t.status === 'completed') completedLab++; });
+        });
+    });
+    document.getElementById('dash-patients').textContent       = patients.length;
+    document.getElementById('dash-visits').textContent         = todayVisits;
+    document.getElementById('dash-today-patients').textContent = todayPats.size;
+    document.getElementById('dash-pending-lab').textContent    = pendingLab;
+    document.getElementById('dash-completed-lab').textContent  = completedLab;
+
+    document.getElementById('dash-recent-patients').innerHTML = patients.slice().reverse().slice(0, 5).map(p =>
+        `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;background:#fafafa;border:1px solid var(--odoo-border);border-radius:4px;margin-bottom:6px;cursor:pointer;" onclick="showSection('patients');viewPatientHistory(${p.id})">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div class="patient-avatar" style="width:30px;height:30px;font-size:12px;">${p.name.charAt(0)}</div>
+                <div><p style="font-weight:700;font-size:12px;">${p.name}</p><p style="font-size:11px;color:var(--odoo-text-muted);">${p.phone}</p></div>
+            </div>
+            <span class="badge badge-purple">${p.visits.length} visits</span>
+        </div>`).join('') || '<p style="color:var(--odoo-text-muted);font-style:italic;font-size:12px;">No patients yet</p>';
+
+    let pendingItems = [];
+    patients.forEach(p => { p.visits.forEach(v => { v.labTests.forEach(t => { if (t.status === 'pending') pendingItems.push({patient:p, test:t, visit:v}); }); }); });
+    document.getElementById('dash-pending-lab-list').innerHTML = pendingItems.slice(0, 5).map(item =>
+        `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;background:#fff8e1;border:1px solid #ffc107;border-left:3px solid #ffc107;border-radius:4px;margin-bottom:6px;">
+            <div>
+                <p style="font-weight:700;font-size:12px;">${item.patient.name}</p>
+                <p style="font-size:11px;color:#c2410c;">${item.test.testName}</p>
+                <p style="font-size:10px;color:var(--odoo-text-muted);">Dr: ${item.visit.doctorName||'--'}</p>
+            </div>
+            <span class="badge badge-pending">Pending</span>
+        </div>`).join('') || '<p style="color:var(--odoo-text-muted);font-style:italic;font-size:12px;text-align:center;padding:20px 0;">No pending lab requests</p>';
 }
 
-function openModal(id){document.getElementById(id).classList.add('active');}
-function closeModal(id){document.getElementById(id).classList.remove('active');}
+/* ============================
+   UTILITIES
+============================ */
+function openModal(id)  { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
 function resetAllData() {
-    if(confirm('WARNING: This will delete ALL data permanently. Are you sure?')){
-        localStorage.removeItem('dms_init_v2');
-        ['patients','medicines','labTests'].forEach(k=>localStorage.removeItem(k));
+    if (confirm('WARNING: This will permanently delete ALL patient data. Are you sure?')) {
+        localStorage.removeItem('dms_init_v3');
+        ['patients','medicines','labTests'].forEach(k => localStorage.removeItem(k));
         location.reload();
     }
 }
 
-// INIT
-document.getElementById('current-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-document.getElementById('doctor-name').textContent=DOCTOR_NAME;
-const nameParts=DOCTOR_NAME.replace('Dr ','').replace('Dr. ','').split(' ');
-const initials=nameParts.length>=2?nameParts[0][0]+nameParts[nameParts.length-1][0]:nameParts[0][0];
-document.getElementById('doctor-avatar-initials').textContent=initials.toUpperCase();
-initData();
-populateLabTemplateSelect();
-updateDashboard();
-showSection('dashboard');
-document.querySelectorAll('.modal-overlay').forEach(overlay=>{overlay.addEventListener('click',function(e){if(e.target===this) this.classList.remove('active');});});
+/* ============================
+   INIT
+============================ */
+document.getElementById('current-date').textContent =
+    new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
+});
+
 </script>
 </body>
 </html>
